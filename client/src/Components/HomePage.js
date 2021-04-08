@@ -13,6 +13,10 @@ const HomePage = () => {
 const Title = styled.div`
   font-size: 2rem;
   margin: auto;
+
+  border: 2px solid black;
+  padding: 20px;
+  text-align: center;
 `;
 
 export default HomePage;

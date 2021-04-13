@@ -6,9 +6,6 @@ const Wrapper = ({ children }) => {
 };
 
 const WrapAll = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
   height: 100vh;
   width: 100vw;
   padding: var(--page-vertical-padding) var(--page-horizontal-padding);

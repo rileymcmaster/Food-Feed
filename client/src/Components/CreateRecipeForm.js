@@ -13,7 +13,6 @@ const RecipeForm = () => {
   //should only be able to submit recipe if signed in!!
   //USER STATE
   const user = useSelector((state) => state.user);
-  // console.log("recipeForm user", user);
 
   //the recipe state that will be submitted
   const [userInput, setUserInput] = useState({
@@ -22,9 +21,9 @@ const RecipeForm = () => {
     directions: [],
     isPrivate: false,
     createdBy: user._id,
-    recipeImage: {},
+    recipeImageUrl: "",
   });
-  console.log("user input", userInput);
+  // console.log("user input", userInput);
 
   //number of inputs for Ingredients & Directions
   const [numIngredients, setNumIngredients] = useState(1);
@@ -69,7 +68,6 @@ const RecipeForm = () => {
     const userInputCopy = { ...userInput };
     //update the corresponding ingredient in DIRECTIONS
     userInputCopy.directions.filter((direction, i) => {
-      console.log("direction", direction);
       direction.ingredients.filter((ingredient, idx) => {
         if (
           ingredient.ingredient === userInputCopy.ingredients[index].ingredient
@@ -110,45 +108,31 @@ const RecipeForm = () => {
   };
 
   //IMAGE UPLOAD
-  const [recipeImg, setRecipeImg] = useState();
-  const updateImageFile = (imageFile) => {
-    console.log("image", imageFile);
-    // const userInputCopy = { ...userInput };
-    // console.log("userInput recipeImg", userInputCopy.recipeImage);
-    // userInputCopy.recipeImage = imageFile;
-    // setUserInput(userInputCopy);
-    //
-    setRecipeImg(imageFile);
-  };
-  const [recipeImageUrl, setRecipeImageUrl] = useState("");
+  const [recipeImage, setRecipeImage] = useState({});
+  const [imageUploading, setImageUploading] = useState(false);
+  const [imageUploadComplete, setImageUploadComplete] = useState(false);
   const sendImage = (ev) => {
+    setImageUploading(true);
     const data = new FormData();
-    data.append("file", recipeImg);
-    // data.append("upload_preset", "bodyofwater");
+    data.append("file", recipeImage);
+    data.append("upload_preset", "feed-preset");
     data.append("cloud_name", "bodyofwater");
-    fetch("https://api.cloudinary.com/v1_1/bodyofwater/upload", {
+    fetch("https://api.cloudinary.com/v1_1/bodyofwater/image/upload", {
       method: "POST",
       body: data,
     })
       .then((res) => res.json())
       .then((data) => {
-        // console.log("data", data);
-        // setRecipeImageUrl(data.url);
-        setUserInput({ ...userInput, recipeImage: data.url });
-      });
+        console.log("image upload successful!");
+        setUserInput({ ...userInput, recipeImageUrl: data.url });
+        setImageUploading(false);
+        setImageUploadComplete(true);
+      })
+      .catch((err) => console.log("error", err));
   };
-
   //SUBMIT
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    // const data = new FormData();
-    // data.append("userInput", userInput);
-    // data.append("recipeImage", recipeImg);
-    // fetch("https://api.cloudinary.com/v1_1/bodyofwater/upload", {
-    //   method: "POST",
-    //   body: data,
-    // });
     //THIS WORKS VVVV except for the image
     fetch("/recipes/create", {
       method: "POST",
@@ -264,19 +248,22 @@ const RecipeForm = () => {
               name="uploadImage"
               onChange={(e) => {
                 const file = e.target.files[0];
-                updateImageFile(file);
+                setRecipeImage(file);
               }}
             />
             <button
               type="button"
               onClick={() => {
                 sendImage();
-                setRecipeImg({});
+                setRecipeImage({});
               }}
             >
               upload picture
             </button>
+            {imageUploading && <h1>image is uploading</h1>}
+            {imageUploadComplete && <h1>Upload is complete!</h1>}
           </div>
+          {/* END UPLOAD IMAGE */}
           <div>
             <button type="submit">Submit</button>
           </div>

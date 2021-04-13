@@ -6,7 +6,8 @@ import { GrFormDown } from "react-icons/gr";
 
 const RecipePage = () => {
   const [currentRecipe, setCurrentRecipe] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [author, setAuthor] = useState("");
   const titlePageRef = useRef(null);
   const ingredientsPageRef = useRef(null);
 
@@ -14,20 +15,29 @@ const RecipePage = () => {
   console.log("recipe", currentRecipe);
   //recipe page will be one long page with ref to each different part.
 
+  //FETCH RECIPE
   useEffect(() => {
     setLoading(true);
-    fetch(`/recipes/${urlId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("data", data);
-        setCurrentRecipe(data.data);
-      });
-    const timer = setTimeout(() => {
+    const fetchRecipeAndAuthor = async () => {
+      const recipeJson = await fetch(`/recipes/${urlId}`);
+      const recipeData = await recipeJson.json();
+      setCurrentRecipe(recipeData.data);
+    };
+    fetchRecipeAndAuthor().catch((err) => console.log("error", err));
+  }, []);
+  //FETCH AUTHOR
+  useEffect(() => {
+    if (currentRecipe) {
+      fetch(`/user/${currentRecipe.createdBy}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setAuthor(data.data);
+        });
       setLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, [urlId]);
+    }
+  }, [currentRecipe]);
 
+  //SCROLL CONTROL
   const scrollTo = (ref) => {
     window.scroll({
       top: ref.current.offsetTop,
@@ -41,8 +51,6 @@ const RecipePage = () => {
   //UPDATE INGREDIENTS
   const updateIngredients = (e, index) => {
     const currentRecipeCopy = { ...currentRecipe };
-    console.log("e", e.target.value);
-    console.log("index", index);
     //update the corresponding ingredient in DIRECTIONS
     //filter through the directions array
     currentRecipeCopy.directions.filter((direction, i) => {
@@ -67,7 +75,6 @@ const RecipePage = () => {
   //UPDATE DIRECTIONS
   const updateDirections = (e, index) => {
     const currentRecipeCopy = { ...currentRecipe };
-    // console.log("copy", currentRecipeCopy);
     currentRecipeCopy.directions[index].direction = e.target.value;
     setCurrentRecipe(currentRecipeCopy);
   };
@@ -75,10 +82,6 @@ const RecipePage = () => {
   //update ingredients from the direction page
   const updateDirectionIngredient = (e, ingredientIndex, directionIndex) => {
     const currentRecipeCopy = { ...currentRecipe };
-    // console.log("e", e.target.value);
-    // console.log("I index", ingredientIndex);
-    // console.log("D index", directionIndex);
-
     //update the ingredients array
     currentRecipeCopy.ingredients.filter((ingredient, index) => {
       if (
@@ -97,13 +100,6 @@ const RecipePage = () => {
     currentRecipeCopy.directions.map((direction, i) => {
       //filter through the ingredients array inside the directions
       direction.ingredients.filter((ingredient, idx) => {
-        console.log("ingedient", ingredient.ingredient);
-        console.log(
-          "long path",
-          currentRecipeCopy.directions[directionIndex].ingredients[
-            ingredientIndex
-          ].ingredient
-        );
         //if the ingredient listed matches the one that is being edited then it will update it
         if (
           ingredient.ingredient ===
@@ -122,16 +118,19 @@ const RecipePage = () => {
     setCurrentRecipe(currentRecipeCopy);
   };
 
-  return currentRecipe ? (
+  return !loading ? (
     <>
       <Container ref={titlePageRef}>
         <Title>{currentRecipe.recipeName}</Title>
+        <Title>{author.handle}</Title>
+        {/* next page button */}
         <Icon onClick={() => scrollTo(ingredientsPageRef)}>
           <GrFormDown />
         </Icon>
+        <RecipeImage src={currentRecipe.recipeImageUrl} />
       </Container>
+      {/* TITLE PAGE */}
       <Container ref={ingredientsPageRef}>
-        {/* TITLE PAGE */}
         <Title>Ingredients:</Title>
         {/*  */}
         {/* INGREDIENTS PAGE */}
@@ -234,6 +233,12 @@ const RecipePage = () => {
     </Wrapper>
   );
 };
+const RecipeImage = styled.img`
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  z-index: -1;
+`;
 const Icon = styled.div`
   color: black;
   font-size: 30px;
@@ -244,6 +249,10 @@ const IngredientLine = styled.h1``;
 const IngredientList = styled.div``;
 const Title = styled.h1`
   font-size: 2rem;
+  &:first-child {
+    background-color: rgba(255, 255, 255, 0.5);
+    padding: 20px;
+  }
 `;
 const Container = styled.div`
   display: flex;

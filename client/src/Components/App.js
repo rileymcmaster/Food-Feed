@@ -7,7 +7,7 @@ import RecipePage from "./RecipePage";
 import SignUp from "./SignUp";
 import SignIn from "./SignIn";
 import Header from "./Header";
-import RecipeForm from "./RecipeForm";
+import RecipeForm from "./CreateRecipeForm";
 
 const App = () => {
   return (

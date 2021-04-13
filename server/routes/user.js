@@ -9,7 +9,7 @@ const {
 const router = express.Router();
 
 //get one user
-router.get("/", getUserProfile);
+router.get("/:_id", getUserProfile);
 
 //create account
 router.post("/signup", createUserAccount);

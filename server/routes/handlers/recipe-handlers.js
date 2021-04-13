@@ -10,38 +10,31 @@ require("dotenv").config();
 const { MONGO_URI } = process.env;
 
 const getAllRecipes = async (req, res) => {
-  const allRecipes = await Recipe.find();
-  console.log("all", allRecipes);
-  if (allRecipes) {
-    res.status(200).json({ status: 200, data: allRecipes });
-  } else {
+  try {
+    const allRecipes = await Recipe.find();
+    // console.log("all", allRecipes);
+    if (allRecipes) {
+      res.status(200).json({ status: 200, data: allRecipes });
+    }
+  } catch (error) {
+    console.log("error", error);
     res.status(404).json({ status: 404, message: "Error" });
   }
-
-  //local fetch
-  // if (recipes) {
-  //   res.status(200).json({ status: 200, data: recipes });
-  // } else {
-  //   res.status(404).json({ status: 404, message: "Error" });
-  // }
 };
 
 const getOneRecipe = async (req, res) => {
-  // const findRecipe = recipes.find((recipe) => {
-  //   if (Number(recipe._id) === Number(req.params._id)) {
-  //     return recipe;
-  //   }
-  // });
-  const findOneRecipe = await Recipe.findOne({ _id: req.params._id });
-  if (findOneRecipe) {
-    res.status(200).json({ status: 200, data: findOneRecipe });
+  try {
+    const findOneRecipe = await Recipe.findOne({ _id: req.params._id });
+    if (findOneRecipe) {
+      res.status(200).json({ status: 200, data: findOneRecipe });
+    }
+  } catch (error) {
+    console.log("error", error);
+    res.status(400).json({ status: 400, message: "no recipe found" });
   }
-  res.status(400).json({ status: 400, message: "no recipe found" });
 };
 
 const createRecipe = (req, res) => {
-  console.log("req", req.body);
-  // console.log("image", req.body.recipeImage);
   //UPLOAD IMAGE
 
   // send to mongo
@@ -53,7 +46,7 @@ const createRecipe = (req, res) => {
     createdBy: req.body.createdBy,
     variations: [],
     isPrivate: req.body.isPrivate,
-    recipeImage: req.body.recipeImage,
+    recipeImageUrl: req.body.recipeImageUrl,
   })
     .then((data) => {
       if (data) {

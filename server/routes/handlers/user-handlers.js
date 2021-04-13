@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 let User = require("../../models/user");
+const { MongoClient, ObjectID } = require("mongodb");
 
 const saltRounds = 10;
 
@@ -34,6 +35,7 @@ const createUserAccount = async (req, res) => {
         isSignedIn: false,
         deactivated: false,
         password: hash,
+        avatarUrl: req.body.avatarUrl,
       })
         .then((data) => {
           if (data) {
@@ -79,7 +81,18 @@ const deleteUserAccount = (req, res) => {
   //todo
 };
 
-const getUserProfile = (req, res) => {
+const getUserProfile = async (req, res) => {
+  console.log("getuser", req.params);
+  const findOneUser = await User.findOne({ _id: req.params._id });
+  try {
+    console.log("findOne", findOneUser);
+    if (findOneUser) {
+      res.status(200).json({ status: 200, data: findOneUser });
+    }
+  } catch (error) {
+    console.log("error", error);
+    res.status(400).json({ status: 400, message: "No user found" });
+  }
   //to do
 };
 

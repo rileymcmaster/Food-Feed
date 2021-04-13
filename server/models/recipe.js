@@ -15,7 +15,7 @@ const schema = new Schema({
   //user can decide to make their recipe private.
   isPrivate: Boolean,
   //upload an image/
-  recipeImage: Object,
+  recipeImageUrl: String,
   //timestamp of when recipe is sent to the db
   date: { type: Date, default: Date.now },
 });

@@ -10,6 +10,7 @@ const schema = new Schema({
   deactivated: { type: Boolean, required: true },
   recipesCreated: [],
   recipesImproved: [],
+  avatarUrl: { type: String },
 });
 
 module.exports = mongoose.model("User", schema, "users");

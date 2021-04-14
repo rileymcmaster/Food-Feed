@@ -8,14 +8,15 @@ const schema = new Schema({
   directions: [{ direction: String, ingredients: [{ ingredient: String }] }],
   likedBy: [{ type: String }],
   //if created by form it will be original, if altered by user it will be false
-  isOriginal: Boolean,
-  createdBy: String,
+  isOriginal: { type: Boolean },
+  originalRecipe: { type: String },
+  createdBy: { type: String },
   //id's of edits of this recipe
-  variations: [{ _id: String, improvedBy: String }],
+  variations: [{ type: String }],
   //user can decide to make their recipe private.
-  isPrivate: Boolean,
+  isPrivate: { type: Boolean },
   //upload an image/
-  recipeImageUrl: String,
+  recipeImageUrl: { type: String },
   //timestamp of when recipe is sent to the db
   date: { type: Date, default: Date.now },
 });

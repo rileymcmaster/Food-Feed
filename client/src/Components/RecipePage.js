@@ -1,18 +1,23 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
 import Wrapper from "./Wrapper";
 import { GrFormDown } from "react-icons/gr";
 
 const RecipePage = () => {
+  //LOGGED IN USER
+  const user = useSelector((state) => state.user);
+
   const [currentRecipe, setCurrentRecipe] = useState(null);
+  const [firstFetch, setFirstFetch] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [author, setAuthor] = useState("");
+  const [author, setAuthor] = useState(null);
   const titlePageRef = useRef(null);
   const ingredientsPageRef = useRef(null);
 
   const urlId = useParams()._id;
-  console.log("recipe", currentRecipe);
+  // console.log("recipe", currentRecipe);
   //recipe page will be one long page with ref to each different part.
 
   //FETCH RECIPE
@@ -22,6 +27,7 @@ const RecipePage = () => {
       const recipeJson = await fetch(`/recipes/${urlId}`);
       const recipeData = await recipeJson.json();
       setCurrentRecipe(recipeData.data);
+      setFirstFetch(true);
     };
     fetchRecipeAndAuthor().catch((err) => console.log("error", err));
   }, []);
@@ -35,7 +41,7 @@ const RecipePage = () => {
         });
       setLoading(false);
     }
-  }, [currentRecipe]);
+  }, [firstFetch]);
 
   //SCROLL CONTROL
   const scrollTo = (ref) => {
@@ -46,8 +52,17 @@ const RecipePage = () => {
   };
 
   //EDITING
-  //bug if two ingredients are the same
+  const [toggleEditTitle, setToggleEditTitle] = useState(false);
   const [toggleEditIngredient, setToggleEditIngredient] = useState(false);
+  const [toggleEditDirection, setToggleEditDirection] = useState(false);
+  //UPDATE TITLE
+  const updateTitle = (e) => {
+    const currentRecipeCopy = { ...currentRecipe };
+    currentRecipeCopy.recipeName = e.target.value;
+    setCurrentRecipe(currentRecipeCopy);
+  };
+  //
+  //bug if two ingredients are the same
   //UPDATE INGREDIENTS
   const updateIngredients = (e, index) => {
     const currentRecipeCopy = { ...currentRecipe };
@@ -71,7 +86,7 @@ const RecipePage = () => {
     setCurrentRecipe(currentRecipeCopy);
   };
   //
-  const [toggleEditDirection, setToggleEditDirection] = useState(false);
+
   //UPDATE DIRECTIONS
   const updateDirections = (e, index) => {
     const currentRecipeCopy = { ...currentRecipe };
@@ -118,10 +133,79 @@ const RecipePage = () => {
     setCurrentRecipe(currentRecipeCopy);
   };
 
-  return !loading ? (
+  //SEND EDIT
+  const [editedRecipeObject, setEditedRecipeObject] = useState(null);
+  const handleSubmitChanges = () => {
+    //two posts
+    //1. make new recipe
+    //2. update this recipe to include the new recipe in its variations array
+    //3. udpate user to say they made a recipe
+
+    const currentRecipeCopy = {
+      ...currentRecipe,
+      createdBy: user._id,
+      isOriginal: false,
+      date: "",
+      originalRecipe: currentRecipe._id,
+    };
+    fetch(`/recipes/create/edit`, {
+      method: "POST",
+      body: JSON.stringify(currentRecipeCopy),
+      headers: {
+        Accept: "application/json",
+        "Content-type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("updated recipe data");
+        setEditedRecipeObject(data.data);
+      });
+  };
+  // update the original recipe and user in the database with the new edited recipe
+  useEffect(() => {
+    const currentRecipeCopy = { ...currentRecipe };
+    if (editedRecipeObject) {
+      currentRecipeCopy.variations.push(editedRecipeObject._id);
+      console.log("CURRENT", currentRecipeCopy);
+      fetch(`/recipes/update/`, {
+        method: "PATCH",
+        body: JSON.stringify(currentRecipeCopy),
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json",
+        },
+      })
+        .then((data) => {
+          console.log("added to variant array");
+          setCurrentRecipe(editedRecipeObject);
+        })
+        .catch((err) => console.log("error", err));
+    }
+  }, [editedRecipeObject]);
+
+  return currentRecipe && !loading && author ? (
     <>
+      <SubmitImprovement type="button" onClick={() => handleSubmitChanges()}>
+        SUBMIT
+      </SubmitImprovement>
       <Container ref={titlePageRef}>
-        <Title>{currentRecipe.recipeName}</Title>
+        {!toggleEditTitle ? (
+          <Title onClick={() => setToggleEditTitle(true)}>
+            {currentRecipe.recipeName}
+          </Title>
+        ) : (
+          <>
+            <input
+              type="text"
+              value={currentRecipe.recipeName}
+              onChange={(e) => updateTitle(e)}
+            />
+            <button type="button" onClick={() => setToggleEditTitle(false)}>
+              Done editing
+            </button>
+          </>
+        )}
         <Title>{author.handle}</Title>
         {/* next page button */}
         <Icon onClick={() => scrollTo(ingredientsPageRef)}>
@@ -233,6 +317,16 @@ const RecipePage = () => {
     </Wrapper>
   );
 };
+const SubmitImprovement = styled.button`
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  margin: 20px;
+  padding: 20px;
+  background-color: red;
+  font-weight: bold;
+`;
+
 const RecipeImage = styled.img`
   height: 100%;
   width: 100%;

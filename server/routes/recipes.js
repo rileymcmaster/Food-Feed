@@ -5,6 +5,7 @@ const {
   editRecipe,
   likeRecipe,
   createRecipe,
+  updateRecipeVariation,
 } = require("./handlers/recipe-handlers");
 const router = express.Router();
 
@@ -17,6 +18,11 @@ router.get("/:_id", getOneRecipe);
 router.post("/create", createRecipe);
 
 //editRecipe
+router.post("/create/edit", editRecipe);
+
+//updateRecipe
+router.patch("/update/", updateRecipeVariation);
+
 //likeRecipe
 
 module.exports = router;

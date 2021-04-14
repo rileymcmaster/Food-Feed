@@ -17,6 +17,7 @@ const App = () => {
         <Header />
         <Switch>
           <Route exact path="/">
+            {/* <SignIn /> */}
             <HomePage />
           </Route>
           <Route exact path="/recipes">

@@ -1,14 +1,24 @@
 import React, { useState } from "react";
 import Wrapper from "./Wrapper";
+import styled from "styled-components";
 
 const SignUp = () => {
   //states all for the form
   const [userInput, setUserInput] = useState({});
-  //TODO: pop up window to redirect to sign in page
+  // todo
   const [successMessasge, setSuccessMessage] = useState(false);
+  // todo
   const [errorMessage, setErrorMessage] = useState(null);
 
-  //should make spaces impossible in handle
+  const controlHandleInput = (e) => {
+    setUserInput({ ...userInput, handle: e.target.value });
+  };
+
+  //DISABLE THE SUBMIT BUTTON UNTIL THE FORM IS FILLLED OUT
+  let disableSubmit = true;
+  if (userInput.handle && userInput.email && userInput.password) {
+    disableSubmit = false;
+  }
 
   //UPLOAD IMAGE
   const [avatarImage, setAvatarImage] = useState({});
@@ -69,88 +79,121 @@ const SignUp = () => {
   };
   return (
     <Wrapper>
-      <form onSubmit={handleSubmit}>
-        {/* handle */}
-        <div>
-          <label for="handle">handle:</label>
-          <input
-            type="text"
-            placeholder="ex: SomeLikeItSpicy"
-            name="handle"
-            required
-            onChange={(e) =>
-              setUserInput({ ...userInput, handle: e.target.value })
-            }
-          />
-        </div>
-        {/* userName */}
-        <div>
-          <label for="userName">UserName:</label>
-          <input
-            type="text"
-            placeholder="ex: Dave Davidson"
-            name="userName"
-            required
-            onChange={(e) =>
-              setUserInput({ ...userInput, userName: e.target.value })
-            }
-          />
-        </div>
-        {/* EMAIL */}
-        <div>
-          <label for="email">Email:</label>
-          <input
-            type="email"
-            placeholder="ex. steamedhams@auroraborealis.org"
-            name="email"
-            required
-            onChange={(e) =>
-              setUserInput({ ...userInput, email: e.target.value })
-            }
-          />
-        </div>
-        <div>
-          {/* PASSWORD */}
-          <label for="password">Password:</label>
-          <input
-            type="password"
-            placeholder="Enter password"
-            name="password"
-            required
-            onChange={(e) =>
-              setUserInput({ ...userInput, password: e.target.value })
-            }
-          />
-        </div>
-        {/* UPLOAD AVATAR IMAGE */}
-        <label for="upload-image">Upload avatar picture</label>
-        <input
-          type="file"
-          name="upload-image"
-          onChange={(e) => handleImageUpload(e)}
-        ></input>
-        <button
-          type="button"
-          onClick={() => {
-            sendImage();
-            setAvatarImage({});
-          }}
-        >
-          Upload avatar
-        </button>
-        {imageUploading && <h1>image is uploading</h1>}
-        {imageUploadComplete && <h1>Upload is complete!</h1>}
-        {/* END UPLOAD IMG */}
-        {/*  */}
-        {/* SUBMIT BUTTON */}
-        <div>
-          <button type="submit" onClick="submit">
-            Sign up
-          </button>
-        </div>
-      </form>
+      <Container>
+        <form onSubmit={handleSubmit}>
+          {/* handle */}
+          <div>
+            <label for="handle">User handle:</label>
+            <input
+              type="text"
+              placeholder="One word, no special characters"
+              name="handle"
+              pattern="[A-Za-z0-9]+"
+              onKeyPress={(e) => controlHandleInput(e)}
+            />
+          </div>
+          {/* userName */}
+          <div>
+            <label for="userName">Display Name:</label>
+            <input
+              type="text"
+              placeholder="ex: Dave Davidson"
+              name="userName"
+              onChange={(e) =>
+                setUserInput({ ...userInput, userName: e.target.value })
+              }
+            />
+          </div>
+          {/* EMAIL */}
+          <div>
+            <label for="email">Email:</label>
+            <input
+              type="email"
+              placeholder="ex. steamedhams@auroraborealis.org"
+              name="email"
+              pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+              onChange={(e) =>
+                setUserInput({ ...userInput, email: e.target.value })
+              }
+            />
+          </div>
+          <div>
+            {/* PASSWORD */}
+            <label for="password">Password:</label>
+            <input
+              type="password"
+              placeholder="Enter password"
+              name="password"
+              onChange={(e) =>
+                setUserInput({ ...userInput, password: e.target.value })
+              }
+            />
+          </div>
+          {/* UPLOAD AVATAR IMAGE */}
+          <div>
+            <label for="upload-image">Upload avatar picture</label>
+            <input
+              type="file"
+              name="upload-image"
+              onChange={(e) => handleImageUpload(e)}
+            ></input>
+          </div>
+          <div>
+            <button
+              type="button"
+              onClick={() => {
+                sendImage();
+                setAvatarImage({});
+              }}
+            >
+              Upload avatar
+            </button>
+          </div>
+          {imageUploading && <h1>image is uploading</h1>}
+          {imageUploadComplete && <h1>Upload is complete!</h1>}
+          {/* END UPLOAD IMG */}
+
+          {/* BIO */}
+          <div>
+            <label for="bio">Brief bio:</label>
+            <textarea
+              type="text"
+              placeholder="I like spicy food"
+              name="userName"
+              onChange={(e) =>
+                setUserInput({ ...userInput, bio: e.target.value })
+              }
+            ></textarea>
+          </div>
+          {/* SUBMIT BUTTON */}
+          <div>
+            <button type="submit" onClick="submit" disabled={disableSubmit}>
+              Sign up
+            </button>
+          </div>
+        </form>
+      </Container>
     </Wrapper>
   );
 };
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  /* width: 100%; */
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  /* background-color: lightblue; */
 
+  div {
+    /* border: 2px solid red; */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  label {
+    margin-bottom: 0.5rem;
+  }
+`;
 export default SignUp;

@@ -36,6 +36,7 @@ const createUserAccount = async (req, res) => {
         deactivated: false,
         password: hash,
         avatarUrl: req.body.avatarUrl,
+        bio: req.body.bio,
       })
         .then((data) => {
           if (data) {
@@ -57,7 +58,7 @@ const userSignIn = (req, res) => {
   User.findOne({
     email: req.body.email,
   }).then((user) => {
-    console.log("user", user);
+    // console.log("user", user);
     if (!user) {
       console.log("no user");
       res.redirect("/");
@@ -82,10 +83,9 @@ const deleteUserAccount = (req, res) => {
 };
 
 const getUserProfile = async (req, res) => {
-  console.log("getuser", req.params);
   const findOneUser = await User.findOne({ _id: req.params._id });
   try {
-    console.log("findOne", findOneUser);
+    // console.log("findOne", findOneUser);
     if (findOneUser) {
       res.status(200).json({ status: 200, data: findOneUser });
     }

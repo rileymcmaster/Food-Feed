@@ -2,12 +2,6 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Wrapper from "./Wrapper";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  Image,
-  Video,
-  Transformation,
-  CloudinaryContext,
-} from "cloudinary-react";
 
 const RecipeForm = () => {
   //should only be able to submit recipe if signed in!!
@@ -130,19 +124,20 @@ const RecipeForm = () => {
       })
       .catch((err) => console.log("error", err));
   };
+  //
   //SUBMIT
   const handleSubmit = (e) => {
     e.preventDefault();
-    //THIS WORKS VVVV except for the image
     fetch("/recipes/create", {
       method: "POST",
       body: JSON.stringify(userInput),
       headers: {
         Accept: "application/json",
         "Content-type": "application/json",
-      },
+      }
+        .then((res) => res.json())
+        .then((data) => console.log("recipe has been uploaded", data)),
     });
-    //WORKS GOOOD /\ /\ /\
   };
 
   return (

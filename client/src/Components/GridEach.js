@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import AvatarImage from "./AvatarImage";
 
 const GridEach = ({ item }) => {
-  console.log("item", item);
+  //   console.log("item", item);
   const [author, setAuthor] = useState("");
   const [loading, setLoading] = useState(null);
   useEffect(() => {
@@ -14,13 +14,12 @@ const GridEach = ({ item }) => {
       .then((data) => setAuthor(data.data))
       .then(() => {
         setLoading(false);
-        console.log("author", author);
       })
       .catch((err) => console.log("error", err));
   }, [item]);
 
   return loading && !author ? (
-    <h1>LOADING</h1>
+    <></>
   ) : (
     <>
       <StyledLink to={`/recipe/${item._id}`}>
@@ -58,8 +57,10 @@ const ImageContainer = styled.div`
   height: 300px;
 `;
 const Thumbnail = styled.img`
-  width: 500px;
-  margin-top: -300px;
+  width: 100%;
+  height: auto;
+  /* margin: auto; */
+  /* margin-top: -300px; */
 `;
 const ContainerEach = styled.div`
   width: 400px;
@@ -72,12 +73,12 @@ const ContainerEach = styled.div`
   color: black;
   transition: all 300ms;
   &:hover {
-    transform: scale(1.01);
+    /* transform: scale(1.01); */
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     filter: brightness(1.05);
   }
   &:active {
-    transform: scale(0.99);
+    /* transform: scale(0.99); */
     filter: brightness(0.95);
   }
 `;

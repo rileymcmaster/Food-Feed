@@ -11,6 +11,7 @@ const schema = new Schema({
   recipesCreated: [],
   recipesImproved: [],
   avatarUrl: { type: String },
+  bio: { type: String },
 });
 
 module.exports = mongoose.model("User", schema, "users");

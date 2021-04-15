@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 require("dotenv").config();
 let User = require("../../models/user");
 const { MongoClient, ObjectID } = require("mongodb");
+const { find } = require("../../models/user");
 
 const saltRounds = 10;
 
@@ -93,7 +94,24 @@ const getUserProfile = async (req, res) => {
     console.log("error", error);
     res.status(400).json({ status: 400, message: "No user found" });
   }
-  //to do
+};
+
+const updateUserRecipes = async (req, res) => {
+  // console.log("req", req.body._id);
+  // const findOneUser = await User.findOne({ _id: req.body.createdBy });
+  // console.log("find one", findOneUser);
+  const query = { _id: req.body.createdBy };
+  const updateCreations = { $push: { recipesCreated: req.body._id } };
+  try {
+    const result = await User.updateOne(query, updateCreations);
+    if (result) {
+      console.log("update of user's recipesCreated successful");
+      res.status(200).json({ status: 200, message: "User info updated" });
+    }
+  } catch (error) {
+    console.log("error updateUserRecipes", error);
+    res.status(400).json({ status: 400, message: "Update user info failed" });
+  }
 };
 
 module.exports = {
@@ -102,4 +120,5 @@ module.exports = {
   userSignOut,
   deleteUserAccount,
   getUserProfile,
+  updateUserRecipes,
 };

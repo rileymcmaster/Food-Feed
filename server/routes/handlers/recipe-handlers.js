@@ -35,6 +35,7 @@ const getOneRecipe = async (req, res) => {
 };
 
 const createRecipe = (req, res) => {
+  console.log("req", req.body);
   // send to mongo
   Recipe.create({
     recipeName: req.body.recipeName,
@@ -45,6 +46,7 @@ const createRecipe = (req, res) => {
     variations: [],
     isPrivate: req.body.isPrivate,
     recipeImageUrl: req.body.recipeImageUrl,
+    originalRecipe: "",
   })
     .then((data) => {
       if (data) {
@@ -82,6 +84,7 @@ const editRecipe = (req, res) => {
 };
 
 const updateRecipeVariation = async (req, res) => {
+  console.log("req body", req.body);
   //update requires two parameters, _id to match and the value that is changing
   const query = { _id: req.body._id };
   const updateVariations = { $set: { variations: req.body.variations } };
@@ -103,6 +106,9 @@ const updateRecipeVariation = async (req, res) => {
 const likeRecipe = (req, res) => {
   //todo
 };
+
+const getMultipleRecipes = async (req, res) => {};
+
 module.exports = {
   getAllRecipes,
   getOneRecipe,
@@ -110,4 +116,5 @@ module.exports = {
   likeRecipe,
   createRecipe,
   updateRecipeVariation,
+  getMultipleRecipes,
 };

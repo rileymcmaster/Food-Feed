@@ -12,7 +12,9 @@ const schema = new Schema({
   originalRecipe: { type: String },
   createdBy: { type: String },
   //id's of edits of this recipe
-  variations: [{ type: String }],
+  variations: [
+    { variationId: { type: String }, variationTitle: { type: String } },
+  ],
   //user can decide to make their recipe private.
   isPrivate: { type: Boolean },
   //upload an image/

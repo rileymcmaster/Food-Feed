@@ -30,10 +30,24 @@ export default createGlobalStyle`
     text {
     }
 
+html {
+  scroll-behavior: smooth;
+  scroll-snap-type:  mandatory;
+  scroll-snap-type: y mandatory;
+  /* -webkit-scroll-snap-type: mandatory; */
+  
+}
+
+body {
+      /* scroll-snap-type: y mandatory; */
+    }
+
     html, body {
         max-width: 100vw;
 
     }
+
+
 html, body, div, span, applet, object, iframe,
     h1, h2, h3, h4, h5, h6, p, blockquote, pre,
     a, abbr, acronym, address, big, cite, code,
@@ -74,30 +88,5 @@ html, body, div, span, applet, object, iframe,
         content: '';
         content: none;
     }
-    input,
-  textarea {
-    /* margin-top: 0.5rem; */
-    border: none;
-    padding: 5px;
-    font-size: 1.2rem;
-    text-align: center;
-    outline: 1px solid rgba(0, 0, 0, 0.5);
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-    vertical-align: center;
-  }
-textarea {
-    resize: vertical;
-}
-  input:focus-within {
-    outline: 2px solid blue;
-  }
-
-  input:invalid {
-    /* background-color: red; */
-    outline: 2px solid red;
-    box-shadow: 0 0 5px red;
-  }
-  input:valid {
-    background-color: white;
-  }
+ 
 `;

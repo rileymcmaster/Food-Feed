@@ -18,7 +18,7 @@ const RecipePage = () => {
   const widthIngredients = useRef(0);
 
   const urlId = useParams()._id;
-  console.log("recipe", currentRecipe);
+  // console.log("recipe", currentRecipe);
 
   //FETCH RECIPE
   useEffect(() => {
@@ -489,6 +489,10 @@ const IngredientLine = styled.div`
     outline: none;
     border: none;
     box-shadow: none;
+    color: black;
+  }
+  & input:disabled {
+    color: black;
   }
   & input:focus-within {
     /* border: none; */
@@ -539,7 +543,7 @@ const TitlePage = styled.div`
   align-items: center;
   padding: 10%;
 
-  input.title {
+  & input.title {
     border: none;
     box-shadow: none;
     outline: none;
@@ -583,7 +587,7 @@ const Container = styled.section`
   flex-direction: column;
   align-items: center;
   height: 100vh;
-  width: 100%;
+  width: 100vw;
   scroll-snap-align: center;
   scroll-snap-stop: normal;
   overflow: hidden;
@@ -602,6 +606,7 @@ const PageWrapper = styled.div`
   /* overflow: hidden; */
   padding: 0;
   margin: 0;
+  height: 100%;
   scroll-snap-type: proximity;
   -webkit-scroll-snap-type: proximity;
   -webkit-scroll-snap-destination: 0% 0%;

@@ -25,7 +25,10 @@ router.post("/create/edit", editRecipe);
 router.patch("/update/", updateRecipeVariation);
 
 //get multiple recipes
-router.get("/multiple", getMultipleRecipes);
+// router.get("/multiple", );
+
+//get recipe by author id
+router.get("/user/:_id", getMultipleRecipes);
 
 //likeRecipe
 

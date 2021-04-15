@@ -107,7 +107,19 @@ const likeRecipe = (req, res) => {
   //todo
 };
 
-const getMultipleRecipes = async (req, res) => {};
+const getMultipleRecipes = async (req, res) => {
+  // console.log("req params", req.params);
+  try {
+    const findRecipes = await Recipe.find({ createdBy: req.params._id });
+    // console.log("all", allRecipes);
+    if (findRecipes) {
+      res.status(200).json({ status: 200, data: findRecipes });
+    }
+  } catch (error) {
+    console.log("error", error);
+    res.status(404).json({ status: 404, message: "Error" });
+  }
+};
 
 module.exports = {
   getAllRecipes,

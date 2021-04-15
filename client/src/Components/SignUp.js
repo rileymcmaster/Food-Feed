@@ -10,10 +10,6 @@ const SignUp = () => {
   // todo
   const [errorMessage, setErrorMessage] = useState(null);
 
-  const controlHandleInput = (e) => {
-    setUserInput({ ...userInput, handle: e.target.value });
-  };
-
   //DISABLE THE SUBMIT BUTTON UNTIL THE FORM IS FILLLED OUT
   let disableSubmit = true;
   if (userInput.handle && userInput.email && userInput.password) {
@@ -89,7 +85,9 @@ const SignUp = () => {
               placeholder="One word, no special characters"
               name="handle"
               pattern="[A-Za-z0-9]+"
-              onKeyPress={(e) => controlHandleInput(e)}
+              onChange={(e) =>
+                setUserInput({ ...userInput, userName: e.target.value })
+              }
             />
           </div>
           {/* userName */}
@@ -149,8 +147,13 @@ const SignUp = () => {
               Upload avatar
             </button>
           </div>
-          {imageUploading && <h1>image is uploading</h1>}
-          {imageUploadComplete && <h1>Upload is complete!</h1>}
+          {imageUploading ? (
+            <h1>image is uploading</h1>
+          ) : imageUploadComplete ? (
+            <h1>Upload is complete!</h1>
+          ) : (
+            <></>
+          )}
           {/* END UPLOAD IMG */}
 
           {/* BIO */}
@@ -167,7 +170,7 @@ const SignUp = () => {
           </div>
           {/* SUBMIT BUTTON */}
           <div>
-            <button type="submit" onClick="submit" disabled={disableSubmit}>
+            <button type="submit" onClick="submit" disabled={!disableSubmit}>
               Sign up
             </button>
           </div>

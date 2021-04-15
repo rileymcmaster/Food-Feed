@@ -195,5 +195,32 @@ const Container = styled.div`
   label {
     margin-bottom: 0.5rem;
   }
+  input,
+  textarea {
+    /* margin-top: 0.5rem; */
+    border: none;
+    padding: 5px;
+    font-size: 1.2rem;
+    text-align: center;
+    outline: 1px solid rgba(0, 0, 0, 0.5);
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    vertical-align: center;
+  }
+
+  textarea {
+    resize: none;
+  }
+  input:focus-within {
+    outline: 2px solid blue;
+  }
+
+  input:invalid {
+    /* background-color: red; */
+    outline: 2px solid red;
+    box-shadow: 0 0 5px red;
+  }
+  input:valid {
+    background-color: white;
+  }
 `;
 export default SignUp;

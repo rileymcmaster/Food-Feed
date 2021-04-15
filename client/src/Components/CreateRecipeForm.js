@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Wrapper from "./Wrapper";
 import { useDispatch, useSelector } from "react-redux";
+import AddSubstractButton from "./AddSubtractButton";
 
 const RecipeForm = () => {
   //should only be able to submit recipe if signed in!!
@@ -31,32 +32,6 @@ const RecipeForm = () => {
   const numIngredientsArray = range(1, numIngredients);
   const numDirectionsArray = range(1, numDirections);
 
-  //BUTTONS FOR **INGREDIENTS**
-  //handle PLUS ingredients button
-  const increaseNumIngredients = () => {
-    setNumIngredients(numIngredients + 1);
-  };
-  //handle MINUS ingredients button
-  const decreaseNumIngredients = () => {
-    if (numIngredients > 1) {
-      setNumIngredients(numIngredients - 1);
-    } else {
-      return;
-    }
-  };
-  //BUTTONS FOR **DIRECTIONS**
-  //handle PLUS directions button
-  const increaseNumDirections = () => {
-    setNumDirections(numDirections + 1);
-  };
-  //handle MINUS directions button
-  const decreaseNumDirections = () => {
-    if (numDirections > 1) {
-      setNumDirections(numDirections - 1);
-    } else {
-      return;
-    }
-  };
   // INGREDIENTS INPUT creates array and updates the userInput
   const updateIngredients = (e, index) => {
     const userInputCopy = { ...userInput };
@@ -134,10 +109,10 @@ const RecipeForm = () => {
       headers: {
         Accept: "application/json",
         "Content-type": "application/json",
-      }
-        .then((res) => res.json())
-        .then((data) => console.log("recipe has been uploaded", data)),
-    });
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => console.log("recipe has been uploaded", data));
   };
 
   return (
@@ -173,13 +148,18 @@ const RecipeForm = () => {
             );
           })}
           {/* MORE INGREDIENTS */}
-          <button type="button" onClick={increaseNumIngredients}>
-            +
-          </button>
+          {/* MORE INGREDIENTS */}
+          <AddSubstractButton
+            state={numIngredients}
+            setState={setNumIngredients}
+            modifier={"add"}
+          />
           {/* FEWER INGREDIENTS */}
-          <button type="button" onClick={decreaseNumIngredients}>
-            -
-          </button>
+          <AddSubstractButton
+            state={numIngredients}
+            setState={setNumIngredients}
+            modifier={"subtract"}
+          />
           {/* END INGREDIENTS */}
           {/* DIRECTIONS */}
           <h1>DIRECTIONS:</h1>
@@ -218,13 +198,17 @@ const RecipeForm = () => {
             );
           })}
           {/* MORE DIRECTIONS */}
-          <button type="button" onClick={increaseNumDirections}>
-            +
-          </button>
+          <AddSubstractButton
+            state={numDirections}
+            setState={setNumDirections}
+            modifier={"add"}
+          />
           {/* FEWER DIRECTIONS */}
-          <button type="button" onClick={decreaseNumDirections}>
-            -
-          </button>
+          <AddSubstractButton
+            state={numDirections}
+            setState={setNumDirections}
+            modifier={"subtract"}
+          />
           <div>
             <label for="isPrivate">
               <input

@@ -5,6 +5,7 @@ const {
   createUserAccount,
   userSignOut,
   deleteUserAccount,
+  updateUserRecipes,
 } = require("./handlers/user-handlers");
 const router = express.Router();
 
@@ -15,5 +16,8 @@ router.get("/:_id", getUserProfile);
 router.post("/signup", createUserAccount);
 //sign in
 router.post("/signin", userSignIn);
+
+//update user's recipes when edits made
+router.patch("/edit/recipe", updateUserRecipes);
 
 module.exports = router;

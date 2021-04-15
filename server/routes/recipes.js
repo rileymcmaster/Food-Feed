@@ -6,6 +6,7 @@ const {
   likeRecipe,
   createRecipe,
   updateRecipeVariation,
+  getMultipleRecipes,
 } = require("./handlers/recipe-handlers");
 const router = express.Router();
 
@@ -22,6 +23,9 @@ router.post("/create/edit", editRecipe);
 
 //updateRecipe
 router.patch("/update/", updateRecipeVariation);
+
+//get multiple recipes
+router.get("/multiple", getMultipleRecipes);
 
 //likeRecipe
 

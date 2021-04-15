@@ -481,30 +481,6 @@ const DirectionsPage = styled.div`
 const IngredientLine = styled.div`
   /* margin-bottom: 20px; */
   padding: 20px;
-  & input {
-    background-color: transparent;
-    font-size: 1.5rem;
-    text-align: left;
-    size: 100%;
-    outline: none;
-    border: none;
-    box-shadow: none;
-    color: black;
-  }
-  & input:disabled {
-    color: black;
-  }
-  & input:focus-within {
-    /* border: none; */
-    border-bottom: 2px solid blue;
-    outline: none;
-    box-shadow: 0 1px 2px blue;
-  }
-  & input:focus {
-    border-bottom: 2px solid blue;
-    /* border: none; */
-    outline: none;
-  }
 `;
 const IngredientList = styled.div`
   margin-top: 2rem;
@@ -553,6 +529,7 @@ const TitlePage = styled.div`
   & input:disabled.title {
     /* background-color: white; */
     color: black;
+    opacity: 1;
   }
   input:focus-within.title {
     /* border: none; */
@@ -600,6 +577,32 @@ const Container = styled.section`
     rgba(255, 255, 255, 0) 84%,
     rgba(238, 238, 238, 1) 100%
   );
+  input {
+    background-color: transparent;
+    font-size: 1.5rem;
+    text-align: left;
+    size: 100%;
+    outline: none;
+    border: none;
+    box-shadow: none;
+    color: black;
+  }
+  textarea:disabled,
+  input:disabled {
+    color: black;
+    opacity: 1;
+  }
+  input:focus-within {
+    /* border: none; */
+    border-bottom: 2px solid blue;
+    outline: none;
+    box-shadow: 0 1px 2px blue;
+  }
+  input:focus {
+    border-bottom: 2px solid blue;
+    /* border: none; */
+    outline: none;
+  }
 `;
 
 const PageWrapper = styled.div`

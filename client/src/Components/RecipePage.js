@@ -18,7 +18,7 @@ const RecipePage = () => {
   const widthIngredients = useRef(0);
 
   const urlId = useParams()._id;
-  console.log("recipe", currentRecipe);
+  // console.log("recipe", currentRecipe);
 
   //FETCH RECIPE
   useEffect(() => {
@@ -481,26 +481,6 @@ const DirectionsPage = styled.div`
 const IngredientLine = styled.div`
   /* margin-bottom: 20px; */
   padding: 20px;
-  & input {
-    background-color: transparent;
-    font-size: 1.5rem;
-    text-align: left;
-    size: 100%;
-    outline: none;
-    border: none;
-    box-shadow: none;
-  }
-  & input:focus-within {
-    /* border: none; */
-    border-bottom: 2px solid blue;
-    outline: none;
-    box-shadow: 0 1px 2px blue;
-  }
-  & input:focus {
-    border-bottom: 2px solid blue;
-    /* border: none; */
-    outline: none;
-  }
 `;
 const IngredientList = styled.div`
   margin-top: 2rem;
@@ -539,7 +519,7 @@ const TitlePage = styled.div`
   align-items: center;
   padding: 10%;
 
-  input.title {
+  & input.title {
     border: none;
     box-shadow: none;
     outline: none;
@@ -549,6 +529,7 @@ const TitlePage = styled.div`
   & input:disabled.title {
     /* background-color: white; */
     color: black;
+    opacity: 1;
   }
   input:focus-within.title {
     /* border: none; */
@@ -583,7 +564,7 @@ const Container = styled.section`
   flex-direction: column;
   align-items: center;
   height: 100vh;
-  width: 100%;
+  width: 100vw;
   scroll-snap-align: center;
   scroll-snap-stop: normal;
   overflow: hidden;
@@ -596,12 +577,39 @@ const Container = styled.section`
     rgba(255, 255, 255, 0) 84%,
     rgba(238, 238, 238, 1) 100%
   );
+  input {
+    background-color: transparent;
+    font-size: 1.5rem;
+    text-align: left;
+    size: 100%;
+    outline: none;
+    border: none;
+    box-shadow: none;
+    color: black;
+  }
+  textarea:disabled,
+  input:disabled {
+    color: black;
+    opacity: 1;
+  }
+  input:focus-within {
+    /* border: none; */
+    border-bottom: 2px solid blue;
+    outline: none;
+    box-shadow: 0 1px 2px blue;
+  }
+  input:focus {
+    border-bottom: 2px solid blue;
+    /* border: none; */
+    outline: none;
+  }
 `;
 
 const PageWrapper = styled.div`
   /* overflow: hidden; */
   padding: 0;
   margin: 0;
+  height: 100%;
   scroll-snap-type: proximity;
   -webkit-scroll-snap-type: proximity;
   -webkit-scroll-snap-destination: 0% 0%;

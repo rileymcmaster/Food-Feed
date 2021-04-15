@@ -8,13 +8,14 @@ import SignUp from "./SignUp";
 import SignIn from "./SignIn";
 import Header from "./Header";
 import RecipeForm from "./CreateRecipeForm";
+import UserPage from "./UserPage";
 
 const App = () => {
   return (
     <>
       <GlobalStyles />
       <Router>
-        <Header />
+        {/* <Header /> */}
         <Switch>
           <Route exact path="/">
             {/* <SignIn /> */}
@@ -28,6 +29,9 @@ const App = () => {
           </Route>
           <Route path="/recipe/:_id">
             <RecipePage />
+          </Route>
+          <Route path="/user/:_id">
+            <UserPage />
           </Route>
           <Route exact path="/signup">
             <SignUp />

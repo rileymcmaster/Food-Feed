@@ -1,4 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { signIn } from "./actions";
+
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import HomePage from "./HomePage";
 import GlobalStyles from "../GlobalStyles";
@@ -11,14 +14,26 @@ import RecipeForm from "./CreateRecipeForm";
 import UserPage from "./UserPage";
 
 const App = () => {
+  const dispatch = useDispatch();
+  //KEEP USER SIGNED
+  useEffect(() => {
+    const localStorageId = JSON.parse(window.localStorage.getItem("_id"));
+    if (localStorageId) {
+      fetch(`/user/${localStorageId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          dispatch(signIn(data.data));
+        });
+    }
+  }, []);
+
   return (
     <>
       <GlobalStyles />
       <Router>
-        {/* <Header /> */}
+        <Header />
         <Switch>
           <Route exact path="/">
-            {/* <SignIn /> */}
             <HomePage />
           </Route>
           <Route exact path="/recipes">

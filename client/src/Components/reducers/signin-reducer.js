@@ -4,13 +4,15 @@ const initialState = {
   handle: "",
   email: "",
   password: "",
+  recipesCreated: [],
+  deactivated: false,
   isSignedIn: false,
 };
 
 export default function signin(state = initialState, action) {
   switch (action.type) {
     case "SIGN_IN":
-      console.log("action", action);
+      // console.log("action", action);
       return {
         ...state,
         ...action.user,
@@ -19,11 +21,15 @@ export default function signin(state = initialState, action) {
     case "SIGN_OUT": {
       return {
         ...state,
-        id: "",
-        firstName: "",
-        lastName: "",
+        _id: "",
+        handle: "",
+        userName: "",
         email: "",
         password: "",
+        deactivated: false,
+        recipesCreated: [],
+        avatarUrl: "",
+        bio: "",
         isSignedIn: false,
       };
     }

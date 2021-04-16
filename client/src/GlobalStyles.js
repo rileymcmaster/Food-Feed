@@ -7,6 +7,7 @@ export default createGlobalStyle`
       --accent-bg-color: #D7ECEF;
       --page-horizontal-padding: 20px;
       --page-vertical-padding: 50px;
+      --recipe-page-padding: 50px;
       --header-height: 50px;
       --max-content-width: 1200px;
       --heading-font-family: 'Rubik', sans-serif;
@@ -14,6 +15,8 @@ export default createGlobalStyle`
       --user-img-margin: 5px;
       --nav-width: 250px;
       --page-height: 100vh;
+      --recipe-box-shadow: 10px 10px 0 5px black, 0 0 5px 1px rgba(0, 0, 0, 0.5);
+      
     }
     *,
     *:before,
@@ -22,6 +25,7 @@ export default createGlobalStyle`
         -webkit-font-smoothing: antialiased;
         font-family: Arial, Helvetica, sans-serif; 
         font-size: 16px;
+
     }
 
     html, body, div,
@@ -32,19 +36,21 @@ export default createGlobalStyle`
 
 html {
   scroll-behavior: smooth;
-  scroll-snap-type:  mandatory;
+  /* scroll-snap-type:  mandatory; */
   scroll-snap-type: y mandatory;
-  /* -webkit-scroll-snap-type: mandatory; */
+  -webkit-scroll-snap-type: mandatory;
+
   
 }
 
 body {
-      /* scroll-snap-type: y mandatory; */
+      scroll-snap-type: y mandatory;
+      /* scroll-snap-destination: 100vh; */
     }
 
     html, body {
         max-width: 100vw;
-
+        /* min-width: 350px; */
     }
 
 

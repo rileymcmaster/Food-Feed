@@ -3,8 +3,9 @@ import { useParams, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import Wrapper from "./Wrapper";
-import { GrFormDown } from "react-icons/gr";
 import AddSubstractButton from "./AddSubtractButton";
+import { TiPencil } from "react-icons/ti";
+import { ImCheckmark2 } from "react-icons/im";
 
 const RecipePage = () => {
   //LOGGED IN USER
@@ -14,23 +15,23 @@ const RecipePage = () => {
   const [firstFetch, setFirstFetch] = useState(false);
   const [loading, setLoading] = useState(true);
   const [author, setAuthor] = useState(null);
+  const [originalVariations, setOriginalVariations] = useState(null);
   const [showVariations, setShowVariations] = useState(false);
   const widthIngredients = useRef(0);
-
+  //get the params to fetch the recipe
   const urlId = useParams()._id;
-  // console.log("recipe", currentRecipe);
 
   //FETCH RECIPE
   useEffect(() => {
     setFirstFetch(false);
     setLoading(true);
-    const fetchRecipeAndAuthor = async () => {
+    const fetchRecipe = async () => {
       const recipeJson = await fetch(`/recipes/${urlId}`);
       const recipeData = await recipeJson.json();
       setCurrentRecipe(recipeData.data);
       setFirstFetch(true);
     };
-    fetchRecipeAndAuthor().catch((err) => console.log("error", err));
+    fetchRecipe().catch((err) => console.log("error", err));
   }, [urlId]);
   //FETCH AUTHOR
   useEffect(() => {
@@ -40,6 +41,20 @@ const RecipePage = () => {
         .then((data) => {
           setAuthor(data.data);
         });
+      if (!currentRecipe.isOriginal) {
+        fetch(`/recipes/${currentRecipe.originalRecipe}`)
+          .then((res) => res.json())
+          .then((data) =>
+            setOriginalVariations([
+              {
+                isOriginal: true,
+                variationId: data.data._id,
+                variationTitle: data.data.recipeName,
+              },
+              ...data.data.variations,
+            ])
+          );
+      }
       setLoading(false);
     }
   }, [firstFetch]);
@@ -193,23 +208,26 @@ const RecipePage = () => {
 
   return currentRecipe && !loading && author ? (
     <PageWrapper>
-      {/* EDIT BUTTONS */}
-      <EditButtonsContainer>
-        <EditRecipeBtn type="button" onClick={() => setToggleEdit(!toggleEdit)}>
-          {toggleEdit ? "Done" : "Edit"}
-        </EditRecipeBtn>
-        <SubmitImprovementBtn
-          type="button"
-          onClick={() => handleSubmitChanges()}
-        >
-          SUBMIT
-        </SubmitImprovementBtn>
-      </EditButtonsContainer>
+      {/* EDIT BUTTONS - must be signed in to edit a recipe */}
+      {user.isSignedIn && (
+        <EditButtonsContainer>
+          <EditRecipeIcon
+            toggleEdit={toggleEdit}
+            onClick={() => setToggleEdit(!toggleEdit)}
+          >
+            <TiPencil size={60} />
+          </EditRecipeIcon>
+          {/* TIPPI here */}
+          <EditRecipeIcon onClick={() => handleSubmitChanges()}>
+            <ImCheckmark2 size={60} />
+          </EditRecipeIcon>
+        </EditButtonsContainer>
+      )}
       {/* TITLEPAGE */}
       <Container>
         {/* TITLE */}
         <TitlePage>
-          <Title>
+          <Title tabIndex="0">
             <input
               size={
                 currentRecipe.recipeName.length
@@ -231,9 +249,12 @@ const RecipePage = () => {
               <AuthorCard>
                 <h1>Original recipe by:</h1>
                 {/* LINK */}
-                <h1>@{author.handle}</h1>
+                <UserLink to={`/user/${author._id}`}>
+                  <h1>@{author.handle}</h1>
+                </UserLink>
               </AuthorCard>
               <VariationButton
+                tabIndex="0"
                 onClick={() => setShowVariations(!showVariations)}
               >
                 VARIATIONS
@@ -242,7 +263,10 @@ const RecipePage = () => {
                 <VariationCard>
                   {currentRecipe.variations.map((variation) => {
                     return (
-                      <VariationLink to={`/recipe/${variation.variationId}`}>
+                      <VariationLink
+                        to={`/recipe/${variation.variationId}`}
+                        onClick={() => setShowVariations(false)}
+                      >
                         {variation.variationTitle}
                       </VariationLink>
                     );
@@ -254,31 +278,35 @@ const RecipePage = () => {
             <>
               <AuthorCard>
                 <h1>Recipe improved by:</h1>
-                {/* LINK */}
-                <h1>@{author.handle}</h1>
+                <UserLink to={`/user/${author._id}`}>
+                  <h1>@{author.handle}</h1>
+                </UserLink>
               </AuthorCard>
               <VariationButton
                 onClick={() => setShowVariations(!showVariations)}
               >
                 VARIATIONS
               </VariationButton>
-              {/* TODO GET Variations from the original */}
-              {/* {showVariations && (
+              {showVariations && (
                 <VariationCard>
-                  {currentRecipe.variations.map((variation) => {
+                  {originalVariations.map((variation) => {
                     return (
-                      <VariationLink to={`/recipe/${variation.variationId}`}>
+                      <VariationLink
+                        to={`/recipe/${variation.variationId}`}
+                        onClick={() => setShowVariations(false)}
+                      >
                         {variation.variationTitle}
+                        {variation.isOriginal && " (original)"}
                       </VariationLink>
                     );
-                  })} */}
-              {/* </VariationCard> */}
-              {/* )} */}
+                  })}
+                </VariationCard>
+              )}
             </>
           )}
+          <RecipeImage src={currentRecipe.recipeImageUrl} />
         </TitlePage>
         {/* IMAGE */}
-        <RecipeImage src={currentRecipe.recipeImageUrl} />
       </Container>
       {/* END TITLE PAGE */}
       {/*  */}
@@ -291,7 +319,8 @@ const RecipePage = () => {
               return (
                 <IngredientLine>
                   <input
-                    size={widthIngredients.current.offsetWidth / 15}
+                    //TO DO MAKE THE WIDTH MATCH THE SIZE OF THE CONTAINER
+                    // size={widthIngredients.current.offsetWidth / 15}
                     disabled={!toggleEdit}
                     type="text"
                     value={ingredient.ingredient}
@@ -317,6 +346,18 @@ const RecipePage = () => {
         return (
           <Container>
             <DirectionsPage>
+              <SubHeader>Step {directionIndex + 1}</SubHeader>
+              <DirectionCard>
+                <textarea
+                  // TODO MAKE THIS BOX EXPAND
+                  rows="6"
+                  cols="50"
+                  disabled={!toggleEdit}
+                  // type="text"
+                  value={direction.direction}
+                  onChange={(e) => updateDirections(e, directionIndex)}
+                ></textarea>
+              </DirectionCard>
               {/* ingredients */}
               <IngredientCard>
                 {direction.ingredients.map((ingredient, ingredientIndex) => {
@@ -341,19 +382,6 @@ const RecipePage = () => {
                   );
                 })}
               </IngredientCard>
-              <SubHeader style={{ marginTop: "-20%" }}>
-                Step: {directionIndex + 1}
-              </SubHeader>
-              <DirectionCard>
-                <textarea
-                  rows="4"
-                  cols="50"
-                  disabled={!toggleEdit}
-                  // type="text"
-                  value={direction.direction}
-                  onChange={(e) => updateDirections(e, directionIndex)}
-                ></textarea>
-              </DirectionCard>
             </DirectionsPage>
           </Container>
         );
@@ -365,6 +393,20 @@ const RecipePage = () => {
     </Wrapper>
   );
 };
+const EditRecipeIcon = styled.div`
+  color: ${(props) => (props.toggleEdit ? "white" : "black")};
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  padding: 5px;
+  background-color: ${(props) => (props.toggleEdit ? "green" : "white")};
+
+  :hover,
+  :active {
+    background-color: black;
+    color: white;
+  }
+`;
+
 const VariationLink = styled(Link)`
   text-decoration: none;
   color: white;
@@ -372,17 +414,28 @@ const VariationLink = styled(Link)`
   text-align: center;
   justify-content: center;
   margin-top: 20px;
+  margin: 5px auto;
+  padding: 20px;
+  /* width: 100px; */
+  border-radius: 10px;
   &:hover {
+    /* border: 1px solid inset white; */
     text-shadow: 0 0 5px white;
+    box-shadow: 0 0 0 2px white;
+  }
+  &:active {
+    color: black;
+    background-color: white;
   }
 `;
 const VariationCard = styled.div`
+  padding: 20px;
   position: absolute;
   display: flex;
   flex-direction: column;
   /* align-items: flex-start; */
   justify-content: flex-start;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 1);
   width: 80%;
   height: 80%;
   margin: auto;
@@ -395,26 +448,16 @@ const VariationButton = styled.button`
   text-shadow: 0px 0px 2px rgba(255, 255, 255, 0.8),
     2px 2px 5px rgba(255, 255, 255, 0.5);
 `;
-const AuthorCard = styled.div`
-  padding: 20px;
-  /* margin-top: 50%; */
-  text-align: center;
-
-  h1 {
-    font-size: 3rem;
-  }
-  background-color: rgba(255, 255, 255, 0.5);
-  text-shadow: 0px 0px 2px rgba(255, 255, 255, 0.8),
-    2px 2px 5px rgba(255, 255, 255, 0.5);
-`;
 
 const EditButtonsContainer = styled.div`
   position: fixed;
-  right: 0;
+  width: 100%;
+  padding: 10px;
   bottom: 0;
-  margin: 20px;
   z-index: 9999;
-  /* padding: 20px; */
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
 `;
 const EditRecipeBtn = styled.button`
   position: relative;
@@ -431,12 +474,6 @@ const SubmitImprovementBtn = styled.button`
   width: 100px;
 `;
 
-const RecipeImage = styled.img`
-  height: 100%;
-  width: auto;
-  position: absolute;
-  z-index: -10;
-`;
 const Icon = styled.div`
   color: black;
   font-size: 30px;
@@ -448,11 +485,10 @@ const DirectionCard = styled.div`
   position: relative;
   font-size: 2rem;
   margin-top: 2rem;
-  box-shadow: 5px 5px 0 5px black, 0 0 5px rgba(0, 0, 0, 0.5);
-
+  box-shadow: var(--recipe-box-shadow);
   textarea {
     padding: 20px;
-    font-size: 2rem;
+    font-size: 1.5rem;
     box-sizing: border-box;
     width: 100%;
     height: 100%;
@@ -465,22 +501,29 @@ const DirectionCard = styled.div`
     box-shadow: 0 0 10px blue;
   }
 `;
+//ingredients in each direction
 const IngredientCard = styled.div`
-  height: 300px;
-  position: relative;
+  /* height: 300px; */
+  position: absolute;
+  /* margin-top: auto; */
+  bottom: 0;
+  border: 2px solid red;
+  /* right: 0; */
 `;
 
 const DirectionsPage = styled.div`
-  padding: 50px;
+  position: relative;
+  padding: var(--recipe-page-padding);
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* width: 100%; */
+  justify-content: center;
 `;
 
 const IngredientLine = styled.div`
-  /* margin-bottom: 20px; */
-  padding: 20px;
+  width: 100%;
+  padding: 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 `;
 const IngredientList = styled.div`
   margin-top: 2rem;
@@ -488,42 +531,85 @@ const IngredientList = styled.div`
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
-  box-shadow: 5px 5px 0 5px black, 0 0 5px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--recipe-box-shadow);
 `;
 
 const IngredientsPage = styled.div`
-  padding: 50px;
+  padding: var(--recipe-page-padding);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  /* justify-content: center; */
   width: 100%;
   height: 100%;
 `;
 
 const SubHeader = styled.div`
-  font-size: 3rem;
+  font-size: 1.5rem;
+`;
+
+const AuthorCard = styled.div`
+  padding: 20px;
+  text-align: center;
+  h1 {
+    font-size: 1.5rem;
+  }
+  background-color: rgba(255, 255, 255, 0.5);
+  text-shadow: 0px 0px 2px rgba(255, 255, 255, 0.8),
+    2px 2px 5px rgba(255, 255, 255, 0.5);
+`;
+const UserLink = styled(Link)`
+  :hover {
+    box-shadow: 0 0 0 2px black, 2px 2px 3px 1px rgba(0, 0, 0, 0.5);
+  }
+  :active {
+    color: white;
+    background-color: black;
+    box-shadow: 0 0 4px 2px white inset, 0 0 2px black;
+  }
+  /* text-decoration: none; */
+`;
+const RecipeImage = styled.img`
+  height: 100%;
+  width: auto;
+  position: absolute;
+  z-index: -10;
+  /* border: 2px solid red; */
 `;
 
 const Title = styled.div`
-  margin: auto 0;
+  /* margin: auto 0; */
   overflow: hidden;
-  /* display: flex; */
+  display: flex;
   justify-content: center;
+  margin-bottom: 50px;
 `;
 const TitlePage = styled.div`
   height: 100%;
+  /* border: 2px solid red; */
+  overflow: hidden;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10%;
+  justify-content: space-evenly;
+  /* padding: 10%; */
 
-  & input.title {
+  input.title {
     border: none;
     box-shadow: none;
     outline: none;
     text-align-last: center;
+    caret-color: blue;
+    font-size: 2rem;
+    padding: 0 1rem;
+
+    /* padding: 50px 0px; */
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.5);
+    text-shadow: 0px 0px 2px rgba(255, 255, 255, 0.8),
+      2px 2px 5px rgba(255, 255, 255, 0.5);
+    /* font-size: 1rem; */
   }
 
   & input:disabled.title {
@@ -546,27 +632,15 @@ const TitlePage = styled.div`
     outline: 2px solid red;
     box-shadow: 0 0 5px red;
   }
-
-  input.title {
-    caret-color: blue;
-    font-size: 4rem;
-    padding: 0;
-
-    /* padding: 50px 0px; */
-    font-weight: bold;
-    background-color: rgba(255, 255, 255, 0.5);
-    text-shadow: 0px 0px 2px rgba(255, 255, 255, 0.8),
-      2px 2px 5px rgba(255, 255, 255, 0.5);
-  }
 `;
 const Container = styled.section`
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   height: 100vh;
-  width: 100vw;
   scroll-snap-align: center;
-  scroll-snap-stop: normal;
+  scroll-snap-stop: always;
   overflow: hidden;
   z-index: 0;
   background: rgb(238, 238, 238);
@@ -579,7 +653,7 @@ const Container = styled.section`
   );
   input {
     background-color: transparent;
-    font-size: 1.5rem;
+    font-size: 1rem;
     text-align: left;
     size: 100%;
     outline: none;
@@ -593,27 +667,25 @@ const Container = styled.section`
     opacity: 1;
   }
   input:focus-within {
-    /* border: none; */
     border-bottom: 2px solid blue;
     outline: none;
     box-shadow: 0 1px 2px blue;
   }
   input:focus {
     border-bottom: 2px solid blue;
-    /* border: none; */
     outline: none;
   }
 `;
 
 const PageWrapper = styled.div`
-  /* overflow: hidden; */
   padding: 0;
   margin: 0;
-  height: 100%;
-  scroll-snap-type: proximity;
-  -webkit-scroll-snap-type: proximity;
-  -webkit-scroll-snap-destination: 0% 0%;
-  -webkit-overflow-scrolling: touch;
+  height: 100vh;
+  overflow: scroll;
+  scroll-snap-type: mandatory;
+  scroll-snap-type: y mandatory;
+  scroll-snap-points-y: repeat(100vh);
+  scroll-behavior: smooth;
 `;
 
 export default RecipePage;

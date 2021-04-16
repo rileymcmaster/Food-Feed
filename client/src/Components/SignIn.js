@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import Wrapper from "./Wrapper";
+import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { signIn } from "./actions";
 import styled from "styled-components";
 
 const SignIn = () => {
+  const history = useHistory();
   //SIGN IN STATE//
   const user = useSelector((state) => state.user);
   // console.log("signIn user", user);
@@ -27,7 +29,9 @@ const SignIn = () => {
     })
       .then((res) => res.json())
       .then((data) => {
+        window.localStorage.setItem("_id", JSON.stringify(data.data._id));
         dispatch(signIn(data.data));
+        history.push("/recipes");
       })
       .catch((err) => {
         console.log("ERROR", err);

@@ -5,17 +5,15 @@ import GenerateGrid from "./GenerateGrid";
 import Wrapper from "./Wrapper";
 
 const UserPage = () => {
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUserProfile, setCurrentUserProfile] = useState(null);
   const [currentUserRecipes, setCurrentUserRecipes] = useState(null);
-  console.log("current user", currentUser);
-  console.log("recipes", currentUserRecipes);
   const urlId = useParams()._id;
 
   useEffect(() => {
     //FIND USER
     fetch(`/user/${urlId}`)
       .then((res) => res.json())
-      .then((data) => setCurrentUser(data.data))
+      .then((data) => setCurrentUserProfile(data.data))
       .catch((err) => {
         console.log("error getting user", err.stack);
       });
@@ -27,20 +25,20 @@ const UserPage = () => {
   }, []);
 
   return (
-    currentUser &&
+    currentUserProfile &&
     currentUserRecipes && (
       <Container>
         <HeadCard>
           <ProfileImageContainer>
-            <ProfileImage src={currentUser.avatarUrl} />
+            <ProfileImage src={currentUserProfile.avatarUrl} />
           </ProfileImageContainer>
-          <h1>{currentUser.userName}</h1>
-          <h2>@{currentUser.handle}</h2>
+          <h1>{currentUserProfile.userName}</h1>
+          <h2>@{currentUserProfile.handle}</h2>
         </HeadCard>
         <Bio>
           <p>I like spicy food and crunchy chips</p>
         </Bio>
-        <GenerateGrid items={currentUserRecipes} />
+        <GenerateGrid items={currentUserRecipes.reverse()} />
       </Container>
     )
   );
@@ -64,6 +62,7 @@ const ProfileImageContainer = styled.div`
   position: relative;
   justify-content: center;
   align-items: center;
+  background-color: black;
   width: 200px;
   height: 200px;
   overflow: hidden;
@@ -93,10 +92,8 @@ const HeadCard = styled.div`
 const Container = styled.div`
   width: 100vw;
   height: 100vh;
-
-  /* display: flex; */
-  /* justify-content: center; */
-  /* align-items: center; */
+  overflow-y: scroll;
+  overflow-x: hidden;
   margin: auto;
 `;
 

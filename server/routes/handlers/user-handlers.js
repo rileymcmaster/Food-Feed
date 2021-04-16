@@ -75,10 +75,25 @@ const userSignIn = (req, res) => {
   });
 };
 
-const userSignOut = (req, res) => {
-  //todo
+const userSignOut = async (req, res) => {
+  const user = { _id: req.body.user._id };
+  const signedIn = req.body.user.isSignedIn;
+  const updateStatus = { $set: { isSignedIn: false } };
+  try {
+    if (signedIn) {
+      const result = await User.updateOne(user, updateStatus);
+      if (result) {
+        console.log("user signed out");
+        res.status(200).json({ status: 200, message: "User signed out" });
+      }
+    }
+  } catch (error) {
+    console.log("error userSignOut", error);
+    res
+      .status(400)
+      .json({ status: 400, message: "There was a problem signing out" });
+  }
 };
-
 const deleteUserAccount = (req, res) => {
   //todo
 };
@@ -97,9 +112,6 @@ const getUserProfile = async (req, res) => {
 };
 
 const updateUserRecipes = async (req, res) => {
-  // console.log("req", req.body._id);
-  // const findOneUser = await User.findOne({ _id: req.body.createdBy });
-  // console.log("find one", findOneUser);
   const query = { _id: req.body.createdBy };
   const updateCreations = { $push: { recipesCreated: req.body._id } };
   try {

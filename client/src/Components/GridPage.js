@@ -31,14 +31,22 @@ const GridPage = () => {
       <h1>There was an error</h1>
     </Wrapper>
   ) : items ? (
-    <Wrapper>
-      <Title>RECIPES</Title>
-      <GenerateGrid items={items} />
-    </Wrapper>
+    <>
+      <Container>
+        <Title>RECIPES</Title>
+        <div style={{ marginTop: "1em" }}>
+          <GenerateGrid items={items.reverse()} />
+        </div>
+      </Container>
+    </>
   ) : (
     <></>
   );
 };
+const Container = styled.div`
+  /* margin-top: 2em; */
+  padding: 1em;
+`;
 const Title = styled.h1`
   text-align: center;
 `;

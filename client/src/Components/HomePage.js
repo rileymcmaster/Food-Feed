@@ -1,10 +1,23 @@
 import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Link, useHistory } from "react-router-dom";
 import styled from "styled-components";
 import Wrapper from "./Wrapper";
 
 const HomePage = () => {
-  return (
+  const history = useHistory();
+  //USER STATE
+  const user = useSelector((state) => state.user);
+  // console.log("user", user);
+  useEffect(() => {
+    if (user && user.isSignedIn) {
+      history.push("/recipes");
+    }
+  }, [user]);
+  return user && user.isSignedIn ? (
+    //TODO
+    <h1>redirecting</h1>
+  ) : (
     <>
       <Wrapper>
         <Container>

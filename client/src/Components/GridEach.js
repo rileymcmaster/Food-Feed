@@ -5,10 +5,9 @@ import AvatarImage from "./AvatarImage";
 import moment from "moment";
 
 const GridEach = ({ item }) => {
-  //   console.log("item", item);
   const [author, setAuthor] = useState("");
   const [loading, setLoading] = useState(null);
-  console.log("author", author);
+
   useEffect(() => {
     setLoading(true);
     fetch(`/user/${item.createdBy}`)
@@ -35,7 +34,7 @@ const GridEach = ({ item }) => {
             <AuthorLine>
               <UserLink to={`/user/${author._id}`}>
                 <AvatarImage img={author.avatarUrl} />
-                <Name>{author.handle}</Name>
+                <Name>@{author.handle}</Name>
               </UserLink>
               <Date>
                 <p>{moment(item.date).fromNow()}</p>
@@ -93,17 +92,17 @@ const StyledLink = styled(Link)`
 
 const ImageContainer = styled.div`
   overflow: hidden;
-  width: 300px;
-  height: 300px;
+  /* display: flex; */
+  max-width: 300px;
+  max-height: 300px;
+  padding: 10px;
 `;
 const Thumbnail = styled.img`
   width: 100%;
   height: auto;
-  /* margin: auto; */
-  /* margin-top: -300px; */
 `;
 const ContainerEach = styled.div`
-  width: 400px;
+  max-width: 400px;
   margin: 10px;
   border: 2px solid black;
   display: flex;

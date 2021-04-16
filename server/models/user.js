@@ -8,8 +8,7 @@ const schema = new Schema({
   password: { type: String, required: true },
   isSignedIn: { type: Boolean, required: true },
   deactivated: { type: Boolean, required: true },
-  recipesCreated: [],
-  recipesImproved: [],
+  recipesCreated: [{ type: String }],
   avatarUrl: { type: String },
   bio: { type: String },
 });

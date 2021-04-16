@@ -20,6 +20,9 @@ router.post("/signin", userSignIn);
 //sign out
 router.patch("/signout", userSignOut);
 
+//delete user
+router.patch("/delete", deleteUserAccount);
+
 //update user's recipes when edits made
 router.patch("/edit/recipe", updateUserRecipes);
 

@@ -13,12 +13,14 @@ const SignIn = () => {
   //SIGN IN FIELDS
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const dispatch = useDispatch();
 
   //SUBMIT
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log("starting sign in");
     fetch("/user/signin", {
       method: "POST",
       body: JSON.stringify({ email, password }),
@@ -28,16 +30,28 @@ const SignIn = () => {
       },
     })
       .then((res) => res.json())
-      .then((data) => {
-        window.localStorage.setItem("_id", JSON.stringify(data.data._id));
-        dispatch(signIn(data.data));
-        history.push("/recipes");
+      .then(({ status, data, message }) => {
+        console.log("status", status);
+        console.log("data", data);
+        if (status == 200) {
+          window.localStorage.setItem("_id", JSON.stringify(data._id));
+          dispatch(signIn(data));
+          history.push("/recipes");
+        } else {
+          console.log("message", message);
+          setErrorMessage(message);
+        }
       })
       .catch((err) => {
-        console.log("ERROR", err);
+        console.log("Error signing in", err);
         //SET AN ERROR MESSAGE
       });
   };
+
+  //error messages
+  // "User has been deactivated"
+  // "No user found"
+  // "Incorrect password"
 
   //RENDERED
   return (
@@ -49,6 +63,7 @@ const SignIn = () => {
           <div>
             <label for="email">Email:</label>
             <input
+              autoFocus
               type="email"
               placeholder="ex. steamedhams@auroraborealis.org"
               name="email"
@@ -66,6 +81,7 @@ const SignIn = () => {
             />
           </div>
           <div>
+            {errorMessage && <h1>{errorMessage}</h1>}
             <button type="button" onClick={handleSubmit}>
               Login
             </button>

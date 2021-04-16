@@ -1,13 +1,22 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { useParams } from "react-router";
 import AvatarImage from "./AvatarImage";
 import moment from "moment";
+import { BsFillLockFill, BsFillUnlockFill } from "react-icons/bs";
 
 const GridEach = ({ item }) => {
+  //USER STATE
+  const user = useSelector((state) => state.user);
+  //local states
   const [author, setAuthor] = useState("");
   const [loading, setLoading] = useState(null);
 
+  const urlId = useParams()._id;
+
+  //fetch the author name and pic
   useEffect(() => {
     setLoading(true);
     fetch(`/user/${item.createdBy}`)
@@ -19,6 +28,12 @@ const GridEach = ({ item }) => {
       .catch((err) => console.log("error", err));
   }, [item]);
 
+  //DELETE RECIPE - only visible if the user is viewing their own profile page
+  const handleDeleteRecipe = () => {
+    // if (user.isSignedIn && user._id === )
+    // fetch(`/recipes/delete/${item._id}`)
+  };
+
   return (
     !loading &&
     author && (
@@ -26,6 +41,15 @@ const GridEach = ({ item }) => {
         {/* THE WHOLE CARD IS A LINK */}
         <StyledLink to={`/recipe/${item._id}`}>
           <ContainerEach>
+            <LockIcon>
+              {item.createdBy === user._id && item.isPrivate && (
+                <BsFillLockFill size={20} />
+              )}
+              {item.createdBy === user._id && !item.isPrivate && (
+                <BsFillUnlockFill />
+              )}
+            </LockIcon>
+
             <ImageContainer>
               <Thumbnail src={item.recipeImageUrl} />
             </ImageContainer>
@@ -36,6 +60,12 @@ const GridEach = ({ item }) => {
                 <AvatarImage img={author.avatarUrl} />
                 <Name>@{author.handle}</Name>
               </UserLink>
+              {/* DELETE BUTTON */}
+              {user._id === urlId && (
+                <button type="button" onClick={() => handleDeleteRecipe()}>
+                  X
+                </button>
+              )}
               <Date>
                 <p>{moment(item.date).fromNow()}</p>
               </Date>
@@ -46,6 +76,10 @@ const GridEach = ({ item }) => {
     )
   );
 };
+const LockIcon = styled.div`
+  position: absolute;
+  margin: 0 auto;
+`;
 const Date = styled.div`
   margin-left: auto;
   color: grey;
@@ -102,6 +136,7 @@ const Thumbnail = styled.img`
   height: auto;
 `;
 const ContainerEach = styled.div`
+  position: relative;
   max-width: 400px;
   margin: 10px;
   border: 2px solid black;

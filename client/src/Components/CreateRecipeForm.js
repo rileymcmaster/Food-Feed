@@ -123,6 +123,7 @@ const RecipeForm = () => {
           <div>
             <label for="recipeName">Recipe name:</label>
             <input
+              autoFocus
               type="text"
               placeholder="Name of dish"
               name="recipeName"

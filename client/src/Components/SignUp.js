@@ -9,12 +9,17 @@ const SignUp = () => {
   const [successMessasge, setSuccessMessage] = useState(false);
   // todo
   const [errorMessage, setErrorMessage] = useState(null);
-
   //DISABLE THE SUBMIT BUTTON UNTIL THE FORM IS FILLLED OUT
-  let disableSubmit = true;
-  if (userInput.handle && userInput.email && userInput.password) {
-    disableSubmit = false;
-  }
+  let disableSubmit = false;
+  // if (userInput) {
+  //   if (
+  //     userInput.handle.length > 1 &&
+  //     userInput.email.length > 1 &&
+  //     userInput.password.length > 2
+  //   ) {
+  //     disableSubmit = false;
+  //   }
+  // }
 
   //UPLOAD IMAGE
   const [avatarImage, setAvatarImage] = useState({});
@@ -60,12 +65,12 @@ const SignUp = () => {
     })
       .then((res) => res.json())
       .then(({ status, message, data }) => {
-        if (status === 400) {
-          console.log("signup didn't work", status, message);
-          setErrorMessage(message);
-        } else {
+        if (status === 200) {
           console.log("signup was successful", status, data);
           setSuccessMessage(true);
+        } else {
+          console.log("signup didn't work", status, message);
+          setErrorMessage(message);
         }
       })
       .catch((err) => {
@@ -81,12 +86,17 @@ const SignUp = () => {
           <div>
             <label for="handle">User handle:</label>
             <input
+              tabIndex="2"
               type="text"
               placeholder="One word, no special characters"
               name="handle"
+              autoFocus
               pattern="[A-Za-z0-9]+"
               onChange={(e) =>
-                setUserInput({ ...userInput, userName: e.target.value })
+                setUserInput({
+                  ...userInput,
+                  handle: e.target.value.toLowerCase(),
+                })
               }
             />
           </div>
@@ -170,7 +180,7 @@ const SignUp = () => {
           </div>
           {/* SUBMIT BUTTON */}
           <div>
-            <button type="submit" onClick="submit" disabled={!disableSubmit}>
+            <button type="submit" onClick="submit" disabled={disableSubmit}>
               Sign up
             </button>
           </div>

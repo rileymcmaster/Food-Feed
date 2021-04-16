@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import Wrapper from "./Wrapper";
 import AddSubstractButton from "./AddSubtractButton";
 import { TiPencil } from "react-icons/ti";
 import { ImCheckmark2 } from "react-icons/im";
+import AddStep from "./AddStep";
 
 const RecipePage = () => {
   //LOGGED IN USER
@@ -208,21 +209,6 @@ const RecipePage = () => {
 
   return currentRecipe && !loading && author ? (
     <PageWrapper>
-      {/* EDIT BUTTONS - must be signed in to edit a recipe */}
-      {user.isSignedIn && (
-        <EditButtonsContainer>
-          <EditRecipeIcon
-            toggleEdit={toggleEdit}
-            onClick={() => setToggleEdit(!toggleEdit)}
-          >
-            <TiPencil size={60} />
-          </EditRecipeIcon>
-          {/* TIPPI here */}
-          <EditRecipeIcon onClick={() => handleSubmitChanges()}>
-            <ImCheckmark2 size={60} />
-          </EditRecipeIcon>
-        </EditButtonsContainer>
-      )}
       {/* TITLEPAGE */}
       <Container>
         {/* TITLE */}
@@ -324,6 +310,7 @@ const RecipePage = () => {
                     disabled={!toggleEdit}
                     type="text"
                     value={ingredient.ingredient}
+                    onFocus={(e) => e.currentTarget.select()}
                     onChange={(e) => updateIngredients(e, index)}
                   ></input>
                 </IngredientLine>
@@ -353,10 +340,17 @@ const RecipePage = () => {
                   rows="6"
                   cols="50"
                   disabled={!toggleEdit}
-                  // type="text"
+                  onFocus={(e) => e.currentTarget.select()}
                   value={direction.direction}
                   onChange={(e) => updateDirections(e, directionIndex)}
                 ></textarea>
+                {/* ADD A PAGE TO RECIPE */}
+                <AddStep
+                  currentRecipe={currentRecipe}
+                  setCurrentRecipe={setCurrentRecipe}
+                  directionIndex={directionIndex}
+                />
+                {/* <button type="button" onClick={()=> }>Add a step</button> */}
               </DirectionCard>
               {/* ingredients */}
               <IngredientCard>
@@ -365,6 +359,7 @@ const RecipePage = () => {
                     <>
                       <IngredientLine>
                         <input
+                          class="ingredient-card"
                           disabled={!toggleEdit}
                           type="text"
                           size={ingredient.ingredient.length}
@@ -386,6 +381,31 @@ const RecipePage = () => {
           </Container>
         );
       })}
+      {/* EDIT BUTTONS - must be signed in to edit a recipe */}
+      {user.isSignedIn && (
+        <EditButtonsContainer>
+          {/* SUBMIT BUTTON */}
+          {/* TIPPI here */}
+          <EditRecipeIcon
+            tabIndex="1"
+            class="edit-recipe-btn"
+            onClick={() => handleSubmitChanges()}
+          >
+            <ImCheckmark2 size={60} />
+          </EditRecipeIcon>
+          {/* EDIT BUTTON */}
+          <EditRecipeIcon
+            tabIndex="1"
+            toggleEdit={toggleEdit}
+            class="edit-recipe-btn"
+            onClick={(e) => {
+              setToggleEdit(!toggleEdit);
+            }}
+          >
+            <TiPencil size={60} />
+          </EditRecipeIcon>
+        </EditButtonsContainer>
+      )}
     </PageWrapper>
   ) : (
     <Wrapper>
@@ -400,10 +420,18 @@ const EditRecipeIcon = styled.div`
   padding: 5px;
   background-color: ${(props) => (props.toggleEdit ? "green" : "white")};
 
-  :hover,
+  :hover {
+    background-color: ${(props) => (props.toggleEdit ? "green" : "white")};
+    color: ${(props) => (props.toggleEdit ? "white" : "black")};
+  }
   :active {
-    background-color: black;
-    color: white;
+    transform: scale(0.9);
+  }
+  :focus {
+    background-color: ${(props) => (props.toggleEdit ? "green" : "white")};
+    color: ${(props) => (props.toggleEdit ? "white" : "black")};
+
+    box-shadow: 0 0 10px green, 0 0 0 5px green;
   }
 `;
 
@@ -451,12 +479,13 @@ const VariationButton = styled.button`
 
 const EditButtonsContainer = styled.div`
   position: fixed;
-  width: 100%;
-  padding: 10px;
-  bottom: 0;
+  width: 100vw;
+  padding: 10px 20px;
+  bottom: 2%;
+
   z-index: 9999;
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: row;
   justify-content: space-between;
 `;
 const EditRecipeBtn = styled.button`
@@ -504,10 +533,14 @@ const DirectionCard = styled.div`
 //ingredients in each direction
 const IngredientCard = styled.div`
   /* height: 300px; */
+  font-size: 1rem;
   position: absolute;
+  .ingredient-card {
+    font-size: 0.8rem;
+  }
   /* margin-top: auto; */
-  bottom: 0;
-  border: 2px solid red;
+  top: 10%;
+  /* border: 2px solid red; */
   /* right: 0; */
 `;
 
@@ -518,6 +551,7 @@ const DirectionsPage = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  height: 100%;
 `;
 
 const IngredientLine = styled.div`
@@ -539,7 +573,7 @@ const IngredientsPage = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* justify-content: center; */
+  justify-content: center;
   width: 100%;
   height: 100%;
 `;
@@ -679,6 +713,7 @@ const Container = styled.section`
 
 const PageWrapper = styled.div`
   padding: 0;
+  position: relative;
   margin: 0;
   height: 100vh;
   overflow: scroll;

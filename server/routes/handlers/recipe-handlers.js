@@ -3,26 +3,54 @@ const { recipes } = require("../../data/recipes");
 const Recipe = require("../../models/recipe");
 const assert = require("assert");
 const { MongoClient } = require("mongodb");
-const fs = require("file-system");
-const cloudinary = require("cloudinary").v2;
-
+const mongoose = require("mongoose");
 require("dotenv").config();
+
 const { MONGO_URI } = process.env;
 
+const options = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+};
+
 const getAllRecipes = async (req, res) => {
+  // console.log("REQ", req.params);
+  // CONNECT TO SERVER
+  console.log("req true", req.params);
+  // const client = await mongoose.connect(MONGO_URI, options);
+  console.log("connected to server");
   try {
-    const allRecipes = await Recipe.find();
-    // console.log("all", allRecipes);
-    if (allRecipes) {
-      res.status(200).json({ status: 200, data: allRecipes });
+    // FILTER for privacy settings
+    const notPrivateRecipes = await Recipe.find({ isPrivate: false });
+    let userPrivateRecipes = [];
+    if (req.params._id !== "0") {
+      console.log("there is a param", req.params);
+      userPrivateRecipes = await Recipe.find({
+        isPrivate: true,
+        createdBy: req.params._id,
+      });
+    }
+    if (notPrivateRecipes || userPrivateRecipes) {
+      const allResults = [...notPrivateRecipes, ...userPrivateRecipes];
+      const sortedResults = allResults.sort((a, b) => b.date - a.date);
+      res.status(200).json({
+        status: 200,
+        data: sortedResults,
+      });
     }
   } catch (error) {
     console.log("error", error);
     res.status(404).json({ status: 404, message: "Error" });
   }
+  // await mongoose.connection.close();
+  console.log("disconnected from server");
 };
 
 const getOneRecipe = async (req, res) => {
+  // console.log("req params", req.params);
+  // CONNECT TO SERVER
+  const client = await mongoose.connect(MONGO_URI, options);
+  console.log("connected to server");
   try {
     const findOneRecipe = await Recipe.findOne({ _id: req.params._id });
     if (findOneRecipe) {
@@ -32,10 +60,14 @@ const getOneRecipe = async (req, res) => {
     console.log("error get one recipe", error);
     res.status(400).json({ status: 400, message: "no recipe found" });
   }
+  // await mongoose.disconnect();
+  console.log("disconnected from server");
 };
 
-const createRecipe = (req, res) => {
-  console.log("req", req.body);
+const createRecipe = async (req, res) => {
+  // CONNECT TO SERVER
+  const client = await mongoose.connect(MONGO_URI, options);
+  console.log("connected to server");
   // send to mongo
   Recipe.create({
     recipeName: req.body.recipeName,
@@ -57,9 +89,14 @@ const createRecipe = (req, res) => {
       console.log("error", err);
       res.status(404).json({ status: 404, message: "Problem with server" });
     });
+  // mongoose.disconnect();
+  // console.log("disconnected from server");
 };
 
-const editRecipe = (req, res) => {
+const editRecipe = async (req, res) => {
+  // CONNECT TO SERVER
+  const client = await mongoose.connect(MONGO_URI, options);
+  console.log("connected to server");
   //send to mongo
   Recipe.create({
     recipeName: req.body.recipeName,
@@ -81,10 +118,14 @@ const editRecipe = (req, res) => {
       console.log("error", err);
       res.status(404).json({ status: 404, message: "Problem with server" });
     });
+  // mongoose.disconnect();
+  // console.log("disconnected from server");
 };
 
 const updateRecipeVariation = async (req, res) => {
-  console.log("req body", req.body);
+  // CONNECT TO SERVER
+  const client = await mongoose.connect(MONGO_URI, options);
+  console.log("connected to server");
   //update requires two parameters, _id to match and the value that is changing
   const query = { _id: req.body._id };
   const updateVariations = { $set: { variations: req.body.variations } };
@@ -101,14 +142,25 @@ const updateRecipeVariation = async (req, res) => {
     console.log("error get one recipe", error);
     res.status(400).json({ status: 400, message: "no recipe found" });
   }
+  // mongoose.disconnect();
+  // console.log("disconnected from server");
 };
 
-const likeRecipe = (req, res) => {
+const deleteRecipe = async (req, res) => {};
+
+const likeRecipe = async (req, res) => {
+  // CONNECT TO SERVER
+  const client = await mongoose.connect(MONGO_URI, options);
+  console.log("connected to server");
   //todo
+  // mongoose.disconnect();
+  // console.log("disconnected from server");
 };
-
+//USER PAGE
 const getMultipleRecipes = async (req, res) => {
-  // console.log("req params", req.params);
+  // CONNECT TO SERVER
+  const client = await mongoose.connect(MONGO_URI, options);
+  console.log("connected to server");
   try {
     const findRecipes = await Recipe.find({ createdBy: req.params._id });
     // console.log("all", allRecipes);
@@ -119,14 +171,37 @@ const getMultipleRecipes = async (req, res) => {
     console.log("error", error);
     res.status(404).json({ status: 404, message: "Error" });
   }
+  // mongoose.disconnect();
+  // console.log("disconnected from server");
+};
+
+//deactive user account deletes their recipes.
+//find recipes created by the userId and delete them
+const deleteRecipeByUserId = async (req, res) => {
+  // CONNECT TO SERVER
+  const client = await mongoose.connect(MONGO_URI, options);
+  console.log("connected to server");
+  try {
+    const result = await Recipe.deleteMany({ createdBy: req.params._id });
+    if (result) {
+      res.status(200).json({ status: 200, data: result });
+    }
+  } catch (error) {
+    console.log("error deleting recipes by userId", error);
+    res.status(400).json({ status: 400, message: "Error deleting recipes" });
+  }
+  // mongoose.disconnect();
+  // console.log("disconnected from server");
 };
 
 module.exports = {
   getAllRecipes,
   getOneRecipe,
   editRecipe,
+  deleteRecipe,
   likeRecipe,
   createRecipe,
   updateRecipeVariation,
   getMultipleRecipes,
+  deleteRecipeByUserId,
 };

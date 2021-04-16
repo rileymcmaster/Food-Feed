@@ -59,7 +59,7 @@ const Header = () => {
                   </MenuLink>
                   {/* CREATE */}
                   <MenuLink
-                    to={"/recipes/create"}
+                    to={"/recipe/create"}
                     onClick={() => {
                       setToggleMenu(false);
                     }}
@@ -126,7 +126,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: row;
   padding: 20px;
-  width: 100vw;
+  /* width: 100vw; */
   z-index: 9;
 `;
 // contains the icon and the menu

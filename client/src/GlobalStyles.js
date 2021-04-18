@@ -10,7 +10,8 @@ export default createGlobalStyle`
       --recipe-page-padding: 50px;
       --header-height: 50px;
       --max-content-width: 1200px;
-      --heading-font-family: 'Rubik', sans-serif;
+      font-size: 16px;
+      /* --heading-font-family: 'Rubik', sans-serif; */
       --user-img-width: 120px;
       --user-img-margin: 5px;
       --nav-width: 250px;

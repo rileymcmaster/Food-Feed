@@ -6,6 +6,7 @@ const {
   userSignOut,
   deleteUserAccount,
   updateUserRecipes,
+  UserRemoveOneRecipe,
 } = require("./handlers/user-handlers");
 const router = express.Router();
 
@@ -25,5 +26,8 @@ router.patch("/delete", deleteUserAccount);
 
 //update user's recipes when edits made
 router.patch("/edit/recipe", updateUserRecipes);
+
+//remove recipe from user's recipes array
+router.patch("/edit/remove", UserRemoveOneRecipe);
 
 module.exports = router;

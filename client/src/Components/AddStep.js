@@ -1,8 +1,6 @@
 import React from "react";
 
 const AddStep = ({ currentRecipe, setCurrentRecipe, directionIndex }) => {
-  console.log("currentRecipe", currentRecipe);
-  console.log("direct I", directionIndex);
   const currentRecipeCopy = { ...currentRecipe };
   const newDirectionPage = { direction: "Tell me what to do", ingredients: [] };
   const addNewPage = () => {
@@ -12,13 +10,12 @@ const AddStep = ({ currentRecipe, setCurrentRecipe, directionIndex }) => {
       0,
       newDirectionPage
     );
-    console.log("copy2", currentRecipeCopy);
     setCurrentRecipe(currentRecipeCopy);
   };
 
   return (
     <button type="button" onClick={() => addNewPage()}>
-      Add step
+      Add step after this one
     </button>
   );
 };

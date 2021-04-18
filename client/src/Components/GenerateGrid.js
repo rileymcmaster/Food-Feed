@@ -20,6 +20,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  gap: 2rem;
   /* flex-basis: calc(calc(800px - 100%) * 999); */
   /* flex-grow: 2; */
   /* max-width: 100vw; */

@@ -7,6 +7,7 @@ import AddSubstractButton from "./AddSubtractButton";
 import { TiPencil } from "react-icons/ti";
 import { ImCheckmark2 } from "react-icons/im";
 import AddStep from "./AddStep";
+import Loading from "./Loading";
 
 const RecipePage = () => {
   //LOGGED IN USER
@@ -62,6 +63,10 @@ const RecipePage = () => {
 
   //EDITING
   const [toggleEdit, setToggleEdit] = useState(false);
+  // toggle show/hide checkboxes of ingredients on direction page
+  const [toggleIngredientCheckboxes, setToggleIngredientCheckboxes] = useState(
+    false
+  );
   //UPDATE TITLE
   const updateTitle = (e) => {
     const currentRecipeCopy = { ...currentRecipe };
@@ -207,6 +212,25 @@ const RecipePage = () => {
     }
   }, [editedRecipeObject]);
 
+  // HANDLE CHECKBOXES of ingredients on direction page
+  const updateDirectionsIngredients = (e, directionIndex) => {
+    let currentRecipeCopy = { ...currentRecipe };
+    const index = currentRecipeCopy.directions[
+      directionIndex
+    ].ingredients.findIndex(
+      (ingredient) => ingredient.ingredient === e.target.value
+    );
+    if (index >= 0) {
+      currentRecipeCopy.directions[directionIndex].ingredients.splice(index, 1);
+    } else {
+      currentRecipeCopy.directions[directionIndex].ingredients = [
+        ...currentRecipeCopy.directions[directionIndex].ingredients,
+        { ingredient: e.target.value },
+      ];
+    }
+    setCurrentRecipe(currentRecipeCopy);
+  };
+
   return currentRecipe && !loading && author ? (
     <PageWrapper>
       {/* TITLEPAGE */}
@@ -336,21 +360,19 @@ const RecipePage = () => {
               <SubHeader>Step {directionIndex + 1}</SubHeader>
               <DirectionCard>
                 <textarea
-                  // TODO MAKE THIS BOX EXPAND
-                  rows="6"
+                  rows={direction.direction.length / 60}
                   cols="50"
                   disabled={!toggleEdit}
                   onFocus={(e) => e.currentTarget.select()}
                   value={direction.direction}
                   onChange={(e) => updateDirections(e, directionIndex)}
                 ></textarea>
-                {/* ADD A PAGE TO RECIPE */}
+                {/* ADD A PAGE TO RECIPE - after current page */}
                 <AddStep
                   currentRecipe={currentRecipe}
                   setCurrentRecipe={setCurrentRecipe}
                   directionIndex={directionIndex}
                 />
-                {/* <button type="button" onClick={()=> }>Add a step</button> */}
               </DirectionCard>
               {/* ingredients */}
               <IngredientCard>
@@ -376,40 +398,92 @@ const RecipePage = () => {
                     </>
                   );
                 })}
+                {/* CHECKBOXES TO LINK INGREDIENTS TO DIRECTION */}
+                {toggleEdit && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setToggleIngredientCheckboxes(!toggleIngredientCheckboxes)
+                    }
+                  >
+                    Link ingredients
+                  </button>
+                )}
+                {currentRecipe.ingredients.map(
+                  (ingredient, ingredientIndex) => {
+                    let checkedIndex = currentRecipe.directions[
+                      directionIndex
+                    ].ingredients.findIndex(
+                      (ing) => ing.ingredient === ingredient.ingredient
+                    );
+                    return (
+                      toggleEdit &&
+                      toggleIngredientCheckboxes && (
+                        <label
+                          for={directionIndex + "-" + ingredient.ingredient}
+                        >
+                          <input
+                            checked={checkedIndex >= 0}
+                            type="checkbox"
+                            name="ingredient"
+                            id={directionIndex + "-" + ingredient.ingredient}
+                            name={ingredientIndex + "-" + ingredient.ingredient}
+                            value={
+                              currentRecipe.ingredients[ingredientIndex]
+                                .ingredient
+                            }
+                            onChange={(e) => {
+                              updateDirectionsIngredients(e, directionIndex);
+                            }}
+                          />
+                          {ingredient.ingredient}
+                        </label>
+                      )
+                    );
+                  }
+                )}
               </IngredientCard>
             </DirectionsPage>
           </Container>
         );
       })}
+      {/* END DIRECTIONS PAGE */}
+      {/*  */}
       {/* EDIT BUTTONS - must be signed in to edit a recipe */}
       {user.isSignedIn && (
-        <EditButtonsContainer>
+        <>
           {/* SUBMIT BUTTON */}
-          {/* TIPPI here */}
-          <EditRecipeIcon
-            tabIndex="1"
-            class="edit-recipe-btn"
-            onClick={() => handleSubmitChanges()}
-          >
-            <ImCheckmark2 size={60} />
-          </EditRecipeIcon>
+          <EditButtonContainer style={{ left: "0" }}>
+            {/* TIPPI here */}
+            <EditRecipeIcon
+              tabIndex="1"
+              class="edit-recipe-btn"
+              onClick={() => handleSubmitChanges()}
+            >
+              <ImCheckmark2 size={60} />
+            </EditRecipeIcon>
+          </EditButtonContainer>
           {/* EDIT BUTTON */}
-          <EditRecipeIcon
-            tabIndex="1"
-            toggleEdit={toggleEdit}
-            class="edit-recipe-btn"
-            onClick={(e) => {
-              setToggleEdit(!toggleEdit);
-            }}
-          >
-            <TiPencil size={60} />
-          </EditRecipeIcon>
-        </EditButtonsContainer>
+          <EditButtonContainer style={{ right: "0" }}>
+            <EditRecipeIcon
+              tabIndex="1"
+              toggleEdit={toggleEdit}
+              class="edit-recipe-btn"
+              onClick={(e) => {
+                setToggleEdit(!toggleEdit);
+                setToggleIngredientCheckboxes(false);
+              }}
+            >
+              <TiPencil size={60} />
+            </EditRecipeIcon>
+          </EditButtonContainer>
+        </>
       )}
     </PageWrapper>
   ) : (
+    // LOADING
     <Wrapper>
-      <h1>Loading</h1>
+      <Loading />
     </Wrapper>
   );
 };
@@ -433,6 +507,17 @@ const EditRecipeIcon = styled.div`
 
     box-shadow: 0 0 10px green, 0 0 0 5px green;
   }
+`;
+const EditButtonContainer = styled.div`
+  position: fixed;
+  /* width: 100vw; */
+  padding: 10px 20px;
+  bottom: 2%;
+
+  z-index: 9999;
+  /* display: flex; */
+  /* flex-direction: row; */
+  /* justify-content: space-between; */
 `;
 
 const VariationLink = styled(Link)`
@@ -477,39 +562,6 @@ const VariationButton = styled.button`
     2px 2px 5px rgba(255, 255, 255, 0.5);
 `;
 
-const EditButtonsContainer = styled.div`
-  position: fixed;
-  width: 100vw;
-  padding: 10px 20px;
-  bottom: 2%;
-
-  z-index: 9999;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-`;
-const EditRecipeBtn = styled.button`
-  position: relative;
-  padding: 20px;
-  background-color: red;
-  font-weight: bold;
-  width: 100px;
-`;
-const SubmitImprovementBtn = styled.button`
-  position: relative;
-  padding: 20px;
-  background-color: red;
-  font-weight: bold;
-  width: 100px;
-`;
-
-const Icon = styled.div`
-  color: black;
-  font-size: 30px;
-  position: absolute;
-  bottom: 0;
-`;
-
 const DirectionCard = styled.div`
   position: relative;
   font-size: 2rem;
@@ -532,16 +584,12 @@ const DirectionCard = styled.div`
 `;
 //ingredients in each direction
 const IngredientCard = styled.div`
-  /* height: 300px; */
   font-size: 1rem;
   position: absolute;
   .ingredient-card {
     font-size: 0.8rem;
   }
-  /* margin-top: auto; */
   top: 10%;
-  /* border: 2px solid red; */
-  /* right: 0; */
 `;
 
 const DirectionsPage = styled.div`

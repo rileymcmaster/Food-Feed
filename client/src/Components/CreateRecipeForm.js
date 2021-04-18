@@ -12,27 +12,14 @@ const RecipeForm = () => {
   //the recipe state that will be submitted
   const [userInput, setUserInput] = useState({
     recipeName: "",
-    ingredients: [],
-    directions: [],
+    ingredients: [{ ingredient: "" }],
+    directions: [{ direction: "", ingredients: [] }],
     isPrivate: false,
     createdBy: user._id,
     recipeImageUrl: "",
   });
-  // console.log("user input", userInput);
 
-  //number of inputs for Ingredients & Directions
-  const [numIngredients, setNumIngredients] = useState(1);
-  const [numDirections, setNumDirections] = useState(1);
-  //
-  //GENERATE THE NUMBER OF INGREDIENT & DIRECTION INPUTS
-  const range = (start, end, step = 1) => {
-    const length = Math.floor(Math.abs((end - start) / step)) + 1;
-    return Array.from(Array(length), (x, index) => start + index * step);
-  };
-  const numIngredientsArray = range(1, numIngredients);
-  const numDirectionsArray = range(1, numDirections);
-
-  // INGREDIENTS INPUT creates array and updates the userInput
+  // INGREDIENTS INPUT
   const updateIngredients = (e, index) => {
     const userInputCopy = { ...userInput };
     //update the corresponding ingredient in DIRECTIONS
@@ -61,14 +48,25 @@ const RecipeForm = () => {
   };
   //checkboxes for the ingredients inside directions
   const updateDirectionsIngredients = (e, directionIndex) => {
-    //currently does not handle unchecking the box
-    const userInputCopy = { ...userInput };
-    userInputCopy.directions[directionIndex].ingredients = [
-      ...userInputCopy.directions[directionIndex].ingredients,
-      { ingredient: e.target.value },
-    ];
+    //toggle insert/remove from array
+    let userInputCopy = { ...userInput };
+    const index = userInputCopy.directions[
+      directionIndex
+    ].ingredients.findIndex(
+      (ingredient) => ingredient.ingredient === e.target.value
+    );
+    if (index >= 0) {
+      userInputCopy.directions[directionIndex].ingredients.splice(index, 1);
+    } else {
+      userInputCopy.directions[directionIndex].ingredients = [
+        ...userInputCopy.directions[directionIndex].ingredients,
+        { ingredient: e.target.value },
+      ];
+    }
     setUserInput(userInputCopy);
   };
+
+  console.log("USER", userInput);
   //toggle private setting
   const updatePrivate = () => {
     const userInputCopy = { ...userInput };
@@ -115,6 +113,64 @@ const RecipeForm = () => {
       .then((data) => console.log("recipe has been uploaded", data));
   };
 
+  // ADD INGREDIENT
+  const handleAddIngredient = () => {
+    // make a copy of the form
+    const userInputCopy = { ...userInput };
+    // new object that will be inserted
+    const newIngredientObject = { ingredient: "" };
+    // add object to end of array
+    const ingredientLength = userInputCopy.ingredients.length;
+    // splice changes original array, inserts the new object
+    const addNewIngredient = userInputCopy.ingredients.splice(
+      ingredientLength,
+      0,
+      newIngredientObject
+    );
+    setUserInput(userInputCopy);
+  };
+
+  // REMOVE INGREDIENT
+  const handleRemoveIngredient = (ingredientIndex) => {
+    // make a copy of the form
+    const userInputCopy = { ...userInput };
+    // must be at least one ingredient
+    if (userInputCopy.ingredients.length > 1) {
+      const remove = userInputCopy.ingredients.splice(ingredientIndex, 1);
+      setUserInput(userInputCopy);
+    }
+  };
+  // ADD DIRECTION
+  const handleAddDirection = () => {
+    // make a copy of the form
+    const userInputCopy = { ...userInput };
+    // new object that will be inserted
+    const newDirectionObject = { direction: "", ingredients: [] };
+    // add object to end of array
+    const directionLength = userInputCopy.directions.length;
+    // splice changes original array, inserts the new object
+    const addNewDirection = userInputCopy.directions.splice(
+      directionLength,
+      0,
+      newDirectionObject
+    );
+    setUserInput(userInputCopy);
+  };
+
+  // console.log("userinput", userInput);
+
+  // REMOVE DIRECTION
+  const handleRemoveDirection = (directionIndex) => {
+    console.log("d in", directionIndex);
+    // make a copy of the form
+    const userInputCopy = { ...userInput };
+    // there must be at least one direction
+    if (userInputCopy.directions.length > 1) {
+      const remove = userInputCopy.directions.splice(directionIndex, 1);
+      setUserInput(userInputCopy);
+    }
+  };
+
   return (
     <Wrapper>
       <FormContainer>
@@ -128,6 +184,7 @@ const RecipeForm = () => {
               placeholder="Name of dish"
               name="recipeName"
               required
+              value={userInput.recipeName}
               onChange={(e) =>
                 setUserInput({ ...userInput, recipeName: e.target.value })
               }
@@ -135,57 +192,66 @@ const RecipeForm = () => {
           </div>
           {/* INGREDIENTS */}
           <h1>INGREDIENTS:</h1>
-          {numIngredientsArray.map((num, index) => {
+          {/* {numIngredientsArray.map((num, index) => { */}
+          {userInput.ingredients.map((ingredient, index) => {
             return (
-              <div>
-                <label for={`ingredient`}>Ingredient {num}:</label>
+              <IngredientInput>
+                <label for={`ingredient-${index}`}>
+                  Ingredient {index + 1}:
+                </label>
                 <input
                   type="text"
                   placeholder="ingredient"
                   name={`ingredient`}
+                  value={userInput.ingredients[index].ingredient}
                   onChange={(e) => updateIngredients(e, index)}
                 />
-              </div>
+                <button
+                  type="button"
+                  onClick={() => handleRemoveIngredient(index)}
+                >
+                  X
+                </button>
+              </IngredientInput>
             );
           })}
           {/* MORE INGREDIENTS */}
-          {/* MORE INGREDIENTS */}
-          <AddSubstractButton
-            state={numIngredients}
-            setState={setNumIngredients}
-            modifier={"add"}
-          />
-          {/* FEWER INGREDIENTS */}
-          <AddSubstractButton
-            state={numIngredients}
-            setState={setNumIngredients}
-            modifier={"subtract"}
-          />
+          <button type="button" onClick={() => handleAddIngredient()}>
+            ADD
+          </button>
           {/* END INGREDIENTS */}
           {/* DIRECTIONS */}
           <h1>DIRECTIONS:</h1>
-          {numDirectionsArray.map((num, index) => {
+          {userInput.directions.map((direction, index) => {
             return (
               <div>
-                <label for={`direction`}>Step {num}:</label>
+                <label for={`direction-${index}`}>Step {index + 1}:</label>
                 <input
                   type="text"
                   placeholder="what to do"
                   name={`direction`}
+                  value={userInput.directions[index].direction}
                   onChange={(e) => updateDirections(e, index)}
                 />
+                {/* REMOVE THIS DIRECTION */}
+                <button
+                  type="button"
+                  onClick={() => handleRemoveDirection(index)}
+                >
+                  X
+                </button>
                 {/* INGREDIENT CHECKBOXES */}
                 {userInput.ingredients.map((ingredient, idx) => {
                   return (
                     <div>
-                      <label for={`${num}-${ingredient.ingredient}`}>
+                      <label for={`${index}-${ingredient.ingredient}`}>
                         <input
                           type="checkbox"
                           name="ingredient"
                           class={index}
-                          value={ingredient.ingredient}
+                          value={userInput.ingredients[idx].ingredient}
                           // value={ingredient.ingredient}
-                          id={`${num}-${ingredient.ingredient}`}
+                          id={`${index}-${ingredient.ingredient}`}
                           onChange={(e) => {
                             updateDirectionsIngredients(e, index, idx);
                           }}
@@ -199,17 +265,15 @@ const RecipeForm = () => {
             );
           })}
           {/* MORE DIRECTIONS */}
-          <AddSubstractButton
-            state={numDirections}
-            setState={setNumDirections}
-            modifier={"add"}
-          />
-          {/* FEWER DIRECTIONS */}
-          <AddSubstractButton
-            state={numDirections}
-            setState={setNumDirections}
-            modifier={"subtract"}
-          />
+          <button
+            type="button"
+            onClick={() => {
+              handleAddDirection();
+            }}
+          >
+            ADD
+          </button>
+          {/* PRIVATE CHECKBOX */}
           <div>
             <label for="isPrivate">
               <input
@@ -252,11 +316,61 @@ const RecipeForm = () => {
     </Wrapper>
   );
 };
-
+const IngredientInput = styled.div`
+  display: flex;
+  flex-direction: row;
+  /* border: 2px solid red; */
+`;
 const FormContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  /* height: 100vh; */
+  /* width: 100%; */
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  /* background-color: lightblue; */
+
   div {
-    margin: 20px;
+    /* border: 2px solid red; */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
   }
+  label {
+    margin-bottom: 0.5rem;
+  }
+  input,
+  textarea {
+    /* margin-top: 0.5rem; */
+    border: none;
+    padding: 5px;
+    font-size: 1.2rem;
+    text-align: center;
+    outline: 1px solid rgba(0, 0, 0, 0.5);
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    vertical-align: center;
+  }
+
+  textarea {
+    resize: none;
+  }
+  input:focus-within {
+    outline: 2px solid blue;
+  }
+
+  input:invalid {
+    /* background-color: red; */
+    outline: 2px solid red;
+    box-shadow: 0 0 5px red;
+  }
+  input:valid {
+    background-color: white;
+  }
+
+  /* div {
+    margin: 20px;
+  } */
 `;
 
 export default RecipeForm;

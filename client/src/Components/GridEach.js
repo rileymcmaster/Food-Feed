@@ -6,6 +6,7 @@ import { useParams } from "react-router";
 import AvatarImage from "./AvatarImage";
 import moment from "moment";
 import { BsFillLockFill, BsFillUnlockFill } from "react-icons/bs";
+import Loading from "./Loading";
 
 const GridEach = ({ item }) => {
   //USER STATE
@@ -13,11 +14,13 @@ const GridEach = ({ item }) => {
   //local states
   const [author, setAuthor] = useState("");
   const [loading, setLoading] = useState(null);
+  const [deleteInProcess, setDeleteInProcess] = useState(false);
 
   const urlId = useParams()._id;
 
   //fetch the author name and pic
   useEffect(() => {
+    setDeleteInProcess(false);
     setLoading(true);
     fetch(`/user/${item.createdBy}`)
       .then((res) => res.json())
@@ -29,25 +32,52 @@ const GridEach = ({ item }) => {
   }, [item]);
 
   //DELETE RECIPE - only visible if the user is viewing their own profile page
-  const handleDeleteRecipe = () => {
-    // if (user.isSignedIn && user._id === )
-    // fetch(`/recipes/delete/${item._id}`)
+  const handleDeleteRecipe = (e) => {
+    setLoading(true);
+    if (user.isSignedIn && user._id === item.createdBy) {
+      //DELETE RECIPE
+      fetch(`/recipes/delete`, {
+        method: "DELETE",
+        body: JSON.stringify(item),
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => console.log("data", data));
+      //Update user's recipe array
+      fetch(`/user/edit/remove`, {
+        method: "PATCH",
+        body: JSON.stringify(item),
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json",
+        },
+      });
+      setLoading(false);
+      setDeleteInProcess(true);
+    }
   };
 
-  return (
-    !loading &&
-    author && (
+  // return loading && !item ? (
+  return loading ? (
+    <LoadingContainer>
+      <Loading />
+    </LoadingContainer>
+  ) : (
+    !loading && author && (
       <>
         {/* THE WHOLE CARD IS A LINK */}
         <StyledLink to={`/recipe/${item._id}`}>
           <ContainerEach>
             <LockIcon>
-              {item.createdBy === user._id && item.isPrivate && (
-                <BsFillLockFill size={20} />
-              )}
-              {item.createdBy === user._id && !item.isPrivate && (
-                <BsFillUnlockFill />
-              )}
+              {item.createdBy === user._id &&
+                user._id === urlId &&
+                item.isPrivate && <BsFillLockFill size={20} />}
+              {item.createdBy === user._id &&
+                user._id === urlId &&
+                !item.isPrivate && <BsFillUnlockFill />}
             </LockIcon>
 
             <ImageContainer>
@@ -60,22 +90,31 @@ const GridEach = ({ item }) => {
                 <AvatarImage img={author.avatarUrl} />
                 <Name>@{author.handle}</Name>
               </UserLink>
-              {/* DELETE BUTTON */}
-              {user._id === urlId && (
-                <button type="button" onClick={() => handleDeleteRecipe()}>
-                  X
-                </button>
-              )}
+
               <Date>
                 <p>{moment(item.date).fromNow()}</p>
               </Date>
             </AuthorLine>
           </ContainerEach>
         </StyledLink>
+        {/* DELETE BUTTON */}
+        {user._id === urlId && (
+          <button
+            style={{}}
+            type="button"
+            onClick={(e) => handleDeleteRecipe(e)}
+          >
+            X
+          </button>
+        )}
       </>
     )
   );
 };
+const LoadingContainer = styled.div`
+  min-width: 400px;
+  margin-top: 80px;
+`;
 const LockIcon = styled.div`
   position: absolute;
   margin: 0 auto;

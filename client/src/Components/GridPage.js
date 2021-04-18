@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import GenerateGrid from "./GenerateGrid";
 import Wrapper from "./Wrapper";
+import Loading from "./Loading";
 
 const GridPage = () => {
   //USER STATE
@@ -15,28 +16,31 @@ const GridPage = () => {
   //
   //load data
   useEffect(() => {
-    // console.log("start fetch");
     setLoading(true);
-    console.log("user_id", user._id);
 
     if (!user._id) {
       user._id = 0;
     }
-    fetch(`/recipes/all/${user._id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setItems(data.data);
-      })
-      .catch((err) => {
-        console.log("error", err);
-        setErrorMessage("There is an error");
-      });
-    setLoading(false);
+    //SHORT DELAY TO WAIT IF THERE IS A USER LOGGED IN
+    const delayFetch = setTimeout(() => {
+      fetch(`/recipes/all/${user._id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setItems(data.data);
+        })
+        .catch((err) => {
+          console.log("error", err);
+          setErrorMessage("There is an error");
+        });
+      setLoading(false);
+    }, 1000);
+    return () => clearTimeout(delayFetch);
   }, [user]);
 
   return loading && !items ? (
+    // return !loading ? (
     <Wrapper>
-      <h1>LOADING</h1>
+      <Loading />
     </Wrapper>
   ) : errorMessage && !items ? (
     <Wrapper>

@@ -4,6 +4,7 @@ const Recipe = require("../../models/recipe");
 const assert = require("assert");
 const { MongoClient } = require("mongodb");
 const mongoose = require("mongoose");
+// const { delete } = require("../recipes");
 require("dotenv").config();
 
 const { MONGO_URI } = process.env;
@@ -14,17 +15,11 @@ const options = {
 };
 
 const getAllRecipes = async (req, res) => {
-  // console.log("REQ", req.params);
-  // CONNECT TO SERVER
-  console.log("req true", req.params);
-  // const client = await mongoose.connect(MONGO_URI, options);
-  console.log("connected to server");
   try {
     // FILTER for privacy settings
     const notPrivateRecipes = await Recipe.find({ isPrivate: false });
     let userPrivateRecipes = [];
     if (req.params._id !== "0") {
-      console.log("there is a param", req.params);
       userPrivateRecipes = await Recipe.find({
         isPrivate: true,
         createdBy: req.params._id,
@@ -137,24 +132,36 @@ const updateRecipeVariation = async (req, res) => {
         status: 200,
         message: `${req.body.recipeName} has been updated`,
       });
+    } else {
+      console.log("error updatin recipe variation");
+      res.status(400).json({ status: 400, message: "no recipe found" });
     }
   } catch (error) {
-    console.log("error get one recipe", error);
-    res.status(400).json({ status: 400, message: "no recipe found" });
+    console.log("Error udpating recipe variation", error);
   }
   // mongoose.disconnect();
   // console.log("disconnected from server");
 };
 
-const deleteRecipe = async (req, res) => {};
+const deleteRecipe = async (req, res) => {
+  // console.log("req.body", req.body);
+  try {
+    const deleteRecipe = await Recipe.deleteOne({ _id: req.body._id });
+    // console.log("delete", deleteRecipe);
+    if (deleteRecipe) {
+      console.log("Recipe deleted");
+      res.status(204).json({ status: 204, message: "Recipe deleted" });
+    } else {
+      console.log("error deleting the recipe");
+      res.status(400).json({ status: 400, message: "no recipe found" });
+    }
+  } catch (err) {
+    console.log("Error deleting recipe", err);
+  }
+};
 
 const likeRecipe = async (req, res) => {
   // CONNECT TO SERVER
-  const client = await mongoose.connect(MONGO_URI, options);
-  console.log("connected to server");
-  //todo
-  // mongoose.disconnect();
-  // console.log("disconnected from server");
 };
 //USER PAGE
 const getMultipleRecipes = async (req, res) => {

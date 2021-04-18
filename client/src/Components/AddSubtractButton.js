@@ -2,14 +2,17 @@ import React from "react";
 import styled from "styled-components";
 //TODO GET ICONS AND STYLE THESE BUTTONS
 
-const AddSubstractButton = ({ state, setState, modifier }) => {
+const AddSubstractButton = ({ state, setState, modifier, ingredientIndex }) => {
+  // CREATE FORM - ADD (ingredient/direction)
   if (modifier === "add") {
     return (
       <button type="button" onClick={() => setState(state + 1)}>
         +
       </button>
     );
-  } else if (modifier === "subtract") {
+  }
+  // CREATE FORM - REMOVE (ingredient/direction)
+  else if (modifier === "subtract") {
     return (
       <button
         type="button"
@@ -20,6 +23,24 @@ const AddSubstractButton = ({ state, setState, modifier }) => {
         }}
       >
         -
+      </button>
+    );
+  }
+  // CREATE FORM - Remove ingredient on each line
+  else if (modifier === "removeIngredient") {
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          console.log("i i ", ingredientIndex);
+          console.log("state", state);
+          if (state > 1) {
+            // let stateSplice = state.splice(ingredientIndex, 1);
+            // setState(stateSplice);
+          }
+        }}
+      >
+        X
       </button>
     );
   } else if (modifier === "newIngredient") {

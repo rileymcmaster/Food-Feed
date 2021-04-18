@@ -1,25 +1,16 @@
 const bcrypt = require("bcrypt");
-const mongoose = require("mongoose");
+
 require("dotenv").config();
 let User = require("../../models/user");
-const { MongoClient, ObjectID } = require("mongodb");
-const { find } = require("../../models/user");
+
+// const { find } = require("../../models/user");
 
 const saltRounds = 10;
 
-const { MONGO_URI } = process.env;
-
-const options = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-};
 ////////////////
 //create account//
 ////////////////
 const createUserAccount = async (req, res) => {
-  // CONNECT TO SERVER
-  const client = await mongoose.connect(MONGO_URI, options);
-  console.log("connected to server");
   //check if email or handle already exist
   const foundUserEmail = await User.findOne({ email: req.body.email });
   const foundUserHandle = await User.findOne({ handle: req.body.handle });
@@ -57,16 +48,12 @@ const createUserAccount = async (req, res) => {
         });
     });
   }
-  // mongoose.disconnect();
-  console.log("disconnected from server");
 };
 ////////////////
 //LOG IN////
 //////////////
 const userSignIn = async (req, res) => {
-  // CONNECT TO SERVER
-  await mongoose.connect(MONGO_URI, options);
-  console.log("connected to server");
+  console.log("req", req.body);
   const userEmail = { email: req.body.email };
   try {
     const findUser = await User.findOne(userEmail);
@@ -79,27 +66,22 @@ const userSignIn = async (req, res) => {
         .status(400)
         .json({ status: 400, message: "User has been deactivated" });
     } else {
+      console.log("user found");
       bcrypt.compare(req.body.password, findUser.password, (err, result) => {
         if (result) {
           res.status(200).json({ status: 200, data: findUser });
         } else {
           res.status(400).json({ status: 401, message: "Incorrect password" });
         }
-        // mongoose.disconnect();
-        console.log("disconnected from server");
       });
     }
   } catch (error) {
     console.log("error signing in", error);
     res.status(502).json({ status: 502, message: "Problem with server" });
-    // mongoose.disconnect();
-    console.log("disconnected from server");
   }
 };
 
 const userSignOut = async (req, res) => {
-  const client = await mongoose.connect(MONGO_URI, options);
-  console.log("connected to server");
   const user = { _id: req.body.user._id };
   const signedIn = req.body.user.isSignedIn;
   const updateStatus = { $set: { isSignedIn: false } };
@@ -117,14 +99,8 @@ const userSignOut = async (req, res) => {
       .status(400)
       .json({ status: 400, message: "There was a problem signing out" });
   }
-  // mongoose.disconnect();
-  console.log("disconnected from server");
 };
 const deleteUserAccount = async (req, res) => {
-  const client = await mongoose.connect(MONGO_URI, options);
-  console.log("connected to server");
-
-  // console.log("req.body", req.body);
   const user = { _id: req.body.user._id };
   const signedIn = { _id: req.body.isSignedIn };
   const deactiveAccount = { $set: { deactivated: true, recipesCreated: [] } };
@@ -144,13 +120,9 @@ const deleteUserAccount = async (req, res) => {
       .status(400)
       .json({ status: 400, message: "There was a problem deleting account" });
   }
-  // mongoose.disconnect();
-  console.log("disconnected from server");
 };
 
 const getUserProfile = async (req, res) => {
-  const client = await mongoose.connect(MONGO_URI, options);
-  console.log("connected to server");
   const findOneUser = await User.findOne({ _id: req.params._id });
   try {
     // console.log("findOne", findOneUser);
@@ -161,13 +133,9 @@ const getUserProfile = async (req, res) => {
     console.log("error", error);
     res.status(400).json({ status: 400, message: "No user found" });
   }
-  // mongoose.disconnect();
-  // console.log("disconnected from server");
 };
 
 const updateUserRecipes = async (req, res) => {
-  const client = await mongoose.connect(MONGO_URI, options);
-  console.log("connected to server");
   const query = { _id: req.body.createdBy };
   const updateCreations = { $push: { recipesCreated: req.body._id } };
   try {
@@ -180,8 +148,24 @@ const updateUserRecipes = async (req, res) => {
     console.log("error updateUserRecipes", error);
     res.status(400).json({ status: 400, message: "Update user info failed" });
   }
-  // mongoose.disconnect();
-  console.log("disconnected from server");
+};
+
+//When user deletes a recipes, this removes it from their recipesCreated array
+const UserRemoveOneRecipe = async (req, res) => {
+  const query = { _id: req.body.createdBy };
+  const RemoveOneRecipe = { $pull: { recipesCreated: req.body } };
+  try {
+    const result = await User.updateOne(query, RemoveOneRecipe);
+    if (result) {
+      console.log("Removed recipe from User object");
+      res.status(200).json({ status: 200, message: "User object updated" });
+    } else {
+      console.log("Error UserRemoveOneRecipe");
+      res.status(400).json({ status: 400, message: "Problem updating user" });
+    }
+  } catch (err) {
+    console.log("Error UserRemoveOneRecipe ", err);
+  }
 };
 
 module.exports = {
@@ -191,4 +175,5 @@ module.exports = {
   deleteUserAccount,
   getUserProfile,
   updateUserRecipes,
+  UserRemoveOneRecipe,
 };

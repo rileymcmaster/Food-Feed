@@ -14,12 +14,14 @@ const UserPage = () => {
   const [currentUserRecipes, setCurrentUserRecipes] = useState(null);
   const [loggedInUser, setLoggedInUser] = useState(false);
   const [deleteUserWarning, setDeleteUserWarning] = useState(false);
+  const [loading, setLoading] = useState(false);
   // utils
   const urlId = useParams()._id;
   const dispatch = useDispatch();
   const history = useHistory();
 
   useEffect(() => {
+    setLoading(true);
     //FIND USER
     fetch(`/user/${urlId}`)
       .then((res) => res.json())
@@ -32,6 +34,7 @@ const UserPage = () => {
       .then((res) => res.json())
       .then((data) => setCurrentUserRecipes(data.data))
       .catch((err) => console.log("error getting recipes", err));
+    setLoading(false);
   }, [urlId]);
 
   //is it the logged in user's profile T/F
@@ -122,7 +125,11 @@ const UserPage = () => {
         <Bio>
           <p>I like spicy food and crunchy chips</p>
         </Bio>
-        <GenerateGrid items={currentUserRecipes.reverse()} />
+        <GenerateGrid
+          loading={loading}
+          setLoading={setLoading}
+          items={currentUserRecipes.reverse()}
+        />
       </Container>
     )
   );

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { signOut } from "./actions";
@@ -49,7 +49,7 @@ const Header = () => {
             {/* DROP DOWN */}
             {toggleMenu && (
               <>
-                <UserDropdown>
+                <UserDropdown toggleMenu={toggleMenu}>
                   {/* FEED */}
                   <MenuLink
                     to={"/recipes"}
@@ -102,7 +102,7 @@ const Header = () => {
             </IconContainer>
 
             {toggleMenu && (
-              <UserDropdown>
+              <UserDropdown toggleMenu={toggleMenu}>
                 <MenuLink to={"/recipes"} onClick={() => setToggleMenu(false)}>
                   The FEED
                 </MenuLink>
@@ -120,6 +120,21 @@ const Header = () => {
     </Container>
   );
 };
+// animate dropdown
+const growDown = keyframes`
+0% {
+  transform: scaleY(0);
+  opacity: 0%;
+}
+80% {
+  transform: scaleY(1.1);
+  opacity: 100%;
+}
+100%{
+  transform: scaleY(1)
+}
+`;
+
 // main div
 const Container = styled.div`
   position: fixed;
@@ -153,13 +168,17 @@ const ImageContainer = styled.div`
 // DROP DOWN
 const UserDropdown = styled.div`
   position: absolute;
-  /* z-index: 999999999; */
-  /* height: 1000px; */
   display: flex;
   flex-direction: column;
   font-size: 2rem;
   background-color: white;
+  animation: ${growDown} 300ms ease-in-out forwards;
+
+  transform-origin: top center;
+
   width: 250px;
+  /* height: ${(props) => (props.toggleMenu ? "auto" : "0")}; */
+
   padding: 10px;
   box-shadow: var(--recipe-box-shadow);
 `;
@@ -175,23 +194,6 @@ const MenuLink = styled(Link)`
   :hover {
     background-color: black;
     color: white;
-  }
-`;
-
-const CreateLink = styled(Link)`
-  position: relative;
-  text-decoration: none;
-  color: black;
-  margin-left: auto;
-  /* margin-right: 5px; */
-
-  h1 {
-    margin-top: 10px;
-  }
-  :hover {
-    filter: invert(100%);
-    /* background-color: blue; */
-    color: teal;
   }
 `;
 

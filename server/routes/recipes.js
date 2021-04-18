@@ -27,7 +27,7 @@ router.post("/create/edit", editRecipe);
 router.patch("/update/", updateRecipeVariation);
 
 //deleteRecipe
-router.delete("/delete/:_id", deleteRecipe);
+router.delete("/delete/", deleteRecipe);
 
 //get recipe by author id
 router.get("/user/:_id", getMultipleRecipes);

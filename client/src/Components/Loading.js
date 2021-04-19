@@ -28,6 +28,7 @@ const Icon = styled.div`
   animation: ${rotate} 1s ease-in-out infinite;
 `;
 const IconContainer = styled.div`
+  background-color: transparent;
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -1,37 +1,46 @@
 import React, { useState } from "react";
 import Wrapper from "./Wrapper";
 import styled from "styled-components";
+import Button from "./Button";
+import ButtonUpload from "./ButtonUpload";
 
 const SignUp = () => {
   //states all for the form
-  const [userInput, setUserInput] = useState({});
-  // todo
-  const [successMessasge, setSuccessMessage] = useState(false);
-  // todo
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [userInput, setUserInput] = useState({
+    handle: "",
+    userName: "",
+    email: "",
+    password: "",
+    avatarUrl: "",
+  });
+  // console.log("userinput", userInput);
+  const [waitingMessage, setWaitingMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
   //DISABLE THE SUBMIT BUTTON UNTIL THE FORM IS FILLLED OUT
-  let disableSubmit = false;
-  // if (userInput) {
-  //   if (
-  //     userInput.handle.length > 1 &&
-  //     userInput.email.length > 1 &&
-  //     userInput.password.length > 2
-  //   ) {
-  //     disableSubmit = false;
-  //   }
-  // }
+  let disableSubmit = true;
+  if (
+    userInput.handle &&
+    userInput.email &&
+    userInput.password &&
+    userInput.avatarUrl
+  ) {
+    disableSubmit = false;
+  }
 
   //UPLOAD IMAGE
   const [avatarImage, setAvatarImage] = useState({});
-  const [imageUploading, setImageUploading] = useState(false);
-  const [imageUploadComplete, setImageUploadComplete] = useState(false);
+  const [imageUploading, setImageUploading] = useState("");
+  const [imageUploadComplete, setImageUploadComplete] = useState("");
+  const [imageUploadFailed, setImageUploadFailed] = useState("");
   const handleImageUpload = (ev) => {
     const file = ev.target.files[0];
     setAvatarImage(file);
   };
 
   const sendImage = (ev) => {
-    setImageUploading(true);
+    setImageUploading("Upload in progress");
     const data = new FormData();
     data.append("file", avatarImage);
     data.append("upload_preset", "feed-preset");
@@ -42,19 +51,21 @@ const SignUp = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("image upload successful");
+        console.log("image upload successful", data);
         setUserInput({ ...userInput, avatarUrl: data.url });
-        setImageUploading(false);
-        setImageUploadComplete(true);
+        setImageUploading("");
+        setImageUploadComplete("Upload complete");
       })
       .catch((err) => {
+        setImageUploadFailed("Upload failed");
         console.log("error uploading", err);
       });
   };
 
   //SUBMIT
   const handleSubmit = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
+    setWaitingMessage("waiting");
     fetch("/user/signup", {
       method: "POST",
       body: JSON.stringify(userInput),
@@ -66,151 +77,192 @@ const SignUp = () => {
       .then((res) => res.json())
       .then(({ status, message, data }) => {
         if (status === 200) {
+          setWaitingMessage("");
           console.log("signup was successful", status, data);
-          setSuccessMessage(true);
+          setSuccessMessage("Success!");
         } else {
+          setWaitingMessage("");
           console.log("signup didn't work", status, message);
           setErrorMessage(message);
         }
       })
       .catch((err) => {
+        setWaitingMessage("");
         console.log("ERROR", err.stack);
+
         //SET AN ERROR MESSAGE
       });
   };
   return (
-    <Wrapper>
-      <Container>
-        <form onSubmit={handleSubmit}>
-          {/* handle */}
-          <div>
-            <label for="handle">User handle:</label>
-            <input
-              tabIndex="2"
-              type="text"
-              placeholder="One word, no special characters"
-              name="handle"
-              autoFocus
-              pattern="[A-Za-z0-9]+"
-              onChange={(e) =>
-                setUserInput({
-                  ...userInput,
-                  handle: e.target.value.toLowerCase(),
-                })
-              }
-            />
-          </div>
-          {/* userName */}
-          <div>
-            <label for="userName">Display Name:</label>
-            <input
-              type="text"
-              placeholder="ex: Dave Davidson"
-              name="userName"
-              onChange={(e) =>
-                setUserInput({ ...userInput, userName: e.target.value })
-              }
-            />
-          </div>
-          {/* EMAIL */}
-          <div>
-            <label for="email">Email:</label>
-            <input
-              type="email"
-              placeholder="ex. steamedhams@auroraborealis.org"
-              name="email"
-              pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-              onChange={(e) =>
-                setUserInput({ ...userInput, email: e.target.value })
-              }
-            />
-          </div>
-          <div>
-            {/* PASSWORD */}
-            <label for="password">Password:</label>
-            <input
-              type="password"
-              placeholder="Enter password"
-              name="password"
-              onChange={(e) =>
-                setUserInput({ ...userInput, password: e.target.value })
-              }
-            />
-          </div>
-          {/* UPLOAD AVATAR IMAGE */}
-          <div>
-            <label for="upload-image">Upload avatar picture</label>
-            <input
-              type="file"
-              name="upload-image"
-              onChange={(e) => handleImageUpload(e)}
-            ></input>
-          </div>
-          <div>
-            <button
-              type="button"
-              onClick={() => {
-                sendImage();
-                setAvatarImage({});
-              }}
-            >
-              Upload avatar
-            </button>
-          </div>
-          {imageUploading ? (
-            <h1>image is uploading</h1>
-          ) : imageUploadComplete ? (
-            <h1>Upload is complete!</h1>
-          ) : (
-            <></>
+    <Container>
+      <form onSubmit={handleSubmit}>
+        {/* handle */}
+        <div>
+          <label for="handle">User handle:</label>
+          <input
+            size="40"
+            tabIndex="2"
+            type="text"
+            placeholder="One word, no special characters"
+            name="handle"
+            autoFocus
+            pattern="[A-Za-z0-9]+"
+            onChange={(e) =>
+              setUserInput({
+                ...userInput,
+                handle: e.target.value.toLowerCase(),
+              })
+            }
+          />
+          {errorMessage === "Handle already exists" && (
+            <ErrorMessage>Handle already exists</ErrorMessage>
           )}
-          {/* END UPLOAD IMG */}
+        </div>
+        {/* userName */}
+        <div>
+          <label for="userName">Display Name:</label>
+          <input
+            size="40"
+            type="text"
+            placeholder="ex: Dave Davidson"
+            name="userName"
+            onChange={(e) =>
+              setUserInput({ ...userInput, userName: e.target.value })
+            }
+          />
+        </div>
+        {/* EMAIL */}
+        <div>
+          <label for="email">Email:</label>
+          <input
+            size="40"
+            type="email"
+            placeholder="ex. steamedhams@auroraborealis.org"
+            name="email"
+            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+            onChange={(e) =>
+              setUserInput({ ...userInput, email: e.target.value })
+            }
+          />
+          {errorMessage === "Email already exists" && (
+            <ErrorMessage>This email already has an account</ErrorMessage>
+          )}
+        </div>
+        <div>
+          {/* PASSWORD */}
+          <label for="password">Password:</label>
+          <input
+            size="40"
+            type="password"
+            placeholder="Enter password"
+            name="password"
+            onChange={(e) =>
+              setUserInput({ ...userInput, password: e.target.value })
+            }
+          />
+        </div>
+        {/* UPLOAD AVATAR IMAGE */}
+        <div>
+          <label for="upload-image">Upload avatar picture</label>
+          <input
+            type="file"
+            name="upload-image"
+            onChange={(e) => {
+              setImageUploading("");
+              setImageUploadComplete("");
+              setImageUploadFailed("");
+              handleImageUpload(e);
+            }}
+          ></input>
+        </div>
+        <ButtonContainer>
+          <ButtonUpload
+            onClick={() => {
+              sendImage();
+              setAvatarImage({});
+            }}
+            wait={imageUploading}
+            success={imageUploadComplete}
+            fail={imageUploadFailed}
+          >
+            Upload avatar
+          </ButtonUpload>
+        </ButtonContainer>
+        {/* END UPLOAD IMG */}
 
-          {/* BIO */}
-          <div>
-            <label for="bio">Brief bio:</label>
-            <textarea
-              type="text"
-              placeholder="I like spicy food"
-              name="userName"
-              onChange={(e) =>
-                setUserInput({ ...userInput, bio: e.target.value })
-              }
-            ></textarea>
-          </div>
-          {/* SUBMIT BUTTON */}
-          <div>
-            <button type="submit" onClick="submit" disabled={disableSubmit}>
-              Sign up
-            </button>
-          </div>
-        </form>
-      </Container>
-    </Wrapper>
+        {/* BIO */}
+        <div>
+          <label for="bio">Brief bio:</label>
+          <textarea
+            rows="4"
+            cols="50"
+            type="text"
+            placeholder="I like spicy food"
+            name="userName"
+            onChange={(e) =>
+              setUserInput({ ...userInput, bio: e.target.value })
+            }
+          ></textarea>
+          {errorMessage === "problem with server" && (
+            <ErrorMessage>There was an error, please try again</ErrorMessage>
+          )}
+        </div>
+        {/* SUBMIT BUTTON */}
+        <ButtonContainer>
+          <ButtonUpload
+            onClick={(e) => handleSubmit(e)}
+            disabled={disableSubmit ? "disabled" : ""}
+            wait={waitingMessage}
+            success={successMessage}
+            fail={errorMessage}
+          >
+            <h1>Sign up</h1>
+          </ButtonUpload>
+        </ButtonContainer>
+      </form>
+    </Container>
   );
 };
+const ErrorMessage = styled.p`
+  font-size: 1rem;
+  color: red;
+  margin-top: 20px;
+  margin-bottom: 0;
+  padding: 0;
+  /* position: absolute; */
+`;
+const ButtonContainer = styled.div`
+  max-width: 200px;
+  margin: 0 auto;
+  & h1 {
+    font-size: 1.5rem;
+  }
+`;
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100%;
-  /* width: 100%; */
-  justify-content: center;
+  height: 100vh;
+  width: 100vw;
   align-items: center;
   text-align: center;
-  /* background-color: lightblue; */
-
   div {
-    /* border: 2px solid red; */
     padding: 20px;
     display: flex;
     flex-direction: column;
+    position: relative;
   }
   label {
     margin-bottom: 0.5rem;
   }
+  form {
+    border: none;
+    width: 100%;
+  }
   input,
   textarea {
-    /* margin-top: 0.5rem; */
+    max-width: 80%;
+    margin: 0 auto;
     border: none;
     padding: 5px;
     font-size: 1.2rem;

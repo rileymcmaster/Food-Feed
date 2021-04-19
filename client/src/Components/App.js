@@ -12,6 +12,7 @@ import SignIn from "./SignIn";
 import Header from "./Header";
 import RecipeForm from "./CreateRecipeForm";
 import UserPage from "./UserPage";
+import ErrorPage from "./ErrorPage";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -42,10 +43,10 @@ const App = () => {
           <Route exact path="/recipe/create">
             <RecipeForm />
           </Route>
-          <Route path="/recipe/:_id">
+          <Route exact path="/recipe/:_id">
             <RecipePage />
           </Route>
-          <Route path="/user/:_id">
+          <Route exact path="/user/:_id">
             <UserPage />
           </Route>
           <Route exact path="/signup">
@@ -53,6 +54,9 @@ const App = () => {
           </Route>
           <Route exact path="/signin">
             <SignIn />
+          </Route>
+          <Route path="/">
+            <ErrorPage />
           </Route>
         </Switch>
       </Router>

@@ -49,7 +49,7 @@ const GridPage = () => {
   ) : items ? (
     <>
       <Container>
-        <Title>RECIPES</Title>
+        <Title>The FEED</Title>
         <div style={{ marginTop: "1em" }}>
           <GenerateGrid items={items} />
         </div>

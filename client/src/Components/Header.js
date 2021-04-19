@@ -127,7 +127,8 @@ const growDown = keyframes`
   opacity: 0%;
 }
 80% {
-  transform: scaleY(1.1);
+  /* causes ghost pixels */
+  /* transform: scaleY(1.1); */
   opacity: 100%;
 }
 100%{
@@ -141,7 +142,6 @@ const Container = styled.div`
   display: flex;
   flex-direction: row;
   padding: 20px;
-  /* width: 100vw; */
   z-index: 9;
 `;
 // contains the icon and the menu
@@ -149,6 +149,8 @@ const UserMenu = styled.div`
   position: relative;
   display: inline-block;
   width: auto;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.05);
+  outline: 1px solid transparent;
 `;
 // profile pic icon
 const ImageContainer = styled.div`

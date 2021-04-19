@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams, Link, NavLink } from "react-router-dom";
+import { useParams, Link, useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import Wrapper from "./Wrapper";
@@ -22,18 +22,34 @@ const RecipePage = () => {
   const widthIngredients = useRef(0);
   //get the params to fetch the recipe
   const urlId = useParams()._id;
+  const history = useHistory();
 
   //FETCH RECIPE
   useEffect(() => {
     setFirstFetch(false);
     setLoading(true);
-    const fetchRecipe = async () => {
-      const recipeJson = await fetch(`/recipes/${urlId}`);
-      const recipeData = await recipeJson.json();
-      setCurrentRecipe(recipeData.data);
-      setFirstFetch(true);
-    };
-    fetchRecipe().catch((err) => console.log("error", err));
+    fetch(`/recipes/${urlId}`)
+      .then((res) => res.json())
+      .then(({ status, data, message }) => {
+        if (status === 200) {
+          setCurrentRecipe(data);
+        } else {
+          console.log("status", status);
+          console.log("error message: ", message);
+          history.push("/error");
+        }
+        console.log("status", status);
+      })
+      .then(() => setFirstFetch(true))
+      .catch((err) => console.log("error getting recipe", err));
+
+    // const fetchRecipe = async () => {
+    //   const recipeJson = await fetch(`/recipes/${urlId}`);
+    //   const recipeData = await recipeJson.json();
+    //   setCurrentRecipe(recipeData.data);
+    //   setFirstFetch(true);
+    // };
+    // fetchRecipe().catch((err) => console.log("error", err));
   }, [urlId]);
   //FETCH AUTHOR
   useEffect(() => {

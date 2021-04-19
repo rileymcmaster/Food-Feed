@@ -165,12 +165,17 @@ const StyledLink = styled(Link)`
 
 const ImageContainer = styled.div`
   overflow: hidden;
+  display: block;
+  text-align: center;
   /* display: flex; */
+  width: calc(100%);
+  height: calc(90%);
   max-width: 300px;
   max-height: 300px;
   padding: 10px;
 `;
 const Thumbnail = styled.img`
+  margin: auto 0;
   width: 100%;
   height: auto;
 `;

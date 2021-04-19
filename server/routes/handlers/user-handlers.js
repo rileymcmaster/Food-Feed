@@ -53,7 +53,6 @@ const createUserAccount = async (req, res) => {
 //LOG IN////
 //////////////
 const userSignIn = async (req, res) => {
-  console.log("req", req.body);
   const userEmail = { email: req.body.email };
   try {
     const findUser = await User.findOne(userEmail);
@@ -123,14 +122,13 @@ const deleteUserAccount = async (req, res) => {
 };
 
 const getUserProfile = async (req, res) => {
-  const findOneUser = await User.findOne({ _id: req.params._id });
   try {
-    // console.log("findOne", findOneUser);
+    const findOneUser = await User.findOne({ _id: req.params._id });
     if (findOneUser) {
       res.status(200).json({ status: 200, data: findOneUser });
     }
   } catch (error) {
-    console.log("error", error);
+    console.log("Error getting user profile", error);
     res.status(400).json({ status: 400, message: "No user found" });
   }
 };

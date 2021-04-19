@@ -37,15 +37,9 @@ const getAllRecipes = async (req, res) => {
     console.log("error", error);
     res.status(404).json({ status: 404, message: "Error" });
   }
-  // await mongoose.connection.close();
-  console.log("disconnected from server");
 };
 
 const getOneRecipe = async (req, res) => {
-  // console.log("req params", req.params);
-  // CONNECT TO SERVER
-  const client = await mongoose.connect(MONGO_URI, options);
-  console.log("connected to server");
   try {
     const findOneRecipe = await Recipe.findOne({ _id: req.params._id });
     if (findOneRecipe) {
@@ -55,14 +49,9 @@ const getOneRecipe = async (req, res) => {
     console.log("error get one recipe", error);
     res.status(400).json({ status: 400, message: "no recipe found" });
   }
-  // await mongoose.disconnect();
-  console.log("disconnected from server");
 };
 
 const createRecipe = async (req, res) => {
-  // CONNECT TO SERVER
-  const client = await mongoose.connect(MONGO_URI, options);
-  console.log("connected to server");
   // send to mongo
   Recipe.create({
     recipeName: req.body.recipeName,
@@ -84,14 +73,9 @@ const createRecipe = async (req, res) => {
       console.log("error", err);
       res.status(404).json({ status: 404, message: "Problem with server" });
     });
-  // mongoose.disconnect();
-  // console.log("disconnected from server");
 };
 
 const editRecipe = async (req, res) => {
-  // CONNECT TO SERVER
-  const client = await mongoose.connect(MONGO_URI, options);
-  console.log("connected to server");
   //send to mongo
   Recipe.create({
     recipeName: req.body.recipeName,
@@ -113,14 +97,9 @@ const editRecipe = async (req, res) => {
       console.log("error", err);
       res.status(404).json({ status: 404, message: "Problem with server" });
     });
-  // mongoose.disconnect();
-  // console.log("disconnected from server");
 };
 
 const updateRecipeVariation = async (req, res) => {
-  // CONNECT TO SERVER
-  const client = await mongoose.connect(MONGO_URI, options);
-  console.log("connected to server");
   //update requires two parameters, _id to match and the value that is changing
   const query = { _id: req.body._id };
   const updateVariations = { $set: { variations: req.body.variations } };
@@ -139,15 +118,11 @@ const updateRecipeVariation = async (req, res) => {
   } catch (error) {
     console.log("Error udpating recipe variation", error);
   }
-  // mongoose.disconnect();
-  // console.log("disconnected from server");
 };
 
 const deleteRecipe = async (req, res) => {
-  // console.log("req.body", req.body);
   try {
     const deleteRecipe = await Recipe.deleteOne({ _id: req.body._id });
-    // console.log("delete", deleteRecipe);
     if (deleteRecipe) {
       console.log("Recipe deleted");
       res.status(204).json({ status: 204, message: "Recipe deleted" });
@@ -160,14 +135,9 @@ const deleteRecipe = async (req, res) => {
   }
 };
 
-const likeRecipe = async (req, res) => {
-  // CONNECT TO SERVER
-};
+const likeRecipe = async (req, res) => {};
 //USER PAGE
 const getMultipleRecipes = async (req, res) => {
-  // CONNECT TO SERVER
-  const client = await mongoose.connect(MONGO_URI, options);
-  console.log("connected to server");
   try {
     const findRecipes = await Recipe.find({ createdBy: req.params._id });
     // console.log("all", allRecipes);
@@ -178,16 +148,11 @@ const getMultipleRecipes = async (req, res) => {
     console.log("error", error);
     res.status(404).json({ status: 404, message: "Error" });
   }
-  // mongoose.disconnect();
-  // console.log("disconnected from server");
 };
 
 //deactive user account deletes their recipes.
 //find recipes created by the userId and delete them
 const deleteRecipeByUserId = async (req, res) => {
-  // CONNECT TO SERVER
-  const client = await mongoose.connect(MONGO_URI, options);
-  console.log("connected to server");
   try {
     const result = await Recipe.deleteMany({ createdBy: req.params._id });
     if (result) {
@@ -197,8 +162,6 @@ const deleteRecipeByUserId = async (req, res) => {
     console.log("error deleting recipes by userId", error);
     res.status(400).json({ status: 400, message: "Error deleting recipes" });
   }
-  // mongoose.disconnect();
-  // console.log("disconnected from server");
 };
 
 module.exports = {

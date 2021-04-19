@@ -2,21 +2,22 @@ import { createGlobalStyle } from "styled-components";
 
 export default createGlobalStyle`
   :root {
-      --primary-color: #5bb462;
-      --secondary-color: #111820;
-      --accent-bg-color: #D7ECEF;
+      --primary-color: #EFAA52;
+      --secondary-color: #B5CD7A;
+      --accent-bg-color: #56A3A6;
       --page-horizontal-padding: 20px;
       --page-vertical-padding: 50px;
       --recipe-page-padding: 50px;
       --header-height: 50px;
       --max-content-width: 1200px;
       font-size: 16px;
+ 
       /* --heading-font-family: 'Rubik', sans-serif; */
       --user-img-width: 120px;
       --user-img-margin: 5px;
       --nav-width: 250px;
       --page-height: 100vh;
-      --recipe-box-shadow: 10px 10px 0 5px black, 0 0 5px 1px rgba(0, 0, 0, 0.5);
+      --recipe-box-shadow: 10px 10px 0 5px black, 0 0 5px 0px rgba(0, 0, 0, 0.3);
       
     }
     *,
@@ -26,7 +27,8 @@ export default createGlobalStyle`
         -webkit-font-smoothing: antialiased;
         font-family: Arial, Helvetica, sans-serif; 
         font-size: 16px;
-
+        -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
     }
 
     html, body, div,

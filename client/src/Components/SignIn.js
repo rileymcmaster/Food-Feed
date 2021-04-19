@@ -4,6 +4,8 @@ import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { signIn } from "./actions";
 import styled from "styled-components";
+import Button from "./Button";
+import ButtonUpload from "./ButtonUpload";
 
 const SignIn = () => {
   const history = useHistory();
@@ -13,14 +15,16 @@ const SignIn = () => {
   //SIGN IN FIELDS
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [waitingMessage, setWaitingMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const dispatch = useDispatch();
 
   //SUBMIT
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("starting sign in");
+    setWaitingMessage("waiting");
     fetch("/user/signin", {
       method: "POST",
       body: JSON.stringify({ email, password }),
@@ -36,8 +40,14 @@ const SignIn = () => {
         if (status == 200) {
           window.localStorage.setItem("_id", JSON.stringify(data._id));
           dispatch(signIn(data));
-          history.push("/recipes");
+          setWaitingMessage("");
+          setSuccessMessage("Success!");
+          //delay to redirect to the feed page
+          setTimeout(() => {
+            history.push("/recipes");
+          }, 2000);
         } else {
+          setWaitingMessage("");
           console.log("message", message);
           setErrorMessage(message);
         }
@@ -48,6 +58,11 @@ const SignIn = () => {
       });
   };
 
+  // let pushToFeed = setTimeout(() => {
+  // history.push("/recipes");
+  // }, 50000);
+  // DELAY PUSH TO FEED
+
   //error messages
   // "User has been deactivated"
   // "No user found"
@@ -55,55 +70,85 @@ const SignIn = () => {
 
   //RENDERED
   return (
-    <Wrapper>
-      <Container>
-        <h1>Sign in</h1>
-        <form>
-          {/* EMAIL */}
-          <div>
-            <label for="email">Email:</label>
-            <input
-              autoFocus
-              type="email"
-              placeholder="ex. steamedhams@auroraborealis.org"
-              name="email"
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div>
-            {/* PASSWORD */}
-            <label for="password">Password:</label>
-            <input
-              type="password"
-              placeholder="Enter password"
-              name="password"
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <div>
-            {errorMessage && <h1>{errorMessage}</h1>}
-            <button type="button" onClick={handleSubmit}>
-              Login
-            </button>
-          </div>
-        </form>
-      </Container>
-    </Wrapper>
+    // <Wrapper>
+    <Container>
+      <form>
+        {/* EMAIL */}
+        <div>
+          <label for="email">Email:</label>
+          <input
+            onFocus={() => {
+              setErrorMessage("");
+              setWaitingMessage("");
+            }}
+            size="40"
+            autoFocus
+            type="email"
+            placeholder="ex. steamedhams@auroraborealis.org"
+            name="email"
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div>
+          {/* PASSWORD */}
+          <label for="password">Password:</label>
+          <input
+            onFocus={() => {
+              setErrorMessage("");
+              setWaitingMessage("");
+            }}
+            size="40"
+            type="password"
+            placeholder="Enter password"
+            name="password"
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+        <div>
+          {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+          <ButtonContainer>
+            <ButtonUpload
+              onClick={handleSubmit}
+              wait={waitingMessage}
+              success={successMessage}
+              fail={errorMessage}
+            >
+              <h1>Sign in</h1>
+            </ButtonUpload>
+          </ButtonContainer>
+        </div>
+      </form>
+    </Container>
+    // {/* </Wrapper> */}
   );
 };
+
+const ErrorMessage = styled.p`
+  font-size: 1rem;
+  color: red;
+  margin-top: 20px;
+  margin-bottom: 0;
+  padding: 0;
+  /* position: absolute; */
+`;
+const ButtonContainer = styled.div`
+  max-width: 200px;
+  margin: 0 auto;
+  & h1 {
+    font-size: 1.7rem;
+  }
+`;
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100%;
-  /* width: 100%; */
+  height: 100vh;
+  width: 100vw;
   justify-content: center;
   align-items: center;
   text-align: center;
-  /* background-color: lightblue; */
 
   div {
-    /* border: 2px solid red; */
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -111,9 +156,13 @@ const Container = styled.div`
   label {
     margin-bottom: 0.5rem;
   }
+  form {
+    width: 100%;
+  }
   & input,
   textarea {
-    /* margin-top: 0.5rem; */
+    max-width: 80%;
+    margin: 0 auto;
     border: none;
     padding: 5px;
     font-size: 1.2rem;
@@ -123,9 +172,6 @@ const Container = styled.div`
     vertical-align: center;
   }
 
-  /* textarea {
-    resize: none;
-  } */
   & input:focus-within {
     outline: 2px solid blue;
   }
@@ -137,6 +183,11 @@ const Container = styled.div`
   }
   &input:valid {
     background-color: white;
+  }
+  & button {
+    background-color: transparent;
+    border: none;
+    outline: none;
   }
 `;
 

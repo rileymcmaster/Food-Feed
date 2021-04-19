@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import styled from "styled-components";
 import Wrapper from "./Wrapper";
+import Button from "./Button";
 
 const HomePage = () => {
   const history = useHistory();
@@ -23,15 +24,23 @@ const HomePage = () => {
         <Container>
           <Title>FOOD FEED</Title>
           <Card>
-            <StyledLink to={"/signin"}>Sign in</StyledLink>
-            or
-            <StyledLink to={"/signup"}>Sign up</StyledLink>
+            <StyledLink to={"/signup"}>
+              <Button>Sign up</Button>
+            </StyledLink>
+            <SignIn>
+              Already a member? <StyledLink to={"/signin"}>Sign in</StyledLink>
+            </SignIn>
           </Card>
         </Container>
       </Wrapper>
     </>
   );
 };
+const SignIn = styled.div`
+  margin-top: 50px;
+  font-size: 1.5rem;
+`;
+
 const Card = styled.div`
   display: flex;
   flex-direction: column;
@@ -42,23 +51,10 @@ const Card = styled.div`
 `;
 const StyledLink = styled(Link)`
   text-decoration: none;
-
-  padding: 10px;
-  font-size: 2rem;
-  background-color: lightblue;
-  color: white;
-  width: 150px;
-  height: 60px;
-  border: 5px white outset;
-  box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  vertical-align: center;
-  &:hover {
-    border: 5px white inset;
-    font-size: 95%;
+  :last-child {
+    text-decoration: underline;
   }
-
-  /* align-self: flex-start; */
+  font-size: 1.5rem;
 `;
 const Container = styled.div`
   display: flex;
@@ -73,13 +69,13 @@ const Container = styled.div`
 `;
 
 const Title = styled.div`
-  font-size: 2rem;
+  font-size: 3rem;
   /* margin: auto; */
 
   border: 2px solid black;
   padding: 20px;
   text-align: center;
-  box-shadow: 2px 2px 0 black, 4px 4px 5px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--recipe-box-shadow);
 `;
 
 export default HomePage;

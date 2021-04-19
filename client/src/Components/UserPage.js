@@ -15,29 +15,41 @@ const UserPage = () => {
   const [loggedInUser, setLoggedInUser] = useState(false);
   const [deleteUserWarning, setDeleteUserWarning] = useState(false);
   const [loading, setLoading] = useState(false);
-  // utils
+
   const urlId = useParams()._id;
   const dispatch = useDispatch();
   const history = useHistory();
 
+  //FIND USER
   useEffect(() => {
     setLoading(true);
-    //FIND USER
     fetch(`/user/${urlId}`)
       .then((res) => res.json())
-      .then((data) => setCurrentUserProfile(data.data))
+      .then(({ status, data, message }) => {
+        console.log("status", status);
+        if (status === 200) {
+          setCurrentUserProfile(data);
+        } else {
+          console.log("status ", status);
+          console.log("error messsage: ", message);
+          history.push("/error");
+        }
+      })
       .catch((err) => {
         console.log("error getting user", err.stack);
       });
-    //FIND THEIR RECIPES
+  }, [urlId]);
+
+  // FIND THE USER's RECIPES
+  useEffect(() => {
     fetch(`/recipes/user/${urlId}`)
       .then((res) => res.json())
       .then((data) => setCurrentUserRecipes(data.data))
       .catch((err) => console.log("error getting recipes", err));
     setLoading(false);
-  }, [urlId]);
+  }, [currentUserProfile]);
 
-  //is it the logged in user's profile T/F
+  //logged in user's profile?
   useEffect(() => {
     if (currentUserProfile && user && user._id === currentUserProfile._id) {
       setLoggedInUser(true);
@@ -46,9 +58,6 @@ const UserPage = () => {
 
   //DELETE ACCOUNT
   const handleDeleteAccount = () => {
-    //update state like a log out
-    //change is deleted to true on account
-
     if (loggedInUser) {
       //set deactive: true in user db
       fetch(`/user/delete`, {

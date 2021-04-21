@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import GenerateGrid from "./GenerateGrid";
-import Wrapper from "./Wrapper";
-import Loading from "./Loading";
+import Wrapper from "../Wrapper";
+import Loading from "../Loading";
 
 const GridPage = () => {
   //USER STATE
@@ -50,21 +50,36 @@ const GridPage = () => {
     <>
       <Container>
         <Title>The FEED</Title>
-        <div style={{ marginTop: "1em" }}>
+        <GridContainer>
+          {/* <div style={{ marginTop: "1em" }}> */}
           <GenerateGrid items={items} />
-        </div>
+          {/* </div> */}
+        </GridContainer>
       </Container>
     </>
   ) : (
     <></>
   );
 };
+
+const GridContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  flex-grow: 1;
+  width: 80%;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem auto;
+`;
 const Container = styled.div`
-  /* margin-top: 2em; */
   padding: 1em;
+  width: 100vw;
+  /* overflow-x: hidden; */
 `;
 const Title = styled.h1`
   text-align: center;
+  margin-top: 2rem;
 `;
 
 export default GridPage;

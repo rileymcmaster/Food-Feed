@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import styled from "styled-components";
 import Wrapper from "./Wrapper";
-import Button from "./Button";
+import Button from "./Buttons/Button";
 
 const HomePage = () => {
   const history = useHistory();

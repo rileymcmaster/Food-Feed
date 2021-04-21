@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import Wrapper from "./Wrapper";
 import styled from "styled-components";
-import Button from "./Button";
-import ButtonUpload from "./ButtonUpload";
+import Button from "./Buttons/Button";
+import ButtonUpload from "./Buttons/ButtonUpload";
 
 const SignUp = () => {
   //states all for the form
@@ -30,7 +30,7 @@ const SignUp = () => {
   }
 
   //UPLOAD IMAGE
-  const [avatarImage, setAvatarImage] = useState({});
+  const [avatarImage, setAvatarImage] = useState();
   const [imageUploading, setImageUploading] = useState("");
   const [imageUploadComplete, setImageUploadComplete] = useState("");
   const [imageUploadFailed, setImageUploadFailed] = useState("");
@@ -40,6 +40,10 @@ const SignUp = () => {
   };
 
   const sendImage = (ev) => {
+    if (!avatarImage) {
+      return setImageUploadFailed("No image");
+    }
+    setImageUploadFailed("");
     setImageUploading("Upload in progress");
     const data = new FormData();
     data.append("file", avatarImage);
@@ -57,6 +61,7 @@ const SignUp = () => {
         setImageUploadComplete("Upload complete");
       })
       .catch((err) => {
+        setImageUploading("");
         setImageUploadFailed("Upload failed");
         console.log("error uploading", err);
       });

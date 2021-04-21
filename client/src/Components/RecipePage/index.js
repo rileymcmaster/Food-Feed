@@ -2,12 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, Link, useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
-import Wrapper from "./Wrapper";
-import AddSubstractButton from "./AddSubtractButton";
+import Wrapper from "../Wrapper";
+import AddSubstractButton from "../Buttons/AddSubtractButton";
 import { TiPencil } from "react-icons/ti";
 import { ImCheckmark2 } from "react-icons/im";
-import AddStep from "./AddStep";
-import Loading from "./Loading";
+import AddStep from "../Buttons/AddStep";
+import Loading from "../Loading";
+import IngredientsPopOut from "./IngredientsPopOut";
 
 const RecipePage = () => {
   //LOGGED IN USER
@@ -38,18 +39,9 @@ const RecipePage = () => {
           console.log("error message: ", message);
           history.push("/error");
         }
-        console.log("status", status);
       })
       .then(() => setFirstFetch(true))
       .catch((err) => console.log("error getting recipe", err));
-
-    // const fetchRecipe = async () => {
-    //   const recipeJson = await fetch(`/recipes/${urlId}`);
-    //   const recipeData = await recipeJson.json();
-    //   setCurrentRecipe(recipeData.data);
-    //   setFirstFetch(true);
-    // };
-    // fetchRecipe().catch((err) => console.log("error", err));
   }, [urlId]);
   //FETCH AUTHOR
   useEffect(() => {
@@ -95,19 +87,23 @@ const RecipePage = () => {
   const updateIngredients = (e, index) => {
     const currentRecipeCopy = { ...currentRecipe };
     //update the corresponding ingredient in DIRECTIONS
-    currentRecipeCopy.directions.filter((direction, i) => {
-      direction.ingredients.filter((ingredient, idx) => {
-        //if the ingredient listed matches the one that is being edited then it will update it
-        if (
-          ingredient.ingredient ===
-          currentRecipeCopy.ingredients[index].ingredient
-        ) {
-          return (direction.ingredients[idx] = {
-            ingredient: e.target.value,
-          });
-        }
-      });
-    });
+    let filterDirections = currentRecipeCopy.directions.filter(
+      (direction, i) => {
+        let filterIngredients = direction.ingredients.filter(
+          (ingredient, idx) => {
+            //if the ingredient listed matches the one that is being edited then it will update it
+            if (
+              ingredient.ingredient ===
+              currentRecipeCopy.ingredients[index].ingredient
+            ) {
+              return (direction.ingredients[idx] = {
+                ingredient: e.target.value,
+              });
+            }
+          }
+        );
+      }
+    );
     currentRecipeCopy.ingredients[index] = { ingredient: e.target.value };
     setCurrentRecipe(currentRecipeCopy);
   };
@@ -194,7 +190,7 @@ const RecipePage = () => {
   useEffect(() => {
     const currentRecipeCopy = { ...currentRecipe };
     if (editedRecipeObject) {
-      currentRecipeCopy.variations.push({
+      currentRecipeCopy.variations.unshift({
         variationId: editedRecipeObject._id,
         variationTitle: editedRecipeObject.recipeName,
       });
@@ -229,7 +225,7 @@ const RecipePage = () => {
   }, [editedRecipeObject]);
 
   // HANDLE CHECKBOXES of ingredients on direction page
-  const updateDirectionsIngredients = (e, directionIndex) => {
+  const updateDirectionsIngredientsLink = (e, directionIndex) => {
     let currentRecipeCopy = { ...currentRecipe };
     const index = currentRecipeCopy.directions[
       directionIndex
@@ -245,6 +241,11 @@ const RecipePage = () => {
       ];
     }
     setCurrentRecipe(currentRecipeCopy);
+  };
+
+  const REupdateDirectionIngredient = (e, directionIndex) => {
+    let currentRecipeCopy = { ...currentRecipe };
+    console.log("E", e.target.value);
   };
 
   return currentRecipe && !loading && author ? (
@@ -347,6 +348,7 @@ const RecipePage = () => {
                   <input
                     //TO DO MAKE THE WIDTH MATCH THE SIZE OF THE CONTAINER
                     // size={widthIngredients.current.offsetWidth / 15}
+                    size="25"
                     disabled={!toggleEdit}
                     type="text"
                     value={ingredient.ingredient}
@@ -376,7 +378,7 @@ const RecipePage = () => {
               <SubHeader>Step {directionIndex + 1}</SubHeader>
               <DirectionCard>
                 <textarea
-                  rows={direction.direction.length / 60}
+                  rows={direction.direction.length / 25}
                   cols="50"
                   disabled={!toggleEdit}
                   onFocus={(e) => e.currentTarget.select()}
@@ -392,7 +394,29 @@ const RecipePage = () => {
               </DirectionCard>
               {/* ingredients */}
               <IngredientCard>
-                {direction.ingredients.map((ingredient, ingredientIndex) => {
+                {/* <h1>Ingredients</h1> */}
+
+                <IngredientsPopOut
+                  key={"ingredients-" + directionIndex}
+                  direction={direction}
+                  directionIndex={directionIndex}
+                  ingredients={direction.ingredients}
+                  toggleEdit={toggleEdit}
+                  currentRecipe={currentRecipe}
+                  setCurrentRecipe={setCurrentRecipe}
+                  // updateDirectionIngredient={(e) =>
+                  //   REupdateDirectionIngredient(e, directionIndex)
+                  // }
+                  updatePageDirections={(e) =>
+                    updateDirectionsIngredientsLink(e, directionIndex)
+                  }
+                  //  view checkboxes
+                  // update checkboxes
+                  // toggle edit
+                />
+
+                {/* THIS WORKS VV */}
+                {/* {direction.ingredients.map((ingredient, ingredientIndex) => {
                   return (
                     <>
                       <IngredientLine>
@@ -413,18 +437,9 @@ const RecipePage = () => {
                       </IngredientLine>
                     </>
                   );
-                })}
+                })} */}
+                {/* THIS WORKS /\ /\ */}
                 {/* CHECKBOXES TO LINK INGREDIENTS TO DIRECTION */}
-                {toggleEdit && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setToggleIngredientCheckboxes(!toggleIngredientCheckboxes)
-                    }
-                  >
-                    Link ingredients
-                  </button>
-                )}
                 {currentRecipe.ingredients.map(
                   (ingredient, ingredientIndex) => {
                     let checkedIndex = currentRecipe.directions[
@@ -449,7 +464,10 @@ const RecipePage = () => {
                                 .ingredient
                             }
                             onChange={(e) => {
-                              updateDirectionsIngredients(e, directionIndex);
+                              updateDirectionsIngredientsLink(
+                                e,
+                                directionIndex
+                              );
                             }}
                           />
                           {ingredient.ingredient}
@@ -505,12 +523,14 @@ const RecipePage = () => {
 };
 const EditRecipeIcon = styled.div`
   color: ${(props) => (props.toggleEdit ? "white" : "black")};
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+  opacity: ${(props) => (props.toggleEdit ? ".8" : ".2")};
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
   border-radius: 50%;
   padding: 5px;
-  background-color: ${(props) => (props.toggleEdit ? "green" : "white")};
-
+  background-color: ${(props) =>
+    props.toggleEdit ? "green" : "rgba(255, 255, 255, 0.2)"};
   :hover {
+    opacity: 0.8;
     background-color: ${(props) => (props.toggleEdit ? "green" : "white")};
     color: ${(props) => (props.toggleEdit ? "white" : "black")};
   }
@@ -518,22 +538,17 @@ const EditRecipeIcon = styled.div`
     transform: scale(0.9);
   }
   :focus {
+    opacity: 0.8;
     background-color: ${(props) => (props.toggleEdit ? "green" : "white")};
     color: ${(props) => (props.toggleEdit ? "white" : "black")};
-
     box-shadow: 0 0 10px green, 0 0 0 5px green;
   }
 `;
 const EditButtonContainer = styled.div`
   position: fixed;
-  /* width: 100vw; */
   padding: 10px 20px;
   bottom: 2%;
-
   z-index: 9999;
-  /* display: flex; */
-  /* flex-direction: row; */
-  /* justify-content: space-between; */
 `;
 
 const VariationLink = styled(Link)`
@@ -545,10 +560,8 @@ const VariationLink = styled(Link)`
   margin-top: 20px;
   margin: 5px auto;
   padding: 20px;
-  /* width: 100px; */
   border-radius: 10px;
   &:hover {
-    /* border: 1px solid inset white; */
     text-shadow: 0 0 5px white;
     box-shadow: 0 0 0 2px white;
   }
@@ -562,7 +575,6 @@ const VariationCard = styled.div`
   position: absolute;
   display: flex;
   flex-direction: column;
-  /* align-items: flex-start; */
   justify-content: flex-start;
   background-color: rgba(0, 0, 0, 1);
   width: 80%;
@@ -577,15 +589,22 @@ const VariationButton = styled.button`
   text-shadow: 0px 0px 2px rgba(255, 255, 255, 0.8),
     2px 2px 5px rgba(255, 255, 255, 0.5);
 `;
-
+const DirectionsPage = styled.div`
+  position: relative;
+  padding: 20px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+`;
 const DirectionCard = styled.div`
   position: relative;
-  font-size: 2rem;
   margin-top: 2rem;
+  margin-right: 10px;
   box-shadow: var(--recipe-box-shadow);
   textarea {
     padding: 20px;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     box-sizing: border-box;
     width: 100%;
     height: 100%;
@@ -600,22 +619,18 @@ const DirectionCard = styled.div`
 `;
 //ingredients in each direction
 const IngredientCard = styled.div`
-  font-size: 1rem;
-  position: absolute;
-  .ingredient-card {
-    font-size: 0.8rem;
-  }
-  top: 10%;
-`;
-
-const DirectionsPage = styled.div`
-  position: relative;
-  padding: var(--recipe-page-padding);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  height: 100%;
+  font-size: 1rem;
+  position: absolute;
+  bottom: 20%;
+  background-color: white;
+  width: 80%;
+
+  .ingredient-card {
+    font-size: 0.8rem;
+  }
 `;
 
 const IngredientLine = styled.div`
@@ -626,6 +641,7 @@ const IngredientLine = styled.div`
 const IngredientList = styled.div`
   margin-top: 2rem;
   display: flex;
+  overflow-y: scroll;
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
@@ -633,7 +649,8 @@ const IngredientList = styled.div`
 `;
 
 const IngredientsPage = styled.div`
-  padding: var(--recipe-page-padding);
+  padding: 20px;
+  /* padding: var(--recipe-page-padding); */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -665,18 +682,15 @@ const UserLink = styled(Link)`
     background-color: black;
     box-shadow: 0 0 4px 2px white inset, 0 0 2px black;
   }
-  /* text-decoration: none; */
 `;
 const RecipeImage = styled.img`
   height: 100%;
   width: auto;
   position: absolute;
   z-index: -10;
-  /* border: 2px solid red; */
 `;
 
 const Title = styled.div`
-  /* margin: auto 0; */
   overflow: hidden;
   display: flex;
   justify-content: center;
@@ -684,14 +698,12 @@ const Title = styled.div`
 `;
 const TitlePage = styled.div`
   height: 100%;
-  /* border: 2px solid red; */
   overflow: hidden;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
-  /* padding: 10%; */
 
   input.title {
     border: none;
@@ -701,24 +713,18 @@ const TitlePage = styled.div`
     caret-color: blue;
     font-size: 2rem;
     padding: 0 1rem;
-
-    /* padding: 50px 0px; */
     font-weight: bold;
     background-color: rgba(255, 255, 255, 0.5);
     text-shadow: 0px 0px 2px rgba(255, 255, 255, 0.8),
       2px 2px 5px rgba(255, 255, 255, 0.5);
-    /* font-size: 1rem; */
   }
 
   & input:disabled.title {
-    /* background-color: white; */
     color: black;
     opacity: 1;
   }
   input:focus-within.title {
-    /* border: none; */
     border: 5px solid blue;
-    /* box-shadow: 0 0 10px 10px blue; */
   }
   input:focus.title {
     outline: 20px solid blue;
@@ -726,7 +732,6 @@ const TitlePage = styled.div`
   }
 
   input:invalid.title {
-    /* background-color: red; */
     outline: 2px solid red;
     box-shadow: 0 0 5px red;
   }
@@ -737,7 +742,7 @@ const Container = styled.section`
   flex-direction: column;
   align-items: center;
   height: 100vh;
-  scroll-snap-align: center;
+  scroll-snap-align: start;
   scroll-snap-stop: always;
   overflow: hidden;
   z-index: 0;

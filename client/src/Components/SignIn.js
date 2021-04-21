@@ -1,11 +1,9 @@
 import React, { useState } from "react";
-import Wrapper from "./Wrapper";
 import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { signIn } from "./actions";
 import styled from "styled-components";
-import Button from "./Button";
-import ButtonUpload from "./ButtonUpload";
+import ButtonUpload from "./Buttons/ButtonUpload";
 
 const SignIn = () => {
   const history = useHistory();
@@ -37,7 +35,7 @@ const SignIn = () => {
       .then(({ status, data, message }) => {
         console.log("status", status);
         console.log("data", data);
-        if (status == 200) {
+        if (status === 200) {
           window.localStorage.setItem("_id", JSON.stringify(data._id));
           dispatch(signIn(data));
           setWaitingMessage("");

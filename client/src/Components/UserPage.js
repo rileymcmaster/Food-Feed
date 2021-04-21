@@ -4,7 +4,8 @@ import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
 import { signOut } from "./actions";
-import GenerateGrid from "./GenerateGrid";
+import GenerateGrid from "./Grid/GenerateGrid";
+import { BsGearWideConnected } from "react-icons/bs";
 
 const UserPage = () => {
   //LOGGED IN USER
@@ -15,6 +16,7 @@ const UserPage = () => {
   const [loggedInUser, setLoggedInUser] = useState(false);
   const [deleteUserWarning, setDeleteUserWarning] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [toggleMenu, setToggleMenu] = useState(false);
 
   const urlId = useParams()._id;
   const dispatch = useDispatch();
@@ -23,21 +25,25 @@ const UserPage = () => {
   //FIND USER
   useEffect(() => {
     setLoading(true);
-    fetch(`/user/${urlId}`)
-      .then((res) => res.json())
-      .then(({ status, data, message }) => {
-        console.log("status", status);
-        if (status === 200) {
-          setCurrentUserProfile(data);
-        } else {
-          console.log("status ", status);
-          console.log("error messsage: ", message);
-          history.push("/error");
-        }
-      })
-      .catch((err) => {
-        console.log("error getting user", err.stack);
-      });
+    // the fetch relies checks if it is the signed in user's account
+    // the delay prevents the page from loading twice
+    const delayFetch = setTimeout(() => {
+      fetch(`/user/${urlId}`)
+        .then((res) => res.json())
+        .then(({ status, data, message }) => {
+          if (status === 200) {
+            setCurrentUserProfile(data);
+          } else {
+            console.log("status ", status);
+            console.log("error messsage: ", message);
+            history.push("/error");
+          }
+        })
+        .catch((err) => {
+          console.log("error getting user", err.stack);
+        });
+    }, 500);
+    return () => clearTimeout(delayFetch);
   }, [urlId]);
 
   // FIND THE USER's RECIPES
@@ -102,13 +108,20 @@ const UserPage = () => {
           <h2>@{currentUserProfile.handle}</h2>
           {loggedInUser && (
             <>
-              <h2>This is you</h2>{" "}
-              <button
-                type="button"
-                onClick={() => setDeleteUserWarning(!deleteUserWarning)}
-              >
-                Delete account
-              </button>
+              <h2>This is you</h2>
+              {/* OPTIONS */}
+              <OptionIcon onClick={() => setToggleMenu(!toggleMenu)}>
+                <BsGearWideConnected size={40} />
+              </OptionIcon>
+              {/* DELETE ACCOUNT */}
+              {toggleMenu && (
+                <button
+                  type="button"
+                  onClick={() => setDeleteUserWarning(!deleteUserWarning)}
+                >
+                  Delete account
+                </button>
+              )}
               {deleteUserWarning ? (
                 <DeleteAccountPopup>
                   <h1>All of your recipes will be deleted</h1>
@@ -134,15 +147,22 @@ const UserPage = () => {
         <Bio>
           <p>I like spicy food and crunchy chips</p>
         </Bio>
-        <GenerateGrid
-          loading={loading}
-          setLoading={setLoading}
-          items={currentUserRecipes.reverse()}
-        />
+        <GridContainer>
+          <GenerateGrid
+            loading={loading}
+            setLoading={setLoading}
+            items={currentUserRecipes}
+          />
+        </GridContainer>
       </Container>
     )
   );
 };
+const OptionIcon = styled.div``;
+
+const GridContainer = styled.div`
+  margin-bottom: 100px;
+`;
 const DeleteAccountButton = styled.button`
   z-index: 99999999999999;
   padding: 5px;
@@ -150,9 +170,6 @@ const DeleteAccountButton = styled.button`
   width: 150px;
 `;
 const DeleteAccountPopup = styled.div`
-  /* width: 100vw; */
-  /* height: 100vh; */
-  /* overflow: hidden; */
   padding: 1rem;
   background-color: rgba(0, 0, 0, 1);
   position: absolute;
@@ -161,16 +178,13 @@ const DeleteAccountPopup = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 2rem;
-
+  box-shadow: 0 0 0 100vh rgba(0, 0, 0, 0.8);
+  z-index: 999999;
+  font-size: 3rem;
   h1 {
     color: white;
     z-index: 9999999;
   }
-  box-shadow: 0 0 0 100vh rgba(0, 0, 0, 0.8);
-
-  /* margin: auto; */
-  z-index: 999999;
-  font-size: 3rem;
 `;
 
 const Bio = styled.div`
@@ -201,8 +215,7 @@ const ProfileImageContainer = styled.div`
 `;
 const HeadCard = styled.div`
   padding: 2rem 1rem;
-
-  width: 100vw;
+  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -222,6 +235,7 @@ const HeadCard = styled.div`
 const Container = styled.div`
   width: 100vw;
   height: 100vh;
+  padding: 20px 40px;
   overflow-y: scroll;
   overflow-x: hidden;
   margin: auto;

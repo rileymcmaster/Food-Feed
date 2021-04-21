@@ -1,27 +1,24 @@
 import React from "react";
-import Loading from "./Loading";
 import styled, { keyframes } from "styled-components";
 import { VscLoading } from "react-icons/vsc";
 
 const ButtonUpload = ({ children, disabled, onClick, wait, fail, success }) => {
-  console.log("wait", wait);
-  console.log("success", success);
   return wait ? (
-    <ButtonStyle onClick={onClick} className={disabled}>
+    <ButtonStyle tabIndex="0" onClick={onClick} className={disabled}>
       <Icon>
         <VscLoading size={30} />
       </Icon>
     </ButtonStyle>
   ) : success ? (
-    <ButtonStyle onClick={onClick} className="complete">
+    <ButtonStyle tabIndex="0" onClick={onClick} className="complete">
       {success}
     </ButtonStyle>
   ) : fail ? (
-    <ButtonStyle onClick={onClick} className={disabled}>
+    <ButtonStyle tabIndex="0" onClick={onClick} className={disabled}>
       {fail}
     </ButtonStyle>
   ) : (
-    <ButtonStyle onClick={onClick} className={disabled}>
+    <ButtonStyle tabIndex="0" onClick={onClick} className={disabled}>
       {children}
     </ButtonStyle>
   );
@@ -59,9 +56,7 @@ const ButtonStyle = styled.div`
   }
   :active {
     background-color: var(--primary-color);
-    /* color: var(--primary-color); */
     transition: none;
-    /* box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.5) inset; */
     box-shadow: 0 0 0 4px inset var(--primary-color), 0 0 0 8px inset white;
     opacity: 0.9;
   }
@@ -69,8 +64,6 @@ const ButtonStyle = styled.div`
     pointer-events: none;
     user-select: none;
     opacity: 0.5;
-    /* box-shadow: 0 0 0 50px/ rgba(0, 0, 0, 0) inset, 0 0 0 2px rgba(0, 0, 0, 0.5); */
-    /* color: rgba(0,0,0,); */
   }
 `;
 
@@ -84,6 +77,9 @@ to {
 `;
 
 const Icon = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 0;
   height: 100%;
   animation: ${rotate} 1s ease-in-out infinite;

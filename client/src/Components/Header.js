@@ -93,8 +93,12 @@ const Header = () => {
       ) : (
         // NO USER SIGNED IN
         <>
-          <UserMenu onMouseLeave={() => setToggleMenu(false)}>
+          <UserMenu
+            onMouseLeave={() => setToggleMenu(false)}
+            onFocus={() => setToggleMenu(true)}
+          >
             <IconContainer
+              tabIndex="1"
               onClick={() => setToggleMenu(!toggleMenu)}
               onMouseEnter={() => setToggleMenu(true)}
             >
@@ -120,26 +124,12 @@ const Header = () => {
     </Container>
   );
 };
-// animate dropdown
-const growDown = keyframes`
-0% {
-  transform: scaleY(0);
-  opacity: 0%;
-}
-80% {
-  /* causes ghost pixels */
-  /* transform: scaleY(1.1); */
-  opacity: 100%;
-}
-100%{
-  transform: scaleY(1)
-}
-`;
 
 // main div
 const Container = styled.div`
   position: fixed;
   display: flex;
+  /* right: 0; */
   flex-direction: row;
   padding: 20px;
   z-index: 9;
@@ -161,13 +151,28 @@ const ImageContainer = styled.div`
   box-shadow: 0 0 0 5px black;
   background-color: black;
   overflow: hidden;
-  z-index: 99;
+  z-index: 999999;
   img {
     width: 100%;
     height: auto;
   }
 `;
 // DROP DOWN
+// animate dropdown
+const growDown = keyframes`
+0% {
+  transform: scaleY(0);
+  opacity: 0%;
+}
+80% {
+  /* causes ghost pixels */
+  /* transform: scaleY(1.1); */
+  opacity: 100%;
+}
+100%{
+  transform: scaleY(1)
+}
+`;
 const UserDropdown = styled.div`
   position: absolute;
   display: flex;
@@ -175,12 +180,8 @@ const UserDropdown = styled.div`
   font-size: 2rem;
   background-color: white;
   animation: ${growDown} 300ms ease-in-out forwards;
-
   transform-origin: top center;
-
   width: 250px;
-  /* height: ${(props) => (props.toggleMenu ? "auto" : "0")}; */
-
   padding: 10px;
   box-shadow: var(--recipe-box-shadow);
 `;
@@ -192,7 +193,6 @@ const MenuLink = styled(Link)`
   height: 50px;
   padding: 15px 5px;
   font-weight: bold;
-  /* vertical-align: center; */
   :hover {
     background-color: black;
     color: white;

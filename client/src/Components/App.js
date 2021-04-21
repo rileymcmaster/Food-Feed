@@ -5,12 +5,12 @@ import { signIn } from "./actions";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import HomePage from "./HomePage";
 import GlobalStyles from "../GlobalStyles";
-import GridPage from "./GridPage";
-import RecipePage from "./RecipePage";
+import GridPage from "./Grid/GridPage";
+import RecipePage from "./RecipePage/index.js";
 import SignUp from "./SignUp";
 import SignIn from "./SignIn";
 import Header from "./Header";
-import RecipeForm from "./CreateRecipeForm";
+import RecipeForm from "./CreateRecipe";
 import UserPage from "./UserPage";
 import ErrorPage from "./ErrorPage";
 

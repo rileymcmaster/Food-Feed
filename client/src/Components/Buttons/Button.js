@@ -1,10 +1,9 @@
 import React from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
 
 const Button = ({ children, disabled, onClick }) => {
   return (
-    <ButtonStyle onClick={onClick} className={disabled}>
+    <ButtonStyle tabIndex="0" onClick={onClick} className={disabled}>
       {children}
     </ButtonStyle>
   );
@@ -13,7 +12,6 @@ export default Button;
 
 const ButtonStyle = styled.div`
   user-select: none;
-  /* display: block; */
   outline: none;
   border: none;
   font-size: 2rem;
@@ -38,9 +36,7 @@ const ButtonStyle = styled.div`
   }
   :active {
     background-color: var(--primary-color);
-    /* color: var(--primary-color); */
     transition: none;
-    /* box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.5) inset; */
     box-shadow: 0 0 0 4px inset var(--primary-color), 0 0 0 8px inset white;
     opacity: 0.9;
   }
@@ -48,7 +44,5 @@ const ButtonStyle = styled.div`
     pointer-events: none;
     user-select: none;
     opacity: 0.5;
-    /* box-shadow: 0 0 0 50px/ rgba(0, 0, 0, 0) inset, 0 0 0 2px rgba(0, 0, 0, 0.5); */
-    /* color: rgba(0,0,0,); */
   }
 `;

@@ -11,8 +11,6 @@ export default createGlobalStyle`
       --header-height: 50px;
       --max-content-width: 1200px;
       font-size: 16px;
- 
-      /* --heading-font-family: 'Rubik', sans-serif; */
       --user-img-width: 120px;
       --user-img-margin: 5px;
       --nav-width: 250px;
@@ -29,6 +27,7 @@ export default createGlobalStyle`
         font-size: 16px;
         -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
     }
 
     html, body, div,

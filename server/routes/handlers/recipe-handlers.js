@@ -13,7 +13,7 @@ const options = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 };
-
+// FETCH ALL
 const getAllRecipes = async (req, res) => {
   try {
     // FILTER for privacy settings
@@ -52,6 +52,14 @@ const getOneRecipe = async (req, res) => {
 };
 
 const createRecipe = async (req, res) => {
+  // set default image
+  let imageUrl;
+  if (!req.body.recipeImageUrl) {
+    imageUrl =
+      "https://res.cloudinary.com/bodyofwater/image/upload/v1618879534/how-to-buy-a-used-car_xk5gof.jpg";
+  } else {
+    imageUrl = req.body.recipeImageUrl;
+  }
   // send to mongo
   Recipe.create({
     recipeName: req.body.recipeName,
@@ -61,7 +69,7 @@ const createRecipe = async (req, res) => {
     createdBy: req.body.createdBy,
     variations: [],
     isPrivate: req.body.isPrivate,
-    recipeImageUrl: req.body.recipeImageUrl,
+    recipeImageUrl: imageUrl,
     originalRecipe: "",
   })
     .then((data) => {
@@ -117,6 +125,26 @@ const updateRecipeVariation = async (req, res) => {
     }
   } catch (error) {
     console.log("Error udpating recipe variation", error);
+    res.status(500).json({ status: 500, message: "Error updating recipe" });
+  }
+};
+
+const updateRecipePrivacy = async (req, res) => {
+  const query = { _id: req.body._id };
+  const updatePrivacy = { $set: { isPrivate: req.body.isPrivate } };
+
+  try {
+    const result = await Recipe.updateOne(query, updatePrivacy);
+    if (result) {
+      console.log("update recipe privacy", result);
+      res.status(200).json({ status: 200, message: "recipe privacy updated" });
+    } else {
+      console.log("error in updating privacy");
+      res.status(400).json({ status: 400, message: "no recipe found" });
+    }
+  } catch (error) {
+    console.log("error updating recipe", err);
+    res.status(500).json({ status: 500, message: "Error updating privacy" });
   }
 };
 
@@ -136,11 +164,11 @@ const deleteRecipe = async (req, res) => {
 };
 
 const likeRecipe = async (req, res) => {};
+
 //USER PAGE
 const getMultipleRecipes = async (req, res) => {
   try {
     const findRecipes = await Recipe.find({ createdBy: req.params._id });
-    // console.log("all", allRecipes);
     if (findRecipes) {
       res.status(200).json({ status: 200, data: findRecipes });
     }
@@ -174,4 +202,5 @@ module.exports = {
   updateRecipeVariation,
   getMultipleRecipes,
   deleteRecipeByUserId,
+  updateRecipePrivacy,
 };

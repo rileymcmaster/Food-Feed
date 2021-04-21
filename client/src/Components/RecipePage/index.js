@@ -9,6 +9,10 @@ import { ImCheckmark2 } from "react-icons/im";
 import AddStep from "../Buttons/AddStep";
 import Loading from "../Loading";
 import IngredientsPopOut from "./IngredientsPopOut";
+import IngredientsPage from "./IngredientsPage";
+import { CgPlayListAdd } from "react-icons/cg";
+import { IoIosCloseCircle } from "react-icons/io";
+import { BsFillTrashFill } from "react-icons/bs";
 
 const RecipePage = () => {
   //LOGGED IN USER
@@ -20,6 +24,7 @@ const RecipePage = () => {
   const [author, setAuthor] = useState(null);
   const [originalVariations, setOriginalVariations] = useState(null);
   const [showVariations, setShowVariations] = useState(false);
+  const [removePagePrompt, setRemovePagePrompt] = useState(false);
   const widthIngredients = useRef(0);
   //get the params to fetch the recipe
   const urlId = useParams()._id;
@@ -79,32 +84,6 @@ const RecipePage = () => {
   const updateTitle = (e) => {
     const currentRecipeCopy = { ...currentRecipe };
     currentRecipeCopy.recipeName = e.target.value;
-    setCurrentRecipe(currentRecipeCopy);
-  };
-  //
-  //bug if two ingredients are the same
-  //UPDATE INGREDIENTS
-  const updateIngredients = (e, index) => {
-    const currentRecipeCopy = { ...currentRecipe };
-    //update the corresponding ingredient in DIRECTIONS
-    let filterDirections = currentRecipeCopy.directions.filter(
-      (direction, i) => {
-        let filterIngredients = direction.ingredients.filter(
-          (ingredient, idx) => {
-            //if the ingredient listed matches the one that is being edited then it will update it
-            if (
-              ingredient.ingredient ===
-              currentRecipeCopy.ingredients[index].ingredient
-            ) {
-              return (direction.ingredients[idx] = {
-                ingredient: e.target.value,
-              });
-            }
-          }
-        );
-      }
-    );
-    currentRecipeCopy.ingredients[index] = { ingredient: e.target.value };
     setCurrentRecipe(currentRecipeCopy);
   };
   //
@@ -243,11 +222,6 @@ const RecipePage = () => {
     setCurrentRecipe(currentRecipeCopy);
   };
 
-  const REupdateDirectionIngredient = (e, directionIndex) => {
-    let currentRecipeCopy = { ...currentRecipe };
-    console.log("E", e.target.value);
-  };
-
   return currentRecipe && !loading && author ? (
     <PageWrapper>
       {/* TITLEPAGE */}
@@ -338,35 +312,14 @@ const RecipePage = () => {
       {/* END TITLE PAGE */}
       {/*  */}
       {/* INGREDIENTS PAGE */}
-      <Container>
-        <IngredientsPage>
-          <SubHeader>Ingredients:</SubHeader>
-          <IngredientList ref={widthIngredients}>
-            {currentRecipe.ingredients.map((ingredient, index) => {
-              return (
-                <IngredientLine>
-                  <input
-                    //TO DO MAKE THE WIDTH MATCH THE SIZE OF THE CONTAINER
-                    // size={widthIngredients.current.offsetWidth / 15}
-                    size="25"
-                    disabled={!toggleEdit}
-                    type="text"
-                    value={ingredient.ingredient}
-                    onFocus={(e) => e.currentTarget.select()}
-                    onChange={(e) => updateIngredients(e, index)}
-                  ></input>
-                </IngredientLine>
-              );
-            })}
-          </IngredientList>
-          {toggleEdit && (
-            <AddSubstractButton
-              state={currentRecipe}
-              setState={setCurrentRecipe}
-              modifier={"newIngredient"}
-            />
-          )}
-        </IngredientsPage>
+      <Container style={{ maxWidth: "1000px" }}>
+        {/* <div style={{ maxWidth: "1000px" }}> */}
+        <IngredientsPage
+          currentRecipe={currentRecipe}
+          setCurrentRecipe={setCurrentRecipe}
+          toggleEdit={toggleEdit}
+        />
+        {/* </div> */}
       </Container>
       {/*  */}
       {/* DIRECTION PAGES */}
@@ -385,17 +338,56 @@ const RecipePage = () => {
                   value={direction.direction}
                   onChange={(e) => updateDirections(e, directionIndex)}
                 ></textarea>
-                {/* ADD A PAGE TO RECIPE - after current page */}
-                <AddStep
-                  currentRecipe={currentRecipe}
-                  setCurrentRecipe={setCurrentRecipe}
-                  directionIndex={directionIndex}
-                />
+                {toggleEdit && (
+                  <>
+                    {/* ADD A PAGE TO RECIPE - after current page */}
+                    <AddStep
+                      modifier={"add-page"}
+                      currentRecipe={currentRecipe}
+                      setCurrentRecipe={setCurrentRecipe}
+                      directionIndex={directionIndex}
+                    >
+                      <AddPageButton>
+                        <CgPlayListAdd size={30} />
+                      </AddPageButton>
+                    </AddStep>
+                    {/* // REMOVE THIS PAGE */}
+                    {!removePagePrompt ? (
+                      <RemovePageButton
+                        onClick={() => setRemovePagePrompt(true)}
+                      >
+                        <IoIosCloseCircle size={25} />
+                      </RemovePageButton>
+                    ) : removePagePrompt ? (
+                      <>
+                        {/* CONFIRMED - remove page */}
+                        <AddStep
+                          modifier={"remove-page"}
+                          currentRecipe={currentRecipe}
+                          setCurrentRecipe={setCurrentRecipe}
+                          directionIndex={directionIndex}
+                          onClick={() => setRemovePagePrompt(false)}
+                        >
+                          <RemovePageButton style={{ right: "80px" }}>
+                            <BsFillTrashFill size={25} />
+                          </RemovePageButton>
+                        </AddStep>
+                        {/* cancel */}
+                        <RemovePageButton
+                          onClick={() => setRemovePagePrompt(false)}
+                        >
+                          <IoIosCloseCircle size={25} />{" "}
+                        </RemovePageButton>
+                        <DeleteMessage>delete this page?</DeleteMessage>
+                      </>
+                    ) : (
+                      <></>
+                    )}
+                  </>
+                )}
               </DirectionCard>
-              {/* ingredients */}
+              {/* ingredients for each direction page*/}
               <IngredientCard>
-                {/* <h1>Ingredients</h1> */}
-
                 <IngredientsPopOut
                   key={"ingredients-" + directionIndex}
                   direction={direction}
@@ -404,78 +396,10 @@ const RecipePage = () => {
                   toggleEdit={toggleEdit}
                   currentRecipe={currentRecipe}
                   setCurrentRecipe={setCurrentRecipe}
-                  // updateDirectionIngredient={(e) =>
-                  //   REupdateDirectionIngredient(e, directionIndex)
-                  // }
                   updatePageDirections={(e) =>
                     updateDirectionsIngredientsLink(e, directionIndex)
                   }
-                  //  view checkboxes
-                  // update checkboxes
-                  // toggle edit
                 />
-
-                {/* THIS WORKS VV */}
-                {/* {direction.ingredients.map((ingredient, ingredientIndex) => {
-                  return (
-                    <>
-                      <IngredientLine>
-                        <input
-                          class="ingredient-card"
-                          disabled={!toggleEdit}
-                          type="text"
-                          size={ingredient.ingredient.length}
-                          value={ingredient.ingredient}
-                          onChange={(e) =>
-                            updateDirectionIngredient(
-                              e,
-                              ingredientIndex,
-                              directionIndex
-                            )
-                          }
-                        ></input>
-                      </IngredientLine>
-                    </>
-                  );
-                })} */}
-                {/* THIS WORKS /\ /\ */}
-                {/* CHECKBOXES TO LINK INGREDIENTS TO DIRECTION */}
-                {currentRecipe.ingredients.map(
-                  (ingredient, ingredientIndex) => {
-                    let checkedIndex = currentRecipe.directions[
-                      directionIndex
-                    ].ingredients.findIndex(
-                      (ing) => ing.ingredient === ingredient.ingredient
-                    );
-                    return (
-                      toggleEdit &&
-                      toggleIngredientCheckboxes && (
-                        <label
-                          for={directionIndex + "-" + ingredient.ingredient}
-                        >
-                          <input
-                            checked={checkedIndex >= 0}
-                            type="checkbox"
-                            name="ingredient"
-                            id={directionIndex + "-" + ingredient.ingredient}
-                            name={ingredientIndex + "-" + ingredient.ingredient}
-                            value={
-                              currentRecipe.ingredients[ingredientIndex]
-                                .ingredient
-                            }
-                            onChange={(e) => {
-                              updateDirectionsIngredientsLink(
-                                e,
-                                directionIndex
-                              );
-                            }}
-                          />
-                          {ingredient.ingredient}
-                        </label>
-                      )
-                    );
-                  }
-                )}
               </IngredientCard>
             </DirectionsPage>
           </Container>
@@ -521,6 +445,56 @@ const RecipePage = () => {
     </Wrapper>
   );
 };
+const DeleteMessage = styled.div`
+  padding: 5px;
+  background-color: red;
+  color: white;
+  position: absolute;
+  top: 2rem;
+  right: 0;
+`;
+const RemovePageButton = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+  align-items: flex-end;
+  position: absolute;
+  right: 0;
+  top: 0px;
+  /* padding: 2px; */
+  border-radius: 50%;
+  :hover,
+  :focus {
+    color: red;
+  }
+  :active {
+    background-color: white;
+    color: red;
+    box-shadow: 0 0 0 4px red;
+  }
+`;
+
+const AddPageButton = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  right: 0;
+  bottom: 0px;
+  padding: 2px;
+  :hover,
+  :focus {
+    background-color: black;
+    color: white;
+  }
+  :active {
+    background-color: white;
+    color: black;
+    box-shadow: 1px 1px 0 4px black;
+  }
+`;
+
 const EditRecipeIcon = styled.div`
   color: ${(props) => (props.toggleEdit ? "white" : "black")};
   opacity: ${(props) => (props.toggleEdit ? ".8" : ".2")};
@@ -624,7 +598,7 @@ const IngredientCard = styled.div`
   align-items: center;
   font-size: 1rem;
   position: absolute;
-  bottom: 20%;
+  bottom: 3rem;
   background-color: white;
   width: 80%;
 
@@ -639,22 +613,20 @@ const IngredientLine = styled.div`
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 `;
 const IngredientList = styled.div`
-  margin-top: 2rem;
   display: flex;
-  overflow-y: scroll;
   flex-direction: column;
-  align-items: flex-start;
   width: 100%;
+  margin-top: 2rem;
+  overflow-y: auto;
   box-shadow: var(--recipe-box-shadow);
 `;
 
-const IngredientsPage = styled.div`
+const IngredientsPageContainer = styled.div`
   padding: 20px;
-  /* padding: var(--recipe-page-padding); */
+
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   width: 100%;
   height: 100%;
 `;
@@ -737,15 +709,6 @@ const TitlePage = styled.div`
   }
 `;
 const Container = styled.section`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100vh;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-  overflow: hidden;
-  z-index: 0;
   background: rgb(238, 238, 238);
   background: linear-gradient(
     0deg,
@@ -754,6 +717,18 @@ const Container = styled.section`
     rgba(255, 255, 255, 0) 84%,
     rgba(238, 238, 238, 1) 100%
   );
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+
+  margin: 0 auto;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  overflow: hidden;
+  z-index: 0;
+
   input {
     background-color: transparent;
     font-size: 1rem;

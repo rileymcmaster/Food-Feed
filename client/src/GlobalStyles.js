@@ -37,12 +37,11 @@ export default createGlobalStyle`
     }
 
 html {
+    -webkit-overflow-scrolling: auto;
   scroll-behavior: smooth;
-  /* scroll-snap-type:  mandatory; */
   scroll-snap-type: y mandatory;
   -webkit-scroll-snap-type: mandatory;
 
-  
 }
 
 body {

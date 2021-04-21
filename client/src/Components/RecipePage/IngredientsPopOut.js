@@ -1,21 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { IoIosArrowDown } from "react-icons/io";
+import { FaLink } from "react-icons/fa";
 
 const IngredientsPopOut = ({
-  direction,
   ingredients,
   toggleEdit,
   currentRecipe,
   directionIndex,
   updatePageDirections,
-
   setCurrentRecipe,
 }) => {
   const [open, setOpen] = useState(false);
   const [viewCheckboxes, setViewCheckboxes] = useState(false);
-  // console.log("current recipe POPOUT", currentRecipe);
 
+  // EDIT AND UPDATE INGREDIENTS RIGHT IN THE POPUP WINDOW
   const updateDirectionIngredient = (e, ingredientIndex, directionIndex) => {
     const currentRecipeCopy = { ...currentRecipe };
     //update the ingredients array
@@ -53,25 +52,51 @@ const IngredientsPopOut = ({
     ] = { ingredient: e.target.value };
     setCurrentRecipe(currentRecipeCopy);
   };
+  //if not editing or have the window expanded then you can't see the checkboxes
+  useEffect(() => {
+    if (!open || !toggleEdit) {
+      setViewCheckboxes(false);
+    }
+  }, [open, toggleEdit]);
 
   return (
-    ingredients.length > 0 && (
+    // IF NO INGREDIENTS TO SHOW - default to show nothing
+    // IF NO ingredients but toggleEdit then show the chain icon and you can link ingredients
+    ingredients.length <= 0 && !toggleEdit && !open ? (
+      <></>
+    ) : ingredients.length <= 0 && toggleEdit && !open ? (
+      <ViewCheckboxesAlt>
+        <button
+          onClick={() => {
+            setViewCheckboxes(!viewCheckboxes);
+            setOpen(true);
+          }}
+          type="button"
+        >
+          <FaLink size={20} />
+        </button>
+      </ViewCheckboxesAlt>
+    ) : (
+      // SHOW INGREDIENTS
+      // Click anywhere on container to open it
       <Container onClick={() => !open && setOpen(true)} open={open}>
-        {/* view other menu with checkboxes */}
-        {toggleEdit && (
+        {/* BUTTON to view CHECKBOXES  */}
+        {toggleEdit && open && (
           <ViewCheckboxes>
             <button
               onClick={() => setViewCheckboxes(!viewCheckboxes)}
               type="button"
             >
-              8
+              <FaLink size={20} />
             </button>
           </ViewCheckboxes>
         )}
+        {/* Click on title line to close */}
         <Title onClick={() => setOpen(!open)}>Ingredients in this step:</Title>
         <IngredientCard viewCheckboxes={viewCheckboxes}>
           <IngredientList>
             {ingredients.map((ingredient, ingredientIndex) => {
+              //  RENDER ALL THE INGREDIENTS LINKED
               return (
                 <input
                   onChange={(e) =>
@@ -122,12 +147,52 @@ const IngredientsPopOut = ({
     )
   );
 };
+//contains everything
+const Container = styled.div`
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  opacity: 0.8;
+  transition: max-height 0.8s ease-in-out;
+  max-height: ${(props) => (props.open ? "400px" : "100px")};
+  background: ${(props) =>
+    props.open
+      ? ""
+      : "  linear-gradient(0deg, rgba(172,172,172,0.9920343137254902) 0%, rgba(255,255,255,0) 19%) "};
+  box-shadow: 0 -5px 5px 0px rgba(0, 0, 0, 0.3);
+`;
+// ICON TO VIEW CHECKBOXES
+const ViewCheckboxes = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  button {
+    display: flex;
+    justify-content: center;
+    padding: 5px;
+    outline: none;
+    background-color: black;
+    border-radius: 20px;
+    color: white;
+    :active {
+      background-color: white;
+      color: black;
+    }
+  }
+`;
+const ViewCheckboxesAlt = styled(ViewCheckboxes)`
+  right: 50%;
+  transform: translate(50%, -30px);
+`;
+// TITLE
+const Title = styled.div`
+  font-size: 1.1rem;
+  padding: 10px;
+`;
+// The card that holds both lists of ingredients
 const IngredientCard = styled.div`
-  /* position: absolute; */
-  /* border: 4px solid orange; */
   display: flex;
   flex-direction: row;
-  /* overflow-y: scroll; */
   overflow: hidden;
   height: 100%;
   width: 200%;
@@ -135,19 +200,16 @@ const IngredientCard = styled.div`
   transform: ${(props) =>
     props.viewCheckboxes ? "translateX(-50%)" : "translateX(0%)"};
 `;
-
+// The ingredients that are linked to the current step
 const IngredientList = styled.div`
-  /* position: relative; */
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
-  /* margin-left: auto; */
-  /* margin: 0 auto; */
-  /* padding: 0 10px; */
-  /* flex-grow: 1; */
+  padding-left: 0.5rem;
+  padding-bottom: 1rem;
 `;
-
+// checkboxes for all ingredients to be able to link them to the current step
 const IngredientCheckboxes = styled.div`
   width: 100%;
   height: ${(props) => (props.viewCheckboxes ? "100%" : "100px")};
@@ -155,19 +217,16 @@ const IngredientCheckboxes = styled.div`
   flex-direction: column;
   overflow-y: hidden;
 `;
-
-const ViewCheckboxes = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
-`;
+// expand/retract icon
 const Icon = styled.div`
   display: flex;
   position: absolute;
   bottom: 0;
   left: 50%;
-  padding: 5px;
-  /* border: 2px solid red; */
+  padding: 2px;
+  border: ${(props) =>
+    props.open ? "2px solid var(--primary-color)" : "none"};
+  background-color: white;
   border-radius: 50%;
   transition: transform 0.8s cubic-bezier(0.89, -0.01, 0.68, 0.93);
   transform: translate(-50%, -0%)
@@ -179,26 +238,4 @@ const Icon = styled.div`
   }
 `;
 
-const Container = styled.div`
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  max-height: ${(props) => (props.open ? "400px" : "100px")};
-  transition: max-height 0.8s ease-in-out;
-  opacity: 0.8;
-  background: ${(props) =>
-    props.open
-      ? ""
-      : "  linear-gradient(0deg, rgba(172,172,172,0.9920343137254902) 0%, rgba(255,255,255,0) 19%) "};
-
-  /* box-shadow: 10px 10px 0 5px var(--primary-color),
-    0 0 5px 0px rgba(0, 0, 0, 0.3); */
-
-  border: 2px solid var(--primary-color);
-`;
-
-const Title = styled.div`
-  font-size: 1.1rem;
-  padding: 10px;
-`;
 export default IngredientsPopOut;

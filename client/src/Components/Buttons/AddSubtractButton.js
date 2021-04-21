@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 //TODO GET ICONS AND STYLE THESE BUTTONS
 
-const AddSubstractButton = ({ state, setState, modifier, ingredientIndex }) => {
+const AddSubtractButton = ({ state, setState, modifier, ingredientIndex }) => {
   // CREATE FORM - ADD (ingredient/direction)
   if (modifier === "add") {
     return (
@@ -85,4 +85,4 @@ const AddSubstractButton = ({ state, setState, modifier, ingredientIndex }) => {
   //   }
 };
 
-export default AddSubstractButton;
+export default AddSubtractButton;

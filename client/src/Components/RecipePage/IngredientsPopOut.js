@@ -93,7 +93,7 @@ const IngredientsPopOut = ({
         )}
         {/* Click on title line to close */}
         <Title onClick={() => setOpen(!open)}>Ingredients in this step:</Title>
-        <IngredientCard viewCheckboxes={viewCheckboxes}>
+        <IngredientCard open={open} viewCheckboxes={viewCheckboxes}>
           <IngredientList>
             {ingredients.map((ingredient, ingredientIndex) => {
               //  RENDER ALL THE INGREDIENTS LINKED
@@ -114,6 +114,7 @@ const IngredientsPopOut = ({
               );
             })}
           </IngredientList>
+          {/* CHECKBOXES */}
           <IngredientCheckboxes viewCheckboxes={viewCheckboxes}>
             {currentRecipe.ingredients.map((ingredient, ingredientIndex) => {
               let checkedIndex = currentRecipe.directions[
@@ -124,11 +125,12 @@ const IngredientsPopOut = ({
               return (
                 <label for={directionIndex + "-" + ingredient.ingredient}>
                   <input
+                    disabled={!toggleEdit}
                     checked={checkedIndex >= 0}
                     type="checkbox"
                     name="ingredient"
-                    // id={directionIndex + "-" + ingredient.ingredient}
-                    name={ingredientIndex + "-" + ingredient.ingredient}
+                    id={directionIndex + "-" + ingredient.ingredient}
+                    name={directionIndex + "-" + ingredient.ingredient}
                     value={
                       currentRecipe.ingredients[ingredientIndex].ingredient
                     }
@@ -194,8 +196,8 @@ const IngredientCard = styled.div`
   display: flex;
   flex-direction: row;
   overflow: hidden;
-  height: 100%;
   width: 200%;
+  min-height: 200px;
   transition: transform 1s ease-in-out;
   transform: ${(props) =>
     props.viewCheckboxes ? "translateX(-50%)" : "translateX(0%)"};
@@ -212,7 +214,7 @@ const IngredientList = styled.div`
 // checkboxes for all ingredients to be able to link them to the current step
 const IngredientCheckboxes = styled.div`
   width: 100%;
-  height: ${(props) => (props.viewCheckboxes ? "100%" : "100px")};
+  min-height: ${(props) => (props.viewCheckboxes ? "200px" : "100px")};
   display: flex;
   flex-direction: column;
   overflow-y: hidden;

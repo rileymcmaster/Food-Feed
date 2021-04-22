@@ -31,7 +31,7 @@ router.patch("/update/", updateRecipeVariation);
 router.patch("/privacy", updateRecipePrivacy);
 
 //deleteRecipe
-router.delete("/delete/", deleteRecipe);
+router.patch("/delete/", deleteRecipe);
 
 //get recipe by author id
 router.get("/user/:_id", getMultipleRecipes);

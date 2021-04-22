@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
 import { signOut } from "./actions";
-import GenerateGrid from "./Grid/GenerateGrid";
+import GridEach from "./Grid/GridEach";
 import { BsGearWideConnected } from "react-icons/bs";
 
 const UserPage = () => {
@@ -50,7 +50,18 @@ const UserPage = () => {
   useEffect(() => {
     fetch(`/recipes/user/${urlId}`)
       .then((res) => res.json())
-      .then((data) => setCurrentUserRecipes(data.data))
+      .then((data) => {
+        // if you are viewing your own profile, you can see private recipes
+        if (user._id === urlId && user.isSignedIn) {
+          setCurrentUserRecipes(data.data);
+        } else {
+          // otherwise, filter private recipes
+          const filterPrivate = data.data.filter((recipe) => {
+            return !recipe.isPrivate;
+          });
+          setCurrentUserRecipes(filterPrivate);
+        }
+      })
       .catch((err) => console.log("error getting recipes", err));
     setLoading(false);
   }, [currentUserProfile]);
@@ -108,7 +119,6 @@ const UserPage = () => {
           <h2>@{currentUserProfile.handle}</h2>
           {loggedInUser && (
             <>
-              <h2>This is you</h2>
               {/* OPTIONS */}
               <OptionIcon onClick={() => setToggleMenu(!toggleMenu)}>
                 <BsGearWideConnected size={40} />
@@ -145,23 +155,40 @@ const UserPage = () => {
           )}
         </HeadCard>
         <Bio>
-          <p>I like spicy food and crunchy chips</p>
+          <p>{currentUserProfile.bio}</p>
         </Bio>
         <GridContainer>
-          <GenerateGrid
-            loading={loading}
-            setLoading={setLoading}
-            items={currentUserRecipes}
-          />
+          {currentUserRecipes.map((item) => {
+            return <GridEach item={item} />;
+          })}
         </GridContainer>
       </Container>
     )
   );
 };
-const OptionIcon = styled.div``;
+// Contains the whole page
+const Container = styled.div`
+  width: 100vw;
+  padding: 20px 40px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  margin: auto;
+  position: relative;
+`;
+
+const OptionIcon = styled.div`
+  margin-top: 10px;
+`;
 
 const GridContainer = styled.div`
-  margin-bottom: 100px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  flex-grow: 1;
+  width: 80%;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem auto 2rem auto;
 `;
 const DeleteAccountButton = styled.button`
   z-index: 99999999999999;
@@ -230,16 +257,6 @@ const HeadCard = styled.div`
     font-size: 1.5rem;
     color: grey;
   }
-`;
-
-const Container = styled.div`
-  width: 100vw;
-  height: 100vh;
-  padding: 20px 40px;
-  overflow-y: scroll;
-  overflow-x: hidden;
-  margin: auto;
-  position: relative;
 `;
 
 export default UserPage;

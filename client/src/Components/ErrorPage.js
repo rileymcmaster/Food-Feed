@@ -8,9 +8,6 @@ const ErrorPage = () => {
     <Container>
       <ErrorCard>
         <h1>This page can't be found.</h1>
-        {/* <StyledLink to={"/recipes"}>
-          <button>Go back home</button>
-        </StyledLink> */}
         <StyledLink tabIndex="-1" to={"/recipes"}>
           <Button>GO HOME</Button>
         </StyledLink>

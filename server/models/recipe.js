@@ -17,6 +17,8 @@ const schema = new Schema({
   ],
   //user can decide to make their recipe private.
   isPrivate: { type: Boolean },
+  // soft delete
+  isDeleted: { type: Boolean },
   //upload an image/
   recipeImageUrl: { type: String },
   //timestamp of when recipe is sent to the db

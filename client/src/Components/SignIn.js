@@ -9,7 +9,6 @@ const SignIn = () => {
   const history = useHistory();
   //SIGN IN STATE//
   const user = useSelector((state) => state.user);
-  // console.log("signIn user", user);
   //SIGN IN FIELDS
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
@@ -33,8 +32,6 @@ const SignIn = () => {
     })
       .then((res) => res.json())
       .then(({ status, data, message }) => {
-        console.log("status", status);
-        console.log("data", data);
         if (status === 200) {
           window.localStorage.setItem("_id", JSON.stringify(data._id));
           dispatch(signIn(data));
@@ -52,23 +49,11 @@ const SignIn = () => {
       })
       .catch((err) => {
         console.log("Error signing in", err);
-        //SET AN ERROR MESSAGE
       });
   };
 
-  // let pushToFeed = setTimeout(() => {
-  // history.push("/recipes");
-  // }, 50000);
-  // DELAY PUSH TO FEED
-
-  //error messages
-  // "User has been deactivated"
-  // "No user found"
-  // "Incorrect password"
-
   //RENDERED
   return (
-    // <Wrapper>
     <Container>
       <form>
         {/* EMAIL */}
@@ -117,7 +102,6 @@ const SignIn = () => {
         </div>
       </form>
     </Container>
-    // {/* </Wrapper> */}
   );
 };
 
@@ -127,7 +111,6 @@ const ErrorMessage = styled.p`
   margin-top: 20px;
   margin-bottom: 0;
   padding: 0;
-  /* position: absolute; */
 `;
 const ButtonContainer = styled.div`
   max-width: 200px;
@@ -169,13 +152,10 @@ const Container = styled.div`
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
     vertical-align: center;
   }
-
   & input:focus-within {
     outline: 2px solid blue;
   }
-
   & input:invalid {
-    /* background-color: red; */
     outline: 2px solid red;
     box-shadow: 0 0 5px red;
   }

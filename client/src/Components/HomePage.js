@@ -4,20 +4,22 @@ import { Link, useHistory } from "react-router-dom";
 import styled from "styled-components";
 import Wrapper from "./Wrapper";
 import Button from "./Buttons/Button";
+import Loading from "./Loading";
 
 const HomePage = () => {
   const history = useHistory();
   //USER STATE
   const user = useSelector((state) => state.user);
-  // console.log("user", user);
+
   useEffect(() => {
     if (user && user.isSignedIn) {
       history.push("/recipes");
     }
   }, [user]);
   return user && user.isSignedIn ? (
-    //TODO
-    <h1>redirecting</h1>
+    <Wrapper>
+      <Loading />
+    </Wrapper>
   ) : (
     <>
       <Wrapper>
@@ -36,6 +38,25 @@ const HomePage = () => {
     </>
   );
 };
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  position: relative;
+`;
+const Title = styled.div`
+  user-select: none;
+  font-size: 3rem;
+  border: 2px solid black;
+  padding: 20px;
+  text-align: center;
+  box-shadow: var(--recipe-box-shadow);
+`;
 const SignIn = styled.div`
   margin-top: 50px;
   font-size: 1.5rem;
@@ -55,27 +76,6 @@ const StyledLink = styled(Link)`
     text-decoration: underline;
   }
   font-size: 1.5rem;
-`;
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  position: relative;
-`;
-
-const Title = styled.div`
-  font-size: 3rem;
-  /* margin: auto; */
-
-  border: 2px solid black;
-  padding: 20px;
-  text-align: center;
-  box-shadow: var(--recipe-box-shadow);
 `;
 
 export default HomePage;

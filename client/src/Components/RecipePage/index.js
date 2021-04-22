@@ -2,14 +2,17 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, Link, useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
+// imported components
 import Wrapper from "../Wrapper";
-import AddSubstractButton from "../Buttons/AddSubtractButton";
-import { TiPencil } from "react-icons/ti";
-import { ImCheckmark2 } from "react-icons/im";
 import AddStep from "../Buttons/AddStep";
 import Loading from "../Loading";
-import IngredientsPopOut from "./IngredientsPopOut";
+import ButtonUpload from "../Buttons/ButtonUpload";
+import Button from "../Buttons/Button";
 import IngredientsPage from "./IngredientsPage";
+import IngredientsPopOut from "./IngredientsPopOut";
+// icons
+import { TiPencil } from "react-icons/ti";
+import { ImCheckmark2 } from "react-icons/im";
 import { CgPlayListAdd } from "react-icons/cg";
 import { IoIosCloseCircle } from "react-icons/io";
 import { BsFillTrashFill } from "react-icons/bs";
@@ -22,12 +25,18 @@ const RecipePage = () => {
   const [firstFetch, setFirstFetch] = useState(false);
   const [loading, setLoading] = useState(true);
   const [author, setAuthor] = useState(null);
-  const [originalVariations, setOriginalVariations] = useState(null);
+  const [originalVariations, setOriginalVariations] = useState([]);
   const [showVariations, setShowVariations] = useState(false);
   const [removePagePrompt, setRemovePagePrompt] = useState(false);
-  const widthIngredients = useRef(0);
+  const [editedRecipeObject, setEditedRecipeObject] = useState(null);
+  const [confirmSendRecipe, setConfirmSendRecipe] = useState(false);
+  const [sendingRecipe, setSendingRecipe] = useState("");
+  const [sendingRecipeComplete, setSendingRecipeComplete] = useState("");
+  const [sendingRecipeError, setSendingRecipeError] = useState("");
+
   //get the params to fetch the recipe
   const urlId = useParams()._id;
+  // refresh page when edited recipe is submitted
   const history = useHistory();
 
   //FETCH RECIPE
@@ -56,10 +65,12 @@ const RecipePage = () => {
         .then((data) => {
           setAuthor(data.data);
         });
-      if (!currentRecipe.isOriginal) {
+      if (currentRecipe.isOriginal) {
+        setOriginalVariations(currentRecipe.variations);
+      } else if (!currentRecipe.isOriginal) {
         fetch(`/recipes/${currentRecipe.originalRecipe}`)
           .then((res) => res.json())
-          .then((data) =>
+          .then((data) => {
             setOriginalVariations([
               {
                 isOriginal: true,
@@ -67,19 +78,16 @@ const RecipePage = () => {
                 variationTitle: data.data.recipeName,
               },
               ...data.data.variations,
-            ])
-          );
+            ]);
+          });
       }
       setLoading(false);
     }
   }, [firstFetch]);
 
-  //EDITING
+  //EDITING - anything on the page
   const [toggleEdit, setToggleEdit] = useState(false);
-  // toggle show/hide checkboxes of ingredients on direction page
-  const [toggleIngredientCheckboxes, setToggleIngredientCheckboxes] = useState(
-    false
-  );
+
   //UPDATE TITLE
   const updateTitle = (e) => {
     const currentRecipeCopy = { ...currentRecipe };
@@ -87,7 +95,6 @@ const RecipePage = () => {
     setCurrentRecipe(currentRecipeCopy);
   };
   //
-
   //UPDATE DIRECTIONS
   const updateDirections = (e, index) => {
     const currentRecipeCopy = { ...currentRecipe };
@@ -95,61 +102,21 @@ const RecipePage = () => {
     setCurrentRecipe(currentRecipeCopy);
   };
   //
-  //update ingredients from the direction page
-  const updateDirectionIngredient = (e, ingredientIndex, directionIndex) => {
-    const currentRecipeCopy = { ...currentRecipe };
-    //update the ingredients array
-    currentRecipeCopy.ingredients.filter((ingredient, index) => {
-      if (
-        ingredient.ingredient ===
-        currentRecipeCopy.directions[directionIndex].ingredients[
-          ingredientIndex
-        ].ingredient
-      ) {
-        return (currentRecipeCopy.ingredients[index] = {
-          ingredient: e.target.value,
-        });
-      }
-    });
-    //check if any other directions reference this ingredient
-    //filter through the directions array
-    currentRecipeCopy.directions.map((direction, i) => {
-      //filter through the ingredients array inside the directions
-      direction.ingredients.filter((ingredient, idx) => {
-        //if the ingredient listed matches the one that is being edited then it will update it
-        if (
-          ingredient.ingredient ===
-          currentRecipeCopy.directions[directionIndex].ingredients[
-            ingredientIndex
-          ].ingredient
-        ) {
-          direction.ingredients[idx] = { ingredient: e.target.value };
-        }
-      });
-    });
-    //change the value that is being edited
-    currentRecipeCopy.directions[directionIndex].ingredients[
-      ingredientIndex
-    ] = { ingredient: e.target.value };
-    setCurrentRecipe(currentRecipeCopy);
-  };
 
-  //SEND EDIT TO SERVER
-  const [editedRecipeObject, setEditedRecipeObject] = useState(null);
+  //SEND THE EDITED RECIPE TO SERVER
   const handleSubmitChanges = () => {
+    setSendingRecipe("sending");
     const currentRecipeCopy = {
       ...currentRecipe,
       createdBy: user._id,
       isOriginal: false,
       date: "",
-      originalRecipe: "",
     };
     //keep the link to original recipe
     if (currentRecipe.isOriginal) {
       currentRecipeCopy.originalRecipe = currentRecipe._id;
-    } else {
-      currentRecipeCopy.originalRecipe = currentRecipe.originalRecipe;
     }
+    console.log("COPY", currentRecipeCopy);
     fetch(`/recipes/create/edit`, {
       method: "POST",
       body: JSON.stringify(currentRecipeCopy),
@@ -159,35 +126,32 @@ const RecipePage = () => {
       },
     })
       .then((res) => res.json())
-      .then((data) => {
-        console.log("updated recipe data");
-        setEditedRecipeObject(data.data);
-        setAuthor(user);
+      .then(({ status, data }) => {
+        if (status === 200) {
+          setEditedRecipeObject(data);
+          setSendingRecipe("");
+          setSendingRecipeComplete("Recipe created!");
+          // setCurrentRecipe(data);
+          // const timer = setTimeout(() => {
+          //   history.push(`/recipe/${data._id}`);
+          setConfirmSendRecipe(false);
+          // }, 3000);
+          // return () => clearTimeout(timer);
+        } else {
+          setSendingRecipe("");
+          setSendingRecipeError("Error, try again");
+        }
+      })
+
+      .catch((err) => {
+        console.log("Error uploading recipe", err);
+        setSendingRecipe("");
+        setSendingRecipeError("Error, try again");
       });
   };
-  // update the original recipe and user in the database with the new edited recipe
+  // update the user's recipe array with the new edited recipe
   useEffect(() => {
-    const currentRecipeCopy = { ...currentRecipe };
     if (editedRecipeObject) {
-      currentRecipeCopy.variations.unshift({
-        variationId: editedRecipeObject._id,
-        variationTitle: editedRecipeObject.recipeName,
-      });
-      //UPDATE ORIGINAL RECIPE *Variations* array
-      fetch(`/recipes/update/`, {
-        method: "PATCH",
-        body: JSON.stringify(currentRecipeCopy),
-        headers: {
-          Accept: "application/json",
-          "Content-type": "application/json",
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log("added to variant array");
-          setCurrentRecipe(editedRecipeObject);
-        })
-        .catch((err) => console.log("error", err));
       // UPDATE USER'S RECIPES ARRAY
       fetch(`/user/edit/recipe`, {
         method: "PATCH",
@@ -196,10 +160,7 @@ const RecipePage = () => {
           Accept: "application/json",
           "Content-type": "application/json",
         },
-      })
-        .then((res) => res.json())
-        .then((data) => console.log("updated user array", data))
-        .catch((err) => console.log("User's recipe array not updated", err));
+      }).catch((err) => console.log("User's recipe array not updated", err));
     }
   }, [editedRecipeObject]);
 
@@ -221,90 +182,52 @@ const RecipePage = () => {
     }
     setCurrentRecipe(currentRecipeCopy);
   };
-
+  // RENDERED ON THE PAGE
   return currentRecipe && !loading && author ? (
     <PageWrapper>
       {/* TITLEPAGE */}
-      <Container>
+      <Container confirmSendRecipe={confirmSendRecipe}>
         {/* TITLE */}
         <TitlePage>
-          <Title tabIndex="0">
-            <input
-              size={
-                currentRecipe.recipeName.length
-                  ? currentRecipe.recipeName.length
-                  : "1"
-              }
-              maxLength="20"
-              class="title"
-              type="text"
-              pattern="[A-Za-z0-9 ]+"
-              required
-              value={currentRecipe.recipeName}
-              onChange={(e) => updateTitle(e)}
-              disabled={!toggleEdit}
-            />
-          </Title>
-          {currentRecipe.isOriginal ? (
-            <>
-              <AuthorCard>
-                <h1>Original recipe by:</h1>
-                {/* LINK */}
-                <UserLink to={`/user/${author._id}`}>
-                  <h1>@{author.handle}</h1>
-                </UserLink>
-              </AuthorCard>
-              <VariationButton
-                tabIndex="0"
-                onClick={() => setShowVariations(!showVariations)}
-              >
-                VARIATIONS
-              </VariationButton>
-              {showVariations && (
-                <VariationCard>
-                  {currentRecipe.variations.map((variation) => {
-                    return (
-                      <VariationLink
-                        to={`/recipe/${variation.variationId}`}
-                        onClick={() => setShowVariations(false)}
-                      >
-                        {variation.variationTitle}
-                      </VariationLink>
-                    );
-                  })}
-                </VariationCard>
+          <Title>{currentRecipe.recipeName}</Title>
+          <>
+            {/* AUTHOR */}
+            <AuthorCard>
+              {currentRecipe.isOriginal ? (
+                <h2>Original recipe by:</h2>
+              ) : (
+                <h2>Recipe improved by:</h2>
               )}
-            </>
-          ) : (
-            <>
-              <AuthorCard>
-                <h1>Recipe improved by:</h1>
-                <UserLink to={`/user/${author._id}`}>
-                  <h1>@{author.handle}</h1>
-                </UserLink>
-              </AuthorCard>
-              <VariationButton
-                onClick={() => setShowVariations(!showVariations)}
-              >
-                VARIATIONS
-              </VariationButton>
-              {showVariations && (
-                <VariationCard>
-                  {originalVariations.map((variation) => {
-                    return (
-                      <VariationLink
-                        to={`/recipe/${variation.variationId}`}
-                        onClick={() => setShowVariations(false)}
-                      >
-                        {variation.variationTitle}
-                        {variation.isOriginal && " (original)"}
-                      </VariationLink>
-                    );
-                  })}
-                </VariationCard>
-              )}
-            </>
-          )}
+              {/* LINK */}
+              <UserLink to={`/user/${author._id}`}>
+                <h1>@{author.handle}</h1>
+              </UserLink>
+            </AuthorCard>
+            {/* VARIATIONS BUTTON */}
+            <VariationButton
+              tabIndex="0"
+              onClick={() => setShowVariations(!showVariations)}
+            >
+              VARIATIONS
+            </VariationButton>
+            {/* VARIATIONS POPUP */}
+            {originalVariations && showVariations && (
+              <VariationCard showVariations={showVariations}>
+                {originalVariations.map((variation) => {
+                  return (
+                    <VariationLink
+                      to={`/recipe/${variation.variationId}`}
+                      onClick={() => setShowVariations(false)}
+                    >
+                      {variation.variationTitle}
+                      {variation.isOriginal && " (original)"}
+                    </VariationLink>
+                  );
+                })}
+              </VariationCard>
+            )}
+          </>
+          {/* IMAGE */}
           <RecipeImage src={currentRecipe.recipeImageUrl} />
         </TitlePage>
         {/* IMAGE */}
@@ -312,23 +235,22 @@ const RecipePage = () => {
       {/* END TITLE PAGE */}
       {/*  */}
       {/* INGREDIENTS PAGE */}
-      <Container style={{ maxWidth: "1000px" }}>
-        {/* <div style={{ maxWidth: "1000px" }}> */}
+      <Container confirmSendRecipe={confirmSendRecipe}>
+        {/* TODO restrict the width of the ingredients */}
         <IngredientsPage
           currentRecipe={currentRecipe}
           setCurrentRecipe={setCurrentRecipe}
           toggleEdit={toggleEdit}
         />
-        {/* </div> */}
       </Container>
       {/*  */}
       {/* DIRECTION PAGES */}
       {/*  */}
       {currentRecipe.directions.map((direction, directionIndex) => {
         return (
-          <Container>
+          <Container confirmSendRecipe={confirmSendRecipe}>
             <DirectionsPage>
-              <SubHeader>Step {directionIndex + 1}</SubHeader>
+              <p>Step {directionIndex + 1}</p>
               <DirectionCard>
                 <textarea
                   rows={direction.direction.length / 25}
@@ -360,19 +282,21 @@ const RecipePage = () => {
                       </RemovePageButton>
                     ) : removePagePrompt ? (
                       <>
-                        {/* CONFIRMED - remove page */}
+                        {/* CONFIRM - remove page */}
                         <AddStep
                           modifier={"remove-page"}
                           currentRecipe={currentRecipe}
                           setCurrentRecipe={setCurrentRecipe}
                           directionIndex={directionIndex}
-                          onClick={() => setRemovePagePrompt(false)}
                         >
-                          <RemovePageButton style={{ right: "80px" }}>
+                          <RemovePageButton
+                            onClick={() => setRemovePagePrompt(false)}
+                            style={{ right: "80px" }}
+                          >
                             <BsFillTrashFill size={25} />
                           </RemovePageButton>
                         </AddStep>
-                        {/* cancel */}
+                        {/* CANCEL - don't remove page */}
                         <RemovePageButton
                           onClick={() => setRemovePagePrompt(false)}
                         >
@@ -416,7 +340,7 @@ const RecipePage = () => {
             <EditRecipeIcon
               tabIndex="1"
               class="edit-recipe-btn"
-              onClick={() => handleSubmitChanges()}
+              onClick={() => setConfirmSendRecipe(true)}
             >
               <ImCheckmark2 size={60} />
             </EditRecipeIcon>
@@ -427,9 +351,8 @@ const RecipePage = () => {
               tabIndex="1"
               toggleEdit={toggleEdit}
               class="edit-recipe-btn"
-              onClick={(e) => {
+              onClick={() => {
                 setToggleEdit(!toggleEdit);
-                setToggleIngredientCheckboxes(false);
               }}
             >
               <TiPencil size={60} />
@@ -437,6 +360,45 @@ const RecipePage = () => {
           </EditButtonContainer>
         </>
       )}
+      {/* END EDIT BUTTONS */}
+      {/*  */}
+      {/* POPUP WINDOW TO SUBMIT THE RECIPE */}
+      {confirmSendRecipe && (
+        <ConfirmSendRecipe>
+          <ConfirmCard>
+            {/* recipe name */}
+            <h1>Name your creation:</h1>
+            <textarea
+              autoFocus
+              onFocus={(e) => e.currentTarget.select()}
+              rows="2"
+              value={currentRecipe.recipeName}
+              onChange={(e) => updateTitle(e)}
+            ></textarea>
+            {/* send button */}
+            <ConfirmButtonContainer>
+              <ButtonUpload
+                className="submit"
+                onClick={() => {
+                  handleSubmitChanges();
+                }}
+                wait={sendingRecipe}
+                fail={sendingRecipeError}
+                success={sendingRecipeComplete}
+              >
+                <h1> SUBMIT</h1>
+              </ButtonUpload>
+            </ConfirmButtonContainer>
+            {/* CANCEL button */}
+            <ConfirmButtonContainer>
+              <ButtonUpload onClick={() => setConfirmSendRecipe(false)}>
+                cancel
+              </ButtonUpload>
+            </ConfirmButtonContainer>
+          </ConfirmCard>
+        </ConfirmSendRecipe>
+      )}
+      {/* END POPUP WINDOW */}
     </PageWrapper>
   ) : (
     // LOADING
@@ -445,6 +407,274 @@ const RecipePage = () => {
     </Wrapper>
   );
 };
+//
+// Container for the entire recipe
+const PageWrapper = styled.div`
+  padding: 0;
+  position: relative;
+  margin: 0;
+  height: 100vh;
+  overflow: scroll;
+  scroll-snap-type: mandatory;
+  scroll-snap-type: y mandatory;
+  scroll-snap-points-y: repeat(100vh);
+  scroll-behavior: smooth;
+`;
+// Container for each page
+const Container = styled.section`
+  transition: filter 1s ease;
+  filter: ${(props) => (props.confirmSendRecipe ? "blur(5px)" : "")};
+  background: rgb(238, 238, 238);
+  background: linear-gradient(
+    0deg,
+    rgba(238, 238, 238, 1) 0%,
+    rgba(241, 241, 241, 0) 13%,
+    rgba(255, 255, 255, 0) 84%,
+    rgba(238, 238, 238, 1) 100%
+  );
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  margin: 0 auto;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  overflow: hidden;
+  z-index: 0;
+  input,
+  textarea {
+    background-color: transparent;
+    font-size: 1rem;
+    text-align: left;
+    size: 100%;
+    outline: none;
+    border: none;
+    box-shadow: none;
+    color: black;
+  }
+  textarea:disabled,
+  input:disabled {
+    color: black;
+    opacity: 1;
+  }
+  input:focus-within,
+  textarea:focus-within {
+    border-bottom: 2px solid blue;
+    outline: none;
+    box-shadow: 0 1px 2px blue;
+  }
+  input:focus,
+  textarea:focus-within {
+    border-bottom: 2px solid blue;
+    outline: none;
+  }
+`;
+// TITLE PAGE
+const TitlePage = styled.div`
+  height: 100%;
+  overflow: hidden;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+`;
+// NAME OF RECIPE
+const Title = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-bottom: 50px;
+  margin-right: 15px;
+  padding: 15px;
+  font-size: 1.5rem;
+  text-align: center;
+  max-width: 300px;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--recipe-box-shadow);
+`;
+// Image that shows on first page
+const RecipeImage = styled.img`
+  height: 100%;
+  width: auto;
+  position: absolute;
+  z-index: -10;
+`;
+// By line
+const AuthorCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  transform: translateY(5rem);
+  text-align: center;
+  h1 {
+    font-size: 1.2rem;
+  }
+  background-color: rgba(255, 255, 255, 0.9);
+`;
+// Link to user handle
+const UserLink = styled(Link)`
+  margin: 0 auto;
+  padding: 5px;
+  color: var(--primary-color);
+  :hover {
+    box-shadow: 0 0 0 2px black, 2px 2px 3px 1px rgba(0, 0, 0, 0.5);
+  }
+  :active {
+    color: white;
+    background-color: black;
+    box-shadow: 0 0 4px 2px white inset, 0 0 2px black;
+  }
+`;
+// VARIATIONS
+const VariationButton = styled.button`
+  border: 6px solid var(--primary-color);
+  position: relative;
+  z-index: 999;
+  margin-top: 50px;
+  font-size: 1.5rem;
+  background-color: white;
+  box-shadow: 0 0 0 50px rgba(0, 0, 0, 0) inset, 0 0 2px 2px rgba(0, 0, 0, 0.5);
+  &:hover {
+    transition: 0.5s ease-in-out;
+    box-shadow: 0 0 0 50px var(--primary-color) inset;
+    color: white;
+  }
+  &:focus {
+    box-shadow: 0 0 0 50px var(--primary-color) inset;
+    color: white;
+    transition: 0.5s ease-in-out;
+  }
+  & :active {
+    background-color: var(--primary-color);
+    transition: none;
+    box-shadow: 0 0 0 4px inset var(--primary-color), 0 0 0 8px inset white;
+    opacity: 0.9;
+  }
+`;
+// Variations popup window
+const VariationCard = styled.div`
+  padding: 20px 20px 60px 20px;
+  border-radius: 20px;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(0, 0, 0, 1);
+  min-width: 200px;
+  max-width: 600px;
+  height: 80vh;
+  overflow-y: auto;
+`;
+// each link in the variations popup
+const VariationLink = styled(Link)`
+  text-decoration: none;
+  color: white;
+  font-size: 1rem;
+  text-align: center;
+  justify-content: center;
+  margin-top: 20px;
+  padding: 5px;
+  &::last-child {
+    margin-bottom: 20px;
+  }
+  border-radius: 10px;
+  &:hover {
+    text-shadow: 0 0 5px white;
+    box-shadow: 0 0 0 2px white;
+  }
+  &:active {
+    color: black;
+    background-color: white;
+  }
+`;
+// DIRECTIONS PAGES
+const DirectionsPage = styled.div`
+  position: relative;
+  padding: 20px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  p {
+    font-size: 1.5rem;
+  }
+`;
+const DirectionCard = styled.div`
+  position: relative;
+  margin-top: 2rem;
+  margin-right: 10px;
+  box-shadow: var(--recipe-box-shadow);
+  textarea {
+    padding: 20px;
+    font-size: 1.2rem;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    outline: none;
+    border: none;
+    resize: none;
+  }
+  textarea:focus {
+    box-shadow: 0 0 10px blue;
+  }
+`;
+
+//ingredients in each direction
+const IngredientCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 1rem;
+  position: absolute;
+  bottom: 3rem;
+  background-color: white;
+  width: 80%;
+  .ingredient-card {
+    font-size: 0.8rem;
+  }
+`;
+
+const ConfirmButtonContainer = styled.div`
+  margin: auto;
+  display: block;
+  max-width: 200px;
+  .input {
+    font-size: 3rem;
+  }
+  h1 {
+    font-size: 2rem;
+  }
+`;
+const ConfirmCard = styled.div`
+  width: 100%;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--recipe-box-shadow);
+  background-color: rgba(255, 255, 255, 0.5);
+  max-width: 600px;
+  margin: auto;
+  gap: 2rem;
+  textarea {
+    resize: none;
+    text-align: center;
+    vertical-align: center;
+  }
+`;
+const ConfirmSendRecipe = styled.div`
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  top: 0;
+  left: 0;
+  z-index: 999999999999999999;
+`;
+
 const DeleteMessage = styled.div`
   padding: 5px;
   background-color: red;
@@ -456,7 +686,6 @@ const DeleteMessage = styled.div`
 const RemovePageButton = styled.div`
   display: flex;
   flex-direction: column;
-
   justify-content: center;
   align-items: flex-end;
   position: absolute;
@@ -494,7 +723,12 @@ const AddPageButton = styled.div`
     box-shadow: 1px 1px 0 4px black;
   }
 `;
-
+const EditButtonContainer = styled.div`
+  position: fixed;
+  padding: 10px 20px;
+  bottom: 2%;
+  z-index: 9999;
+`;
 const EditRecipeIcon = styled.div`
   color: ${(props) => (props.toggleEdit ? "white" : "black")};
   opacity: ${(props) => (props.toggleEdit ? ".8" : ".2")};
@@ -517,254 +751,6 @@ const EditRecipeIcon = styled.div`
     color: ${(props) => (props.toggleEdit ? "white" : "black")};
     box-shadow: 0 0 10px green, 0 0 0 5px green;
   }
-`;
-const EditButtonContainer = styled.div`
-  position: fixed;
-  padding: 10px 20px;
-  bottom: 2%;
-  z-index: 9999;
-`;
-
-const VariationLink = styled(Link)`
-  text-decoration: none;
-  color: white;
-  font-size: 2rem;
-  text-align: center;
-  justify-content: center;
-  margin-top: 20px;
-  margin: 5px auto;
-  padding: 20px;
-  border-radius: 10px;
-  &:hover {
-    text-shadow: 0 0 5px white;
-    box-shadow: 0 0 0 2px white;
-  }
-  &:active {
-    color: black;
-    background-color: white;
-  }
-`;
-const VariationCard = styled.div`
-  padding: 20px;
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  background-color: rgba(0, 0, 0, 1);
-  width: 80%;
-  height: 80%;
-  margin: auto;
-`;
-const VariationButton = styled.button`
-  z-index: 999;
-  margin-top: 50px;
-  font-size: 2rem;
-  background-color: rgba(255, 255, 255, 0.5);
-  text-shadow: 0px 0px 2px rgba(255, 255, 255, 0.8),
-    2px 2px 5px rgba(255, 255, 255, 0.5);
-`;
-const DirectionsPage = styled.div`
-  position: relative;
-  padding: 20px 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100%;
-`;
-const DirectionCard = styled.div`
-  position: relative;
-  margin-top: 2rem;
-  margin-right: 10px;
-  box-shadow: var(--recipe-box-shadow);
-  textarea {
-    padding: 20px;
-    font-size: 1.2rem;
-    box-sizing: border-box;
-    width: 100%;
-    height: 100%;
-    background-color: transparent;
-    outline: none;
-    border: none;
-    resize: none;
-  }
-  textarea:focus {
-    box-shadow: 0 0 10px blue;
-  }
-`;
-//ingredients in each direction
-const IngredientCard = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 1rem;
-  position: absolute;
-  bottom: 3rem;
-  background-color: white;
-  width: 80%;
-
-  .ingredient-card {
-    font-size: 0.8rem;
-  }
-`;
-
-const IngredientLine = styled.div`
-  width: 100%;
-  padding: 10px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-`;
-const IngredientList = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  margin-top: 2rem;
-  overflow-y: auto;
-  box-shadow: var(--recipe-box-shadow);
-`;
-
-const IngredientsPageContainer = styled.div`
-  padding: 20px;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-`;
-
-const SubHeader = styled.div`
-  font-size: 1.5rem;
-`;
-
-const AuthorCard = styled.div`
-  padding: 20px;
-  text-align: center;
-  h1 {
-    font-size: 1.5rem;
-  }
-  background-color: rgba(255, 255, 255, 0.5);
-  text-shadow: 0px 0px 2px rgba(255, 255, 255, 0.8),
-    2px 2px 5px rgba(255, 255, 255, 0.5);
-`;
-const UserLink = styled(Link)`
-  :hover {
-    box-shadow: 0 0 0 2px black, 2px 2px 3px 1px rgba(0, 0, 0, 0.5);
-  }
-  :active {
-    color: white;
-    background-color: black;
-    box-shadow: 0 0 4px 2px white inset, 0 0 2px black;
-  }
-`;
-const RecipeImage = styled.img`
-  height: 100%;
-  width: auto;
-  position: absolute;
-  z-index: -10;
-`;
-
-const Title = styled.div`
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 50px;
-`;
-const TitlePage = styled.div`
-  height: 100%;
-  overflow: hidden;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-evenly;
-
-  input.title {
-    border: none;
-    box-shadow: none;
-    outline: none;
-    text-align-last: center;
-    caret-color: blue;
-    font-size: 2rem;
-    padding: 0 1rem;
-    font-weight: bold;
-    background-color: rgba(255, 255, 255, 0.5);
-    text-shadow: 0px 0px 2px rgba(255, 255, 255, 0.8),
-      2px 2px 5px rgba(255, 255, 255, 0.5);
-  }
-
-  & input:disabled.title {
-    color: black;
-    opacity: 1;
-  }
-  input:focus-within.title {
-    border: 5px solid blue;
-  }
-  input:focus.title {
-    outline: 20px solid blue;
-    box-shadow: 0 0 10px blue;
-  }
-
-  input:invalid.title {
-    outline: 2px solid red;
-    box-shadow: 0 0 5px red;
-  }
-`;
-const Container = styled.section`
-  background: rgb(238, 238, 238);
-  background: linear-gradient(
-    0deg,
-    rgba(238, 238, 238, 1) 0%,
-    rgba(241, 241, 241, 0) 13%,
-    rgba(255, 255, 255, 0) 84%,
-    rgba(238, 238, 238, 1) 100%
-  );
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100vh;
-
-  margin: 0 auto;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-  overflow: hidden;
-  z-index: 0;
-
-  input {
-    background-color: transparent;
-    font-size: 1rem;
-    text-align: left;
-    size: 100%;
-    outline: none;
-    border: none;
-    box-shadow: none;
-    color: black;
-  }
-  textarea:disabled,
-  input:disabled {
-    color: black;
-    opacity: 1;
-  }
-  input:focus-within {
-    border-bottom: 2px solid blue;
-    outline: none;
-    box-shadow: 0 1px 2px blue;
-  }
-  input:focus {
-    border-bottom: 2px solid blue;
-    outline: none;
-  }
-`;
-
-const PageWrapper = styled.div`
-  padding: 0;
-  position: relative;
-  margin: 0;
-  height: 100vh;
-  overflow: scroll;
-  scroll-snap-type: mandatory;
-  scroll-snap-type: y mandatory;
-  scroll-snap-points-y: repeat(100vh);
-  scroll-behavior: smooth;
 `;
 
 export default RecipePage;

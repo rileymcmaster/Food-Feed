@@ -3,14 +3,17 @@ import styled from "styled-components";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { useParams, useHistory } from "react-router";
-import AvatarImage from "../AvatarImage";
 import moment from "moment";
+import AvatarImage from "../AvatarImage";
+import Loading from "../Loading";
 import {
   BsFillLockFill,
   BsFillUnlockFill,
   BsFillTrashFill,
 } from "react-icons/bs";
-import Loading from "../Loading";
+
+// Render each preview recipe card in the feed and in user profile
+// some alternate settings for a user viewing own profile - lock and delete buttons replace the author's picture and handle
 
 const GridEach = ({ item }) => {
   //USER STATE
@@ -39,19 +42,20 @@ const GridEach = ({ item }) => {
 
   //DELETE RECIPE - only visible if the user is viewing their own profile page
   const handleDeleteRecipe = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
     setLoading(true);
     if (user.isSignedIn && user._id === item.createdBy) {
-      //DELETE RECIPE
+      //DELETE RECIPE - sets isDelete to true
+      // removes the recipe from the original recipe's variations array
       fetch(`/recipes/delete`, {
-        method: "DELETE",
+        method: "PATCH",
         body: JSON.stringify(item),
         headers: {
           Accept: "application/json",
           "Content-type": "application/json",
         },
-      })
-        .then((res) => res.json())
-        .then((data) => console.log("data", data));
+      }).catch((err) => console.log("error", err));
       //Update user's recipe array
       fetch(`/user/edit/remove`, {
         method: "PATCH",
@@ -82,7 +86,8 @@ const GridEach = ({ item }) => {
         },
       })
         .then((res) => res.json())
-        .then((data) => console.log("data", data));
+        .then((data) => data)
+        .catch((err) => console.log("error  changing privacy setting", err));
     }
     setPrivacy(!privacy);
   };
@@ -125,8 +130,8 @@ const GridEach = ({ item }) => {
             {user._id === urlId ? (
               <>
                 {/* PRIVACY */}
-                <AuthorLine style={{ marginTop: "0px" }}>
-                  <LockIcon
+                <AuthorLine style={{ paddingBottom: "20px" }}>
+                  <OptionIcon
                     tabIndex="0"
                     onClick={(e) => {
                       e.currentTarget.blur();
@@ -139,24 +144,28 @@ const GridEach = ({ item }) => {
                     ) : (
                       <BsFillUnlockFill size={30} />
                     )}
-                  </LockIcon>
+                  </OptionIcon>
                   {/* DELETE BUTTON */}
-                  <LockIcon tabIndex="0" style={{ margin: "0 auto" }}>
-                    <BsFillTrashFill
-                      size={30}
-                      onClick={(e) => {
-                        e.currentTarget.blur();
-                        handleDeleteRecipe(e);
-                      }}
-                    />
-                  </LockIcon>
+                  {/* CAN'T DELETE ORIGINAL RECIPES, it messes up the variations array for future recipes */}
+                  {!item.isOriginal && (
+                    <OptionIcon tabIndex="0" style={{ margin: "0 auto" }}>
+                      <BsFillTrashFill
+                        size={30}
+                        onClick={(e) => {
+                          e.currentTarget.blur();
+                          e.stopPropagation();
+                          handleDeleteRecipe(e);
+                        }}
+                      />
+                    </OptionIcon>
+                  )}
                   <Date>
                     <p>{moment(item.date).fromNow()}</p>
                   </Date>
                 </AuthorLine>
               </>
             ) : (
-              // NORMAL VIEW - other users' recipes
+              // NORMAL VIEW
               // {/* LINK TO AUTHOR PROFILE */}
               <AuthorLine>
                 <UserLink to={`/user/${author._id}`}>
@@ -177,11 +186,69 @@ const GridEach = ({ item }) => {
     )
   );
 };
+// STYLES
+// The parent container
+const ContainerEach = styled.div`
+  height: 400px;
+  width: 300px;
+  position: relative;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  color: black;
+
+  :active {
+    transform: translate(10px 10px);
+  }
+`;
+// Loading
 const LoadingContainer = styled.div`
   min-width: 400px;
   margin-top: 80px;
 `;
-const LockIcon = styled.div`
+// Link that wraps whole card
+const LinkContainer = styled(Link)`
+  margin: 20px;
+  text-decoration: none;
+  user-select: none;
+  border: 2px solid var(--accent-bg-color);
+  &:hover {
+    transition: 0.5s ease-in-out;
+    box-shadow: var(--recipe-box-shadow);
+  }
+  &:focus {
+    transition: 0.5s ease-in-out;
+    outline: none;
+    box-shadow: var(--recipe-box-shadow);
+  }
+  :active {
+    transition: 0.2s ease-out;
+    transform: translate(10px, 10px);
+    box-shadow: 0px 0px 0 0px black, 0 0 0px 0px rgba(0, 0, 0, 0.3);
+  }
+`;
+// Main image
+const ImageContainer = styled.div`
+  overflow: hidden;
+  display: block;
+  text-align: center;
+  width: calc(100%);
+  height: calc(90%);
+  max-width: 300px;
+  max-height: 300px;
+  padding: 10px;
+`;
+// recipe image
+const Thumbnail = styled.img`
+  margin: auto 0;
+  width: 100%;
+  height: auto;
+`;
+
+// Logged in user's own profile  - Privacy setting
+const OptionIcon = styled.div`
   padding: 10px;
   border-radius: 50%;
   vertical-align: center;
@@ -200,20 +267,25 @@ const LockIcon = styled.div`
     color: var(--primary-color);
   }
 `;
+// TIMESTAMP
 const Date = styled.div`
   margin-left: auto;
-  /* max-width: 60px; */
   right: 20px;
   color: grey;
   vertical-align: bottom;
   position: absolute;
 `;
+// h2 - title of recipe. No designation is the author's handle
 const Name = styled.div`
   h2 {
-    margin-top: 10px;
+    /* margin-top: 10px; */
+    width: 80%;
+    text-align: center;
+    margin: 10px auto 5px;
     font-size: 1.2rem;
   }
 `;
+// Link to author's profile. Wraps the avatar and handle
 const UserLink = styled(Link)`
   margin-right: auto;
   text-decoration: none;
@@ -226,6 +298,7 @@ const UserLink = styled(Link)`
   min-width: 100px;
   height: 4rem;
   border-radius: 2rem;
+  background-color: white;
   &:hover {
     transition: 0.5s ease-out;
     box-shadow: 0 0 0 2px var(--primary-color),
@@ -246,60 +319,10 @@ const UserLink = styled(Link)`
 
 const AuthorLine = styled.div`
   width: 100%;
-  margin-top: -10px;
+  margin-top: auto;
   display: flex;
   flex-direction: row;
-  /* justify-content: center; */
   align-items: center;
-  margin-right: auto;
-`;
-const LinkContainer = styled(Link)`
-  text-decoration: none;
-  user-select: none;
-  border: 2px solid var(--accent-bg-color);
-  &:hover {
-    transition: 0.5s ease-in-out;
-    box-shadow: var(--recipe-box-shadow);
-  }
-  &:focus {
-    transition: 0.5s ease-in-out;
-    outline: none;
-    box-shadow: var(--recipe-box-shadow);
-  }
-  :active {
-    transition: 0.2s ease-out;
-    transform: translate(10px, 10px);
-    box-shadow: 0px 0px 0 0px black, 0 0 0px 0px rgba(0, 0, 0, 0.3);
-  }
 `;
 
-const ImageContainer = styled.div`
-  overflow: hidden;
-  display: block;
-  text-align: center;
-  width: calc(100%);
-  height: calc(90%);
-  max-width: 300px;
-  max-height: 300px;
-  padding: 10px;
-`;
-const Thumbnail = styled.img`
-  margin: auto 0;
-  width: 100%;
-  height: auto;
-`;
-const ContainerEach = styled.div`
-  min-height: 400px;
-  min-width: 300px;
-  position: relative;
-  max-width: 400px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 10px;
-  color: black;
-  :active {
-    transform: translate(10px 10px);
-  }
-`;
 export default GridEach;

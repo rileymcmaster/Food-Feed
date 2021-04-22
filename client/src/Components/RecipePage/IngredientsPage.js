@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-import AddSubtractButton from "../Buttons/AddSubtractButton";
 import { BsPlusCircle } from "react-icons/bs";
 import { IoIosCloseCircle } from "react-icons/io";
 
@@ -61,7 +60,7 @@ const IngredientsPage = ({ currentRecipe, setCurrentRecipe, toggleEdit }) => {
               <input
                 //TO DO MAKE THE WIDTH MATCH THE SIZE OF THE CONTAINER
                 // size={widthIngredients.current.offsetWidth / 15}
-                size="30"
+                size="40"
                 disabled={!toggleEdit}
                 type="text"
                 value={ingredient.ingredient}
@@ -162,7 +161,9 @@ const IngredientLine = styled.div`
   display: flex;
   flex-direction: row;
   margin-top: 5px;
+  padding-left: 10px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 `;
 
 export default IngredientsPage;

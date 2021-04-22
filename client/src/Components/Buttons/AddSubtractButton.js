@@ -1,6 +1,4 @@
 import React from "react";
-import styled from "styled-components";
-//TODO GET ICONS AND STYLE THESE BUTTONS
 
 const AddSubtractButton = ({ state, setState, modifier, ingredientIndex }) => {
   // CREATE FORM - ADD (ingredient/direction)
@@ -61,28 +59,6 @@ const AddSubtractButton = ({ state, setState, modifier, ingredientIndex }) => {
       </button>
     );
   }
-  //BUGGY - makes the add ingredient break
-  //   else if (modifier === "lessIngredient") {
-  //     const stateCopy = { ...state };
-  //     console.log("stateCopy", stateCopy);
-  //     const ingredientsLength = stateCopy.ingredients.length - 1;
-  //     console.log("ing length", ingredientsLength);
-  //     stateCopy.ingredients.splice(ingredientsLength, 1);
-  //     console.log("stateCopy2", stateCopy);
-  //     return (
-  //       <button
-  //         type="button"
-  //         onClick={() => {
-  //           // setState({
-  //           //   ...state,
-  //           //   ingredients: [...stateCopy.ingredients],
-  //           // });
-  //         }}
-  //       >
-  //         -
-  //       </button>
-  //     );
-  //   }
 };
 
 export default AddSubtractButton;

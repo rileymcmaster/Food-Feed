@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { IoIosCloseCircle } from "react-icons/io";
 
@@ -84,20 +84,20 @@ const DirectionLine = styled.div`
   transition: all 2s ease;
   position: relative;
   display: flex;
-
   justify-content: center;
   & input {
     width: 90%;
     margin-bottom: 2px;
   }
 `;
+
 const growDown = keyframes`
-From {
+from {
   transform: translateY(-60%);
 
   opacity: 0%;
 }
-To{
+to{
     transform: translateY(0%);
     opacity: 100%;
 }
@@ -107,12 +107,9 @@ const IngredientBoxes = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  /* z-index: -1; */
-  animation: ${growDown} 300ms ease-in-out both;
-  transform-origin: top center;
   width: 100%;
-  /* margin-left: auto; */
-  /* margin: 0 auto; */
+  transform-origin: top center;
+  animation: ${growDown} 300ms ease-in-out forwards;
   div {
     display: flex;
     flex-direction: column;

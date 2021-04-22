@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import Wrapper from "./Wrapper";
+import { useHistory } from "react-router";
 import styled from "styled-components";
-import Button from "./Buttons/Button";
+
 import ButtonUpload from "./Buttons/ButtonUpload";
 
 const SignUp = () => {
@@ -13,11 +13,11 @@ const SignUp = () => {
     password: "",
     avatarUrl: "",
   });
-  // console.log("userinput", userInput);
+
   const [waitingMessage, setWaitingMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-
+  const history = useHistory();
   //DISABLE THE SUBMIT BUTTON UNTIL THE FORM IS FILLLED OUT
   let disableSubmit = true;
   if (
@@ -55,7 +55,6 @@ const SignUp = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("image upload successful", data);
         setUserInput({ ...userInput, avatarUrl: data.url });
         setImageUploading("");
         setImageUploadComplete("Upload complete");
@@ -83,8 +82,11 @@ const SignUp = () => {
       .then(({ status, message, data }) => {
         if (status === 200) {
           setWaitingMessage("");
-          console.log("signup was successful", status, data);
           setSuccessMessage("Success!");
+          const pushToSignin = setTimeout(() => {
+            history.push("/signin");
+          }, 1000);
+          return () => clearTimeout(pushToSignin);
         } else {
           setWaitingMessage("");
           console.log("signup didn't work", status, message);
@@ -94,8 +96,7 @@ const SignUp = () => {
       .catch((err) => {
         setWaitingMessage("");
         console.log("ERROR", err.stack);
-
-        //SET AN ERROR MESSAGE
+        setErrorMessage("Error, try again");
       });
   };
   return (
@@ -234,7 +235,6 @@ const ErrorMessage = styled.p`
   margin-top: 20px;
   margin-bottom: 0;
   padding: 0;
-  /* position: absolute; */
 `;
 const ButtonContainer = styled.div`
   max-width: 200px;

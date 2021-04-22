@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { useHistory, Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import ButtonUpload from "../Buttons/ButtonUpload";
 import { IoIosCloseCircle } from "react-icons/io";
 import { BsPlusCircle } from "react-icons/bs";
@@ -98,7 +98,6 @@ const RecipeForm = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("image upload successful!");
         setUserInput({ ...userInput, recipeImageUrl: data.url });
         setImageUploading("");
         setImageUploadComplete("Upload complete!");
@@ -127,9 +126,7 @@ const RecipeForm = () => {
     })
       .then((res) => res.json())
       .then(({ status, data }) => {
-        console.log("status", status);
         if (status === 200) {
-          console.log("recipe has been uploaded", data);
           setSendingRecipe("");
           setRecipeSuccess("Recipe created!");
           //delay to redirect to the feed page
@@ -192,8 +189,6 @@ const RecipeForm = () => {
     setUserInput(userInputCopy);
   };
 
-  // console.log("userinput", userInput);
-
   // REMOVE DIRECTION
   const handleRemoveDirection = (directionIndex) => {
     // make a copy of the form
@@ -204,7 +199,7 @@ const RecipeForm = () => {
       setUserInput(userInputCopy);
     }
   };
-
+  // RENDERED ON THE PAGE
   return !user.isSignedIn ? (
     <FormContainer>
       <Link style={{ marginTop: "50vh" }} to={"/signin"}>
@@ -269,77 +264,31 @@ const RecipeForm = () => {
         >
           <BsPlusCircle size={35} />
         </button>
-
         {/* END INGREDIENTS */}
+        {/*  */}
         {/* DIRECTIONS */}
         <DirectionCard>
           <h1>DIRECTIONS:</h1>
           {userInput.directions.map((direction, index) => {
             return (
               <>
-                {/* TRYING SOMETHING NEW V V V */}
                 <EachDirectionContainer
                   key={"direction-" + index}
                   direction={direction}
                   ingredients={userInput.ingredients}
                   index={index}
                   value={userInput.directions[index].direction}
-                  // direction change
                   directionChange={(e) => updateDirections(e, index)}
                   clickFunction={() => handleRemoveDirection(index)}
-                  // ingredient change
                   ingredientChange={(e) => {
                     updateDirectionsIngredients(e, index);
                   }}
                 />
-                {/* THIS WORKED V V V V */}
-                {/* <DirectionLine>
-                  <label for={`direction-${index}`}></label>
-                  <input
-                    className="direction"
-                    type="text"
-                    placeholder={`Step ${index + 1}`}
-                    name={`direction`}
-                    value={userInput.directions[index].direction}
-                    onChange={(e) => updateDirections(e, index)}
-                  />
-                  {/* REMOVE THIS DIRECTION */}
-                {/* <button */}
-                {/* className="remove-button" */}
-                {/* type="button" */}
-                {/* onClick={() => handleRemoveDirection(index)} */}
-                {/* > */}
-                {/* <IoIosCloseCircle size={30} /> */}
-                {/* </button> */}
-                {/* </DirectionLine> */}
-                {/* INGREDIENT CHECKBOXES */}
-                {/* {userInput.ingredients.map((ingredient, idx) => {
-                  if (ingredient.ingredient) {
-                    return (
-                      <div>
-                        <label for={`${index}-${ingredient.ingredient}`}>
-                          <input
-                            className="checkbox"
-                            type="checkbox"
-                            name="ingredient"
-                            class={index}
-                            value={userInput.ingredients[idx].ingredient}
-                            id={`${index}-${ingredient.ingredient}`}
-                            onChange={(e) => {
-                              updateDirectionsIngredients(e, index, idx);
-                            }}
-                          />
-                          {ingredient.ingredient}
-                        </label>
-                      </div>
-                    );
-                  }
-                })} */}
               </>
             );
           })}
         </DirectionCard>
-        {/* MORE DIRECTIONS */}
+        {/* ADD DIRECTIONS BUTTON */}
         <button
           className="add-button"
           type="button"
@@ -364,7 +313,7 @@ const RecipeForm = () => {
           </label>
         </PrivateLine>
         {/* UPLOAD IMAGE */}
-        <div>
+        <div style={{ maxWidth: "400px", margin: "0 auto" }}>
           <input
             className="file-uploader"
             type="file"
@@ -381,7 +330,6 @@ const RecipeForm = () => {
             <ButtonUpload
               onClick={() => {
                 sendImage();
-                // setRecipeImage({});
               }}
               wait={imageUploading}
               success={imageUploadComplete}
@@ -392,7 +340,6 @@ const RecipeForm = () => {
           </ButtonContainer>
         </div>
         {/* END UPLOAD IMAGE */}
-
         <ButtonContainer>
           {/* SUBMIT */}
           <ButtonUpload
@@ -406,7 +353,6 @@ const RecipeForm = () => {
         </ButtonContainer>
       </form>
     </FormContainer>
-    // </Wrapper>
   );
 };
 // WHOLE PAGE
@@ -416,13 +362,9 @@ const FormContainer = styled.div`
   height: 100vh;
   justify-content: space-between;
   padding: 20px;
-  /* width: 100vw; */
   margin: 0 auto;
   align-items: center;
   text-align: center;
-  div {
-    /* padding: 20px; */
-  }
   label {
     margin-bottom: 0.5rem;
   }
@@ -449,7 +391,6 @@ const FormContainer = styled.div`
   input.checkbox {
     box-shadow: none;
   }
-
   textarea {
     resize: none;
   }
@@ -457,7 +398,6 @@ const FormContainer = styled.div`
     outline: 2px solid blue;
     box-shadow: 0 0 3px inset blue;
   }
-
   input:invalid {
     outline: 2px solid red;
     box-shadow: 0 0 5px red;
@@ -512,20 +452,16 @@ const Title = styled.div`
     box-shadow: var(--recipe-box-shadow);
   }
 `;
-
 // RECIPE NAME
 const NameCard = styled.div`
   h1 {
     margin-bottom: 10px;
   }
 `;
-
 // INGREDIENTS
 const IngredientsCard = styled.div`
-  /* margin-top: 30px; */
   max-width: 700px;
   margin: 30px auto 0;
-
   & h1 {
     margin-bottom: 10px;
   }
@@ -545,10 +481,8 @@ const IngredientLine = styled.div`
 // DIRECTIONS
 const DirectionCard = styled.div`
   transition: all 2s ease;
-
   max-width: 700px;
   margin: 30px auto 0;
-
   & h1 {
     margin-bottom: 10px;
   }

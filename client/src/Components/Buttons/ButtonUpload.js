@@ -29,11 +29,9 @@ const ButtonStyle = styled.div`
   user-select: none;
   max-height: 50px;
   overflow-y: hidden;
-  /* display: block; */
   outline: none;
   border: none;
   font-weight: bold;
-  /* font-size: 1rem; */
   text-decoration: none;
   color: black;
   display: flex;
@@ -82,5 +80,6 @@ const Icon = styled.div`
   align-items: center;
   padding: 0;
   height: 100%;
+  color: white;
   animation: ${rotate} 1s ease-in-out infinite;
 `;

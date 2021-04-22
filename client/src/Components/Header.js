@@ -26,7 +26,6 @@ const Header = () => {
       .then((res) => res.json())
       .then((data) => {
         window.localStorage.removeItem("_id");
-        console.log("data", data);
         dispatch(signOut());
       })
       .catch((err) => {

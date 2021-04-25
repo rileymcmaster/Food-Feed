@@ -168,9 +168,7 @@ const UserPage = () => {
 };
 // Contains the whole page
 const Container = styled.div`
-  width: 100vw;
   padding: 20px 40px;
-  overflow-y: scroll;
   overflow-x: hidden;
   margin: auto;
   position: relative;

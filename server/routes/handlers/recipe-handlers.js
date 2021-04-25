@@ -96,8 +96,6 @@ const createRecipe = async (req, res) => {
 //
 // EDIT
 const editRecipe = async (req, res) => {
-  console.log("req EDIT", req.body);
-
   //send to mongo
   try {
     let createRecipe = await Recipe.create({
@@ -209,6 +207,7 @@ const deleteRecipe = async (req, res) => {
           newVariationsArrayObject
         );
         if (updateOriginalRecipeVariations) {
+          console.log("update", updateOriginalRecipeVariations);
           res.status(204).json({
             status: 204,
             message: "recipe removed from original recipe's variations array",

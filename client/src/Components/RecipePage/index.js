@@ -116,7 +116,6 @@ const RecipePage = () => {
     if (currentRecipe.isOriginal) {
       currentRecipeCopy.originalRecipe = currentRecipe._id;
     }
-    console.log("COPY", currentRecipeCopy);
     fetch(`/recipes/create/edit`, {
       method: "POST",
       body: JSON.stringify(currentRecipeCopy),
@@ -131,12 +130,7 @@ const RecipePage = () => {
           setEditedRecipeObject(data);
           setSendingRecipe("");
           setSendingRecipeComplete("Recipe created!");
-          // setCurrentRecipe(data);
-          // const timer = setTimeout(() => {
-          //   history.push(`/recipe/${data._id}`);
           setConfirmSendRecipe(false);
-          // }, 3000);
-          // return () => clearTimeout(timer);
         } else {
           setSendingRecipe("");
           setSendingRecipeError("Error, try again");
@@ -160,7 +154,9 @@ const RecipePage = () => {
           Accept: "application/json",
           "Content-type": "application/json",
         },
-      }).catch((err) => console.log("User's recipe array not updated", err));
+      })
+        .then(() => history.push(`/recipe/${editedRecipeObject._id}`))
+        .catch((err) => console.log("User's recipe array not updated", err));
     }
   }, [editedRecipeObject]);
 

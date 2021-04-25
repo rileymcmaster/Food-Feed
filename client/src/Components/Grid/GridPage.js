@@ -50,7 +50,7 @@ const GridPage = () => {
   ) : items ? (
     <>
       <Container>
-        <Title>The FEED</Title>
+        <Title>FOOD FEED</Title>
         <GridContainer>
           {items.map((item) => {
             return <GridEach item={item} />;
@@ -75,12 +75,18 @@ const GridContainer = styled.div`
 `;
 const Container = styled.div`
   padding: 1em;
-  /* width: 100vw; */
-  /* overflow-x: hidden; */
 `;
-const Title = styled.h1`
+
+const Title = styled.div`
+  font-weight: bold;
+  user-select: none;
+  max-width: 300px;
+  font-size: 1.5rem;
+  border: 2px solid black;
+  padding: 20px;
+  margin: 2rem auto 0 auto;
   text-align: center;
-  margin-top: 2rem;
+  box-shadow: var(--recipe-box-shadow);
 `;
 
 export default GridPage;

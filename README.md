@@ -2,7 +2,7 @@
 
 Food Feed started as my final project for Concordia’s full stack web development bootcamp, which I graduated from in April 2021. The objective was to build an interactive site with a frontend and a backend using React.js and Node. I also used Redux, Express, Mongoose and MongoDB.
 
-**Food Feed** is a social networking site where users can easily create recipes to share which other members can then customize and save those recipes to make them their own. With the touch of a button, users can easily edit the ingredients, the directions and even link ingredients to the individual steps.
+**Food Feed** is a social networking site where users can easily modify and share recipes. Users have the option of creating recipes from scratch or they can simply edit any recipe in their feed with the click of a button. Change the ingredients, directions and even link specific ingredients to individual steps to suit your own taste!
 
 ![Food feed demo](https://github.com/rileymcmaster/recipe-app/blob/main/client/public/FF-screencap.gif?raw=true)
 

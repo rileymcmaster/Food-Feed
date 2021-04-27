@@ -253,10 +253,9 @@ const RecipePage = () => {
                 <textarea
                   rows={
                     mediaQuery
-                      ? direction.direction.length / 45
-                      : direction.direction.length / 30
+                      ? direction.direction.length / 35
+                      : direction.direction.length / 25
                   }
-                  // rows={direction.direction.length / 15}
                   cols="50"
                   disabled={!toggleEdit}
                   onFocus={(e) => e.currentTarget.select()}

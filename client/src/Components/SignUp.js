@@ -79,7 +79,7 @@ const SignUp = () => {
       },
     })
       .then((res) => res.json())
-      .then(({ status, message, data }) => {
+      .then(({ status, message }) => {
         if (status === 200) {
           setWaitingMessage("");
           setSuccessMessage("Success!");
@@ -169,19 +169,25 @@ const SignUp = () => {
         </div>
         {/* UPLOAD AVATAR IMAGE */}
         <div>
-          <label for="upload-image">Upload avatar picture</label>
-          <input
-            type="file"
-            name="upload-image"
-            onChange={(e) => {
-              setImageUploading("");
-              setImageUploadComplete("");
-              setImageUploadFailed("");
-              handleImageUpload(e);
-            }}
-          ></input>
+          <label for="uploadImage">
+            <input
+              type="file"
+              name="uploadImage"
+              id="uploadImage"
+              onChange={(e) => {
+                setImageUploading("");
+                setImageUploadComplete("");
+                setImageUploadFailed("");
+                handleImageUpload(e);
+              }}
+            />
+            <UploadImageBtn>
+              <div>Choose avatar</div>
+              {avatarImage && <p>{avatarImage.name}</p>}
+            </UploadImageBtn>
+          </label>
         </div>
-        <ButtonContainer>
+        <ButtonContainer style={{ marginTop: "-40px" }}>
           <ButtonUpload
             onClick={() => {
               sendImage();
@@ -229,26 +235,11 @@ const SignUp = () => {
     </Container>
   );
 };
-const ErrorMessage = styled.p`
-  font-size: 1rem;
-  color: red;
-  margin-top: 20px;
-  margin-bottom: 0;
-  padding: 0;
-`;
-const ButtonContainer = styled.div`
-  max-width: 200px;
-  margin: 0 auto;
-  & h1 {
-    font-size: 1.5rem;
-  }
-`;
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
-  width: 100vw;
   align-items: center;
   text-align: center;
   div {
@@ -283,14 +274,54 @@ const Container = styled.div`
   input:focus-within {
     outline: 2px solid blue;
   }
-
+  input[type="file"] {
+    display: none;
+  }
   input:invalid {
-    /* background-color: red; */
     outline: 2px solid red;
     box-shadow: 0 0 5px red;
   }
   input:valid {
     background-color: white;
+  }
+`;
+
+const ErrorMessage = styled.p`
+  font-size: 1rem;
+  color: red;
+  margin-top: 20px;
+  margin-bottom: 0;
+  padding: 0;
+`;
+const ButtonContainer = styled.div`
+  max-width: 200px;
+  margin: 0 auto;
+  & h1 {
+    font-size: 1.5rem;
+  }
+`;
+
+const UploadImageBtn = styled.div`
+  & div {
+    font-size: 1.1rem;
+    margin: 0 auto 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dotted var(--primary-color);
+    width: 100px;
+    height: 50px;
+    &:hover,
+    &:focus {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    &:active {
+      box-shadow: 0 0 5px inset rgba(0, 0, 0, 0.8);
+    }
+  }
+  & p {
+    font-size: 0.8rem;
   }
 `;
 export default SignUp;

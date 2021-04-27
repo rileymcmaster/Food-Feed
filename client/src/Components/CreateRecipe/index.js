@@ -313,11 +313,12 @@ const RecipeForm = () => {
           </label>
         </PrivateLine>
         {/* UPLOAD IMAGE */}
-        <div style={{ maxWidth: "400px", margin: "0 auto" }}>
+        <label for="uploadImage" className="file-uploader">
           <input
             className="file-uploader"
             type="file"
             name="uploadImage"
+            id="uploadImage"
             onChange={(e) => {
               const file = e.target.files[0];
               setRecipeImage(file);
@@ -326,19 +327,23 @@ const RecipeForm = () => {
               setImageUploadError("");
             }}
           />
-          <ButtonContainer>
-            <ButtonUpload
-              onClick={() => {
-                sendImage();
-              }}
-              wait={imageUploading}
-              success={imageUploadComplete}
-              fail={imageUploadError}
-            >
-              Upload image
-            </ButtonUpload>
-          </ButtonContainer>
-        </div>
+          <UploadImageBtn>
+            <div>Choose image</div>
+            {recipeImage && <p>{recipeImage.name}</p>}
+          </UploadImageBtn>
+        </label>
+        <ButtonContainer style={{ width: "100px" }}>
+          <ButtonUpload
+            onClick={() => {
+              sendImage();
+            }}
+            wait={imageUploading}
+            success={imageUploadComplete}
+            fail={imageUploadError}
+          >
+            Upload image
+          </ButtonUpload>
+        </ButtonContainer>
         {/* END UPLOAD IMAGE */}
         <ButtonContainer>
           {/* SUBMIT */}
@@ -387,6 +392,9 @@ const FormContainer = styled.div`
     outline: 1px solid rgba(0, 0, 0, 0.5);
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
     vertical-align: center;
+  }
+  input[type="file"] {
+    display: none;
   }
   input.checkbox {
     box-shadow: none;
@@ -491,7 +499,29 @@ const DirectionCard = styled.div`
 const PrivateLine = styled.div`
   margin: 40px auto;
 `;
-
+const UploadImageBtn = styled.div`
+  & div {
+    font-size: 1.1rem;
+    margin: 0 auto 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dotted var(--primary-color);
+    width: 100px;
+    height: 50px;
+    &:hover,
+    &:focus {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    &:active {
+      box-shadow: 0 0 5px inset rgba(0, 0, 0, 0.8);
+    }
+  }
+  & p {
+    font-size: 0.8rem;
+  }
+`;
 const ButtonContainer = styled.div`
   max-width: 200px;
   margin: 40px auto;

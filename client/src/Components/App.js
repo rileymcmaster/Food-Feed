@@ -16,7 +16,7 @@ import ErrorPage from "./ErrorPage";
 
 const App = () => {
   const dispatch = useDispatch();
-  //KEEP USER SIGNED
+  //KEEP USER SIGNED - check local storage for a userId
   useEffect(() => {
     const localStorageId = JSON.parse(window.localStorage.getItem("_id"));
     if (localStorageId) {

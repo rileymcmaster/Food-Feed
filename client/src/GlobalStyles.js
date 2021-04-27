@@ -15,6 +15,7 @@ export default createGlobalStyle`
       --nav-width: 250px;
       --page-height: 100vh;
       --recipe-box-shadow: 10px 10px 0 5px black, 0 0 5px 0px rgba(0, 0, 0, 0.3);
+      --default-break-point: min-width: 800px;
       font-size: 16px;
       
     }
@@ -27,7 +28,6 @@ export default createGlobalStyle`
         font-size: 16px;
         -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  
     }
 
     html, body, div,

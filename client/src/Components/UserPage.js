@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
+import styled from "styled-components";
 import { useParams } from "react-router";
 import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import styled from "styled-components";
-import { signOut } from "./actions";
 import GridEach from "./Grid/GridEach";
+import { signOut } from "./actions";
 import { BsGearWideConnected } from "react-icons/bs";
 
 const UserPage = () => {

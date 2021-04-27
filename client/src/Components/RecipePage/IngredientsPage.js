@@ -1,9 +1,13 @@
 import React from "react";
 import styled from "styled-components";
+import useMediaQuery from "../useMediaQuery";
 import { BsPlusCircle } from "react-icons/bs";
 import { IoIosCloseCircle } from "react-icons/io";
 
 const IngredientsPage = ({ currentRecipe, setCurrentRecipe, toggleEdit }) => {
+  // media query
+  let mediaQuery = useMediaQuery();
+
   //   Input onChange = UPDATE INGREDIENTS
   const updateIngredients = (e, index) => {
     const currentRecipeCopy = { ...currentRecipe };
@@ -58,9 +62,7 @@ const IngredientsPage = ({ currentRecipe, setCurrentRecipe, toggleEdit }) => {
           return (
             <IngredientLine>
               <input
-                //TO DO MAKE THE WIDTH MATCH THE SIZE OF THE CONTAINER
-                // size={widthIngredients.current.offsetWidth / 15}
-                size="40"
+                size={mediaQuery ? "80" : "30"}
                 disabled={!toggleEdit}
                 type="text"
                 value={ingredient.ingredient}
@@ -99,11 +101,12 @@ const IngredientsPage = ({ currentRecipe, setCurrentRecipe, toggleEdit }) => {
 
 const IngredientsPageContainer = styled.div`
   position: relative;
+  /* margin: 5px; */
+  /* width: 90%; */
   padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
   height: 100%;
   & button.add-button {
     display: flex;
@@ -128,13 +131,12 @@ const IngredientsPageContainer = styled.div`
     }
   }
   & button.remove-button {
-    margin-left: auto;
-    position: absolute;
-    right: 15px;
-    transform: translateY(-4px);
-    display: flex;
+    /* transform: translateX(-20px); */
+    height: 20px;
     background-color: transparent;
     border: none;
+    padding: none;
+    margin-left: -20px;
     :hover,
     :focus,
     :active {
@@ -147,23 +149,19 @@ const SubHeader = styled.div`
   font-size: 1.5rem;
 `;
 const IngredientList = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-height: 90%;
+  max-height: 80%;
   margin-top: 2rem;
   overflow-y: auto;
   box-shadow: var(--recipe-box-shadow);
 `;
 
 const IngredientLine = styled.div`
-  width: 100%;
   display: flex;
   flex-direction: row;
-  margin-top: 5px;
+  align-items: center;
+  height: 35px;
   padding-left: 10px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  overflow: hidden;
 `;
 
 export default IngredientsPage;

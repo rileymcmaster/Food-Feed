@@ -198,7 +198,8 @@ const ContainerEach = styled.div`
   align-items: center;
   padding: 10px;
   color: black;
-
+  border: 5px solid var(--accent-bg-color);
+  /* background-color: var(--accent-bg-color); */
   :active {
     transform: translate(10px 10px);
   }
@@ -213,7 +214,7 @@ const LinkContainer = styled(Link)`
   margin: 20px;
   text-decoration: none;
   user-select: none;
-  border: 2px solid var(--accent-bg-color);
+  /* border: 2px solid var(--accent-bg-color); */
   &:hover {
     transition: 0.5s ease-in-out;
     box-shadow: var(--recipe-box-shadow);

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, Link, useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
+import useMediaQuery from "../useMediaQuery";
 // imported components
 import Wrapper from "../Wrapper";
 import AddStep from "../Buttons/AddStep";
@@ -18,6 +19,8 @@ import { IoIosCloseCircle } from "react-icons/io";
 import { BsFillTrashFill } from "react-icons/bs";
 
 const RecipePage = () => {
+  // MEDIA QUERY - Break point is 800px
+  let mediaQuery = useMediaQuery();
   //LOGGED IN USER
   const user = useSelector((state) => state.user);
 
@@ -232,7 +235,6 @@ const RecipePage = () => {
       {/*  */}
       {/* INGREDIENTS PAGE */}
       <Container confirmSendRecipe={confirmSendRecipe}>
-        {/* TODO restrict the width of the ingredients */}
         <IngredientsPage
           currentRecipe={currentRecipe}
           setCurrentRecipe={setCurrentRecipe}
@@ -249,7 +251,12 @@ const RecipePage = () => {
               <p>Step {directionIndex + 1}</p>
               <DirectionCard>
                 <textarea
-                  rows={direction.direction.length / 25}
+                  rows={
+                    mediaQuery
+                      ? direction.direction.length / 45
+                      : direction.direction.length / 30
+                  }
+                  // rows={direction.direction.length / 15}
                   cols="50"
                   disabled={!toggleEdit}
                   onFocus={(e) => e.currentTarget.select()}
@@ -331,22 +338,23 @@ const RecipePage = () => {
       {user.isSignedIn && (
         <>
           {/* SUBMIT BUTTON */}
-          <EditButtonContainer style={{ left: "0" }}>
-            {/* TIPPI here */}
+          <EditButtonContainer className="submit">
             <EditRecipeIcon
               tabIndex="1"
-              class="edit-recipe-btn"
               onClick={() => setConfirmSendRecipe(true)}
             >
               <ImCheckmark2 size={60} />
             </EditRecipeIcon>
           </EditButtonContainer>
           {/* EDIT BUTTON */}
-          <EditButtonContainer style={{ right: "0" }}>
+          <EditButtonContainer
+            className={
+              mediaQuery ? "edit-toggle-desktop" : "edit-toggle-mobile"
+            }
+          >
             <EditRecipeIcon
               tabIndex="1"
               toggleEdit={toggleEdit}
-              class="edit-recipe-btn"
               onClick={() => {
                 setToggleEdit(!toggleEdit);
               }}
@@ -721,9 +729,19 @@ const AddPageButton = styled.div`
 `;
 const EditButtonContainer = styled.div`
   position: fixed;
+  z-index: 9999;
   padding: 10px 20px;
   bottom: 2%;
-  z-index: 9999;
+  &.submit {
+    left: 0;
+  }
+  &.edit-toggle-mobile {
+    right: 0;
+  }
+  &.edit-toggle-desktop {
+    left: 0;
+    bottom: 120px;
+  }
 `;
 const EditRecipeIcon = styled.div`
   color: ${(props) => (props.toggleEdit ? "white" : "black")};

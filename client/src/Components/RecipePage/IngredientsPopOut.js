@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import useMediaQuery from "../useMediaQuery";
+// icons
 import { IoIosArrowDown } from "react-icons/io";
 import { FaLink } from "react-icons/fa";
 
@@ -11,6 +13,9 @@ const IngredientsPopOut = ({
   updatePageDirections,
   setCurrentRecipe,
 }) => {
+  // MEDIA QUERY - Break point is 800px
+  let mediaQuery = useMediaQuery();
+
   const [open, setOpen] = useState(false);
   const [viewCheckboxes, setViewCheckboxes] = useState(false);
 
@@ -57,7 +62,10 @@ const IngredientsPopOut = ({
     if (!open || !toggleEdit) {
       setViewCheckboxes(false);
     }
-  }, [open, toggleEdit]);
+    if (mediaQuery) {
+      setOpen(true);
+    }
+  }, [open, toggleEdit, mediaQuery]);
 
   return (
     // IF NO INGREDIENTS TO SHOW - default to show nothing
@@ -142,9 +150,12 @@ const IngredientsPopOut = ({
             })}
           </IngredientCheckboxes>
         </IngredientCard>
-        <Icon onClick={() => setOpen(!open)} open={open}>
-          <IoIosArrowDown size={20} />
-        </Icon>
+        {/* OPEN/CLOSE BUTTON */}
+        {!mediaQuery && (
+          <Icon onClick={() => setOpen(!open)} open={open}>
+            <IoIosArrowDown size={20} />
+          </Icon>
+        )}
       </Container>
     )
   );
@@ -161,7 +172,7 @@ const Container = styled.div`
     props.open
       ? ""
       : "  linear-gradient(0deg, rgba(172,172,172,0.9920343137254902) 0%, rgba(255,255,255,0) 19%) "};
-  box-shadow: 0 -5px 5px 0px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.5);
 `;
 // ICON TO VIEW CHECKBOXES
 const ViewCheckboxes = styled.div`
@@ -214,7 +225,7 @@ const IngredientList = styled.div`
 // checkboxes for all ingredients to be able to link them to the current step
 const IngredientCheckboxes = styled.div`
   width: 100%;
-  min-height: ${(props) => (props.viewCheckboxes ? "200px" : "100px")};
+  min-height: ${(props) => (props.viewCheckboxes ? "300px" : "100px")};
   display: flex;
   flex-direction: column;
   overflow-y: hidden;

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import styled from "styled-components";
-import GridEach from "./GridEach";
+import GridDisplay from "./GridDisplay";
 
 import Wrapper from "../Wrapper";
 import Loading from "../Loading";
@@ -16,7 +16,7 @@ const GridPage = () => {
   const [items, setItems] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
-  //
+
   //load data
   useEffect(() => {
     setLoading(true);
@@ -51,11 +51,7 @@ const GridPage = () => {
     <>
       <Container>
         <Title>FOOD FEED</Title>
-        <GridContainer>
-          {items.map((item) => {
-            return <GridEach item={item} />;
-          })}
-        </GridContainer>
+        <GridDisplay items={items} />
       </Container>
     </>
   ) : (
@@ -63,18 +59,11 @@ const GridPage = () => {
   );
 };
 
-const GridContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  flex-grow: 1;
-  width: 80%;
-  justify-content: center;
-  align-items: center;
-  margin: 2rem auto;
-`;
 const Container = styled.div`
   padding: 1em;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
 `;
 
 const Title = styled.div`

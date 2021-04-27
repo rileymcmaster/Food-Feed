@@ -12,13 +12,11 @@ const AvatarImage = ({ img }) => {
 const AvatarImgContainer = styled.div`
   position: relative;
   display: inline-block;
-  width: 50px;
-  max-width: 50px;
-  min-width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   overflow: hidden;
-  border: 2px solid rgba(0, 0, 0, 0.5);
+  border: 2px solid var(--primary-color);
   background-color: black;
 `;
 const AvatarImg = styled.img`

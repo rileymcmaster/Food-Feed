@@ -97,8 +97,8 @@ const GridEach = ({ item }) => {
       future: "in %s",
       past: "%s ago",
       s: "seconds",
-      m: "1 minute",
-      mm: "%d minutes",
+      m: "1 min",
+      mm: "%d mins",
       h: "1 hour",
       hh: "%d hours",
       d: "1 day",
@@ -130,25 +130,30 @@ const GridEach = ({ item }) => {
             {user._id === urlId ? (
               <>
                 {/* PRIVACY */}
-                <AuthorLine style={{ paddingBottom: "20px" }}>
-                  <OptionIcon
-                    tabIndex="0"
-                    onClick={(e) => {
-                      e.currentTarget.blur();
-                      handleChangePrivacy(e);
-                    }}
-                    style={({ marginRight: "auto" }, { position: "absolute" })}
-                  >
+                <AuthorLine>
+                  <OptionIcon tabIndex="0">
                     {privacy ? (
-                      <BsFillLockFill size={30} />
+                      <BsFillLockFill
+                        size={30}
+                        onClick={(e) => {
+                          e.currentTarget.blur();
+                          handleChangePrivacy(e);
+                        }}
+                      />
                     ) : (
-                      <BsFillUnlockFill size={30} />
+                      <BsFillUnlockFill
+                        size={30}
+                        onClick={(e) => {
+                          e.currentTarget.blur();
+                          handleChangePrivacy(e);
+                        }}
+                      />
                     )}
                   </OptionIcon>
                   {/* DELETE BUTTON */}
                   {/* CAN'T DELETE ORIGINAL RECIPES, it messes up the variations array for future recipes */}
                   {!item.isOriginal && (
-                    <OptionIcon tabIndex="0" style={{ margin: "0 auto" }}>
+                    <OptionIcon tabIndex="0" style={{ marginLeft: "60px" }}>
                       <BsFillTrashFill
                         size={30}
                         onClick={(e) => {
@@ -199,22 +204,20 @@ const ContainerEach = styled.div`
   padding: 10px;
   color: black;
   border: 5px solid var(--accent-bg-color);
-  /* background-color: var(--accent-bg-color); */
   :active {
     transform: translate(10px 10px);
   }
 `;
 // Loading
 const LoadingContainer = styled.div`
-  min-width: 400px;
-  margin-top: 80px;
+  height: 400px;
+  width: 300px;
 `;
 // Link that wraps whole card
 const LinkContainer = styled(Link)`
   margin: 20px;
   text-decoration: none;
   user-select: none;
-  /* border: 2px solid var(--accent-bg-color); */
   &:hover {
     transition: 0.5s ease-in-out;
     box-shadow: var(--recipe-box-shadow);
@@ -297,7 +300,7 @@ const UserLink = styled(Link)`
   justify-content: center;
   padding: 0.5rem;
   min-width: 100px;
-  height: 4rem;
+  height: 3rem;
   border-radius: 2rem;
   background-color: white;
   &:hover {

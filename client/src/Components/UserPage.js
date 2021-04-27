@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useParams } from "react-router";
 import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import GridEach from "./Grid/GridEach";
+import GridDisplay from "./Feed/GridDisplay";
 import { signOut } from "./actions";
 import { BsGearWideConnected } from "react-icons/bs";
 
@@ -157,11 +157,7 @@ const UserPage = () => {
         <Bio>
           <p>{currentUserProfile.bio}</p>
         </Bio>
-        <GridContainer>
-          {currentUserRecipes.map((item) => {
-            return <GridEach item={item} />;
-          })}
-        </GridContainer>
+        <GridDisplay items={currentUserRecipes} />
       </Container>
     )
   );
@@ -178,16 +174,6 @@ const OptionIcon = styled.div`
   margin-top: 10px;
 `;
 
-const GridContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  flex-grow: 1;
-  width: 80%;
-  justify-content: center;
-  align-items: center;
-  margin: 1rem auto 2rem auto;
-`;
 const DeleteAccountButton = styled.button`
   z-index: 99999999999999;
   padding: 5px;
@@ -236,7 +222,7 @@ const ProfileImageContainer = styled.div`
   height: 200px;
   overflow: hidden;
   border-radius: 50%;
-  box-shadow: 10px 7px 2px black;
+  box-shadow: 12px 8px 2px 2px black, 0 0 4px rgba(0, 0, 0, 0.2);
 `;
 const HeadCard = styled.div`
   padding: 2rem 1rem;

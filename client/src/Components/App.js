@@ -5,7 +5,7 @@ import { signIn } from "./actions";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import HomePage from "./HomePage";
 import GlobalStyles from "../GlobalStyles";
-import GridPage from "./Grid/GridPage";
+import GridPage from "./Feed/";
 import RecipePage from "./RecipePage/index.js";
 import SignUp from "./SignUp";
 import SignIn from "./SignIn";

@@ -70,7 +70,7 @@ const SignUp = () => {
   const handleSubmit = (e) => {
     // e.preventDefault();
     setWaitingMessage("waiting");
-    fetch("/user/signup", {
+    fetch("https://food-feed.herokuapp.com/user/signup", {
       method: "POST",
       body: JSON.stringify(userInput),
       headers: {

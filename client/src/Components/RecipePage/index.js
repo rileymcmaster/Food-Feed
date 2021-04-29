@@ -46,7 +46,7 @@ const RecipePage = () => {
   useEffect(() => {
     setFirstFetch(false);
     setLoading(true);
-    fetch(`/recipes/${urlId}`)
+    fetch(`https://food-feed.herokuapp.com/recipes/${urlId}`)
       .then((res) => res.json())
       .then(({ status, data, message }) => {
         if (status === 200) {
@@ -63,7 +63,7 @@ const RecipePage = () => {
   //FETCH AUTHOR
   useEffect(() => {
     if (currentRecipe) {
-      fetch(`/user/${currentRecipe.createdBy}`)
+      fetch(`https://food-feed.herokuapp.com/user/${currentRecipe.createdBy}`)
         .then((res) => res.json())
         .then((data) => {
           setAuthor(data.data);
@@ -71,7 +71,9 @@ const RecipePage = () => {
       if (currentRecipe.isOriginal) {
         setOriginalVariations(currentRecipe.variations);
       } else if (!currentRecipe.isOriginal) {
-        fetch(`/recipes/${currentRecipe.originalRecipe}`)
+        fetch(
+          `https://food-feed.herokuapp.com/recipes/${currentRecipe.originalRecipe}`
+        )
           .then((res) => res.json())
           .then((data) => {
             setOriginalVariations([
@@ -119,7 +121,7 @@ const RecipePage = () => {
     if (currentRecipe.isOriginal) {
       currentRecipeCopy.originalRecipe = currentRecipe._id;
     }
-    fetch(`/recipes/create/edit`, {
+    fetch(`https://food-feed.herokuapp.com/recipes/create/edit`, {
       method: "POST",
       body: JSON.stringify(currentRecipeCopy),
       headers: {
@@ -150,7 +152,7 @@ const RecipePage = () => {
   useEffect(() => {
     if (editedRecipeObject) {
       // UPDATE USER'S RECIPES ARRAY
-      fetch(`/user/edit/recipe`, {
+      fetch(`https://food-feed.herokuapp.com/user/edit/recipe`, {
         method: "PATCH",
         body: JSON.stringify(editedRecipeObject),
         headers: {

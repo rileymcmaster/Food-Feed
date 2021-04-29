@@ -20,7 +20,7 @@ const App = () => {
   useEffect(() => {
     const localStorageId = JSON.parse(window.localStorage.getItem("_id"));
     if (localStorageId) {
-      fetch(`/user/${localStorageId}`)
+      fetch(`https://food-feed.herokuapp.com/user/${localStorageId}`)
         .then((res) => res.json())
         .then((data) => {
           dispatch(signIn(data.data));

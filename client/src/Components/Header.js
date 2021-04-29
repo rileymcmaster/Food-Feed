@@ -15,7 +15,7 @@ const Header = () => {
 
   //SIGN OUT
   const handleSignout = () => {
-    fetch("/user/signout", {
+    fetch("https://food-feed.herokuapp.com/user/signout", {
       method: "PATCH",
       body: JSON.stringify({ user }),
       headers: {

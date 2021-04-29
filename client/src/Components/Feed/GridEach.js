@@ -31,7 +31,7 @@ const GridEach = ({ item }) => {
     setPrivacy(item.isPrivate);
     setDeleteInProcess(false);
     setLoading(true);
-    fetch(`/user/${item.createdBy}`)
+    fetch(`https://food-feed.herokuapp.com/user/${item.createdBy}`)
       .then((res) => res.json())
       .then((data) => {
         setAuthor(data.data);
@@ -48,7 +48,7 @@ const GridEach = ({ item }) => {
     if (user.isSignedIn && user._id === item.createdBy) {
       //DELETE RECIPE - sets isDelete to true
       // removes the recipe from the original recipe's variations array
-      fetch(`/recipes/delete`, {
+      fetch(`https://food-feed.herokuapp.com/recipes/delete`, {
         method: "PATCH",
         body: JSON.stringify(item),
         headers: {
@@ -57,7 +57,7 @@ const GridEach = ({ item }) => {
         },
       }).catch((err) => console.log("error", err));
       //Update user's recipe array
-      fetch(`/user/edit/remove`, {
+      fetch(`https://food-feed.herokuapp.com/user/edit/remove`, {
         method: "PATCH",
         body: JSON.stringify(item),
         headers: {
@@ -77,7 +77,7 @@ const GridEach = ({ item }) => {
     const itemCopy = { ...item };
     itemCopy.isPrivate = !privacy;
     if (user.isSignedIn && user._id === item.createdBy) {
-      fetch(`/recipes/privacy`, {
+      fetch(`https://food-feed.herokuapp.com/recipes/privacy`, {
         method: "PATCH",
         body: JSON.stringify(itemCopy),
         headers: {

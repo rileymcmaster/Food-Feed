@@ -116,7 +116,7 @@ const RecipeForm = () => {
   const handleSubmit = (e) => {
     setSendingRecipe("upload in progress");
     e.preventDefault();
-    fetch("/recipes/create", {
+    fetch("https://food-feed.herokuapp.com/recipes/create", {
       method: "POST",
       body: JSON.stringify(userInput),
       headers: {

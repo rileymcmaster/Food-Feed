@@ -22,7 +22,7 @@ const SignIn = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setWaitingMessage("waiting");
-    fetch("/user/signin", {
+    fetch("https://food-feed.herokuapp.com/user/signin", {
       method: "POST",
       body: JSON.stringify({ email, password }),
       headers: {

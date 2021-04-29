@@ -28,7 +28,7 @@ const UserPage = () => {
     // the fetch relies checks if it is the signed in user's account
     // the delay prevents the page from loading twice
     const delayFetch = setTimeout(() => {
-      fetch(`/user/${urlId}`)
+      fetch(`https://food-feed.herokuapp.com/user/${urlId}`)
         .then((res) => res.json())
         .then(({ status, data, message }) => {
           if (status === 200) {
@@ -48,7 +48,7 @@ const UserPage = () => {
 
   // FIND THE USER's RECIPES
   useEffect(() => {
-    fetch(`/recipes/user/${urlId}`)
+    fetch(`https://food-feed.herokuapp.com/recipes/user/${urlId}`)
       .then((res) => res.json())
       .then((data) => {
         // if you are viewing your own profile, you can see private recipes
@@ -77,7 +77,7 @@ const UserPage = () => {
   const handleDeleteAccount = () => {
     if (loggedInUser) {
       //set deactive: true in user db
-      fetch(`/user/delete`, {
+      fetch(`https://food-feed.herokuapp.com/user/delete`, {
         method: "PATCH",
         body: JSON.stringify({ user }),
         headers: {
@@ -90,7 +90,7 @@ const UserPage = () => {
         .catch((err) => console.log("problem deleting user", err));
       //
       // delete the user's recipes
-      fetch(`/recipes/user/delete/${user._id}`, {
+      fetch(`https://food-feed.herokuapp.com/recipes/user/delete/${user._id}`, {
         method: "DELETE",
         headers: {
           Accept: "application/json",

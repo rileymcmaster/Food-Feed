@@ -25,7 +25,7 @@ const GridPage = () => {
     }
     //SHORT DELAY TO WAIT IF THERE IS A USER LOGGED IN
     const delayFetch = setTimeout(() => {
-      fetch(`/recipes/all/${user._id}`)
+      fetch(`https://food-feed.herokuapp.com/recipes/all/${user._id}`)
         .then((res) => res.json())
         .then((data) => {
           setItems(data.data);

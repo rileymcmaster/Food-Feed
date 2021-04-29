@@ -8,8 +8,6 @@ require("dotenv").config();
 const recipeRouter = require("./routes/recipes");
 const userRouter = require("./routes/user");
 
-const PORT = 4000;
-
 const mongoose = require("mongoose");
 const { MONGO_URI } = process.env;
 
@@ -50,4 +48,6 @@ express()
     res.status(400).send("Page not found");
   })
 
-  .listen(PORT, () => console.info(`Listening on port ${PORT}`));
+  .listen(process.env.PORT || 4000, () =>
+    console.info(`Listening on port 4000`)
+  );

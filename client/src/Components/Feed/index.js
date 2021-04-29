@@ -44,9 +44,9 @@ const GridPage = () => {
       <Loading />
     </Wrapper>
   ) : errorMessage && !items ? (
-    <Wrapper>
-      <h1>There was an error</h1>
-    </Wrapper>
+    <Container>
+      <h1 style={{ margin: "auto" }}>There was an error. Try again later</h1>
+    </Container>
   ) : items ? (
     <>
       <Container>
@@ -62,6 +62,8 @@ const GridPage = () => {
 const Container = styled.div`
   padding: 1em;
   display: flex;
+  width: 100vw;
+  min-height: 100vh;
   flex-direction: column;
   margin-bottom: 20px;
 `;

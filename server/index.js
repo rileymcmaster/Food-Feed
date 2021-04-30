@@ -1,8 +1,11 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
+const cors = require("cors");
 
 require("dotenv").config();
+
+const PORT = process.env.PORT || 4000;
 
 //routes/
 const recipeRouter = require("./routes/recipes");
@@ -14,6 +17,11 @@ const { MONGO_URI } = process.env;
 const options = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+};
+
+const corsOptions = {
+  origin: "https://food-feed.herokuapp.com",
+  optionsSuccessStatus: 200,
 };
 
 mongoose
@@ -38,6 +46,7 @@ express()
   .use(bodyParser.json())
   .use(express.urlencoded({ extended: false }))
   .use("/", express.static(__dirname + "/"))
+  .use(cors(corsOptions))
 
   //RECIPES
   .use("/recipes", recipeRouter)
@@ -48,6 +57,4 @@ express()
     res.status(400).send("Page not found");
   })
 
-  .listen(process.env.PORT || 4000, () =>
-    console.info(`Listening on port 4000`)
-  );
+  .listen(PORT, () => console.info(`Listening on port ${PORT}`));

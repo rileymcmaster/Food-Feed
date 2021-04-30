@@ -20,23 +20,29 @@ const GridPage = () => {
   //load data
   useEffect(() => {
     setLoading(true);
-    if (!user._id) {
-      user._id = 0;
-    }
+    // if (!user._id) {
+    //   user._id = 0;
+    // }
     //SHORT DELAY TO WAIT IF THERE IS A USER LOGGED IN
-    const delayFetch = setTimeout(() => {
-      fetch(`https://food-feed.herokuapp.com/recipes/all/${user._id}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setItems(data.data);
-        })
-        .catch((err) => {
-          console.log("error", err);
-          setErrorMessage("There is an error");
-        });
-      setLoading(false);
-    }, 1000);
-    return () => clearTimeout(delayFetch);
+    // const delayFetch = setTimeout(() => {
+    // fetch(`https://food-feed.herokuapp.com/recipes/all/${user._id}`)
+    fetch("https://food-feed.herokuapp.com/recipes/all/0")
+      .then((res) => {
+        console.log("res", res);
+        res.json();
+      })
+      .then(({ status, data, message }) => {
+        console.log("status", status);
+        console.log("message", message);
+        setItems(data);
+      })
+      .catch((err) => {
+        console.log("error", err);
+        setErrorMessage("There is an error");
+      });
+    setLoading(false);
+    // }, 100);
+    // return () => clearTimeout(delayFetch);
   }, [user]);
 
   return loading && !items ? (
@@ -63,7 +69,7 @@ const Container = styled.div`
   padding: 1em;
   display: flex;
   width: 100vw;
-  min-height: 100vh;
+  min-height: 90vh;
   flex-direction: column;
   margin-bottom: 20px;
 `;

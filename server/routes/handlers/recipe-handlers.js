@@ -4,7 +4,6 @@ const Recipe = require("../../models/recipe");
 const assert = require("assert");
 const { MongoClient } = require("mongodb");
 const mongoose = require("mongoose");
-// const { delete } = require("../recipes");
 require("dotenv").config();
 
 const { MONGO_URI } = process.env;

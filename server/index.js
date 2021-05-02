@@ -21,7 +21,7 @@ const options = {
 
 const corsOptions = {
   origin: "https://food-feed.herokuapp.com",
-  optionsSuccessStatus: 200,
+  optionsSuccessStatus: 202,
 };
 
 mongoose
@@ -42,7 +42,6 @@ express()
     next();
   })
   .use(morgan("tiny"))
-  .use(express.static("./public"))
   .use(bodyParser.json())
   .use(express.urlencoded({ extended: false }))
   .use("/", express.static(__dirname + "/"))

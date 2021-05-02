@@ -19,6 +19,7 @@ const GridPage = () => {
 
   //load data
   useEffect(() => {
+    setErrorMessage("");
     setLoading(true);
     // if (!user._id) {
     //   user._id = 0;
@@ -27,13 +28,15 @@ const GridPage = () => {
     // const delayFetch = setTimeout(() => {
     // fetch(`https://food-feed.herokuapp.com/recipes/all/${user._id}`)
     fetch("https://food-feed.herokuapp.com/recipes/all/0")
-      .then((res) => {
-        console.log("res", res);
-        res.json();
-      })
+      // fetch(`/recipes/all/0`)
+      // .then((res) => {
+      //   console.log("res", typeof res);
+      //   res.text();
+      // })
       .then(({ status, data, message }) => {
         console.log("status", status);
         console.log("message", message);
+        console.log("data", data);
         setItems(data);
       })
       .catch((err) => {

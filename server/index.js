@@ -20,7 +20,7 @@ const options = {
 };
 
 const corsOptions = {
-  origin: "https://food-feed.herokuapp.com",
+  origin: "https://food-feed.netlify.app/",
   optionsSuccessStatus: 202,
 };
 
@@ -39,12 +39,14 @@ express()
       "Access-Control-Allow-Headers",
       "Origin, X-Requested-With, Content-Type, Accept"
     );
+    res.header("Access-Control-Allow-Origin", "https://food-feed.netlify.app/");
     next();
   })
   .use(morgan("tiny"))
   .use(bodyParser.json())
   .use(express.urlencoded({ extended: false }))
   .use("/", express.static(__dirname + "/"))
+  .use(express.static("public"))
   .use(cors(corsOptions))
 
   //RECIPES

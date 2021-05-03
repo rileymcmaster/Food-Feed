@@ -21,32 +21,38 @@ const GridPage = () => {
   useEffect(() => {
     setErrorMessage("");
     setLoading(true);
-    // if (!user._id) {
-    //   user._id = 0;
-    // }
-    //SHORT DELAY TO WAIT IF THERE IS A USER LOGGED IN
-    // const delayFetch = setTimeout(() => {
-    // fetch(`https://food-feed.herokuapp.com/recipes/all/${user._id}`)
-    fetch("https://food-feed.herokuapp.com/recipes/all/0", {
-      mode: "cors",
-      credentials: "include",
-    })
-      // fetch(`/recipes/all/0`)
-      // .then((res) => {
-      //   console.log("res", typeof res);
-      //   res.text();
-      // })
-      .then(({ status, data, message }) => {
-        console.log("status", status);
-        console.log("message", message);
-        console.log("data", data);
-        setItems(data);
-      })
-      .catch((err) => {
-        console.log("error", err);
-        setErrorMessage("There is an error");
-      });
-    setLoading(false);
+    const loadData = async () => {
+      // let  checkIfLoggedIn =  await () => {
+      if (!user._id) {
+        user._id = 0;
+      }
+
+      // }
+      //SHORT DELAY TO WAIT IF THERE IS A USER LOGGED IN
+      // const delayFetch = setTimeout(() => {
+      fetch(`https://food-feed.herokuapp.com/recipes/all/${user._id}`)
+        // fetch("https://food-feed.herokuapp.com/recipes/all/0", {
+        //   mode: "cors",
+        //   credentials: "include",
+        // })
+        // fetch(`/recipes/all/0`)
+        .then((res) => {
+          console.log("res", typeof res);
+          res.text();
+        })
+        .then(({ status, data, message }) => {
+          console.log("status", status);
+          console.log("message", message);
+          console.log("data", data);
+          setItems(data);
+        })
+        .catch((err) => {
+          console.log("error", err);
+          setErrorMessage("There is an error");
+        });
+      setLoading(false);
+    };
+    loadData();
     // }, 100);
     // return () => clearTimeout(delayFetch);
   }, [user]);

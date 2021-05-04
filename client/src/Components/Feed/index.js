@@ -40,8 +40,9 @@ const GridPage = () => {
         // })
         // fetch(`/recipes/all/0`)
         .then((res) => {
-          console.log("res", res);
-          res.json();
+          const response = res.json();
+          console.log("response", response);
+          return response;
         })
         .then(({ status, data, message }) => {
           console.log("status", status);

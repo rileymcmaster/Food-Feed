@@ -33,6 +33,9 @@ const GridPage = () => {
       fetch(`https://food-feed.herokuapp.com/recipes/all/${user._id}`, {
         method: "GET",
         mode: "no-cors",
+        headers: {
+          Authorization: ("Bearer" = accessToken),
+        },
       })
         // fetch("https://food-feed.herokuapp.com/recipes/all/0", {
         //   mode: "cors",

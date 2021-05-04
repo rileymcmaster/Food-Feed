@@ -30,15 +30,18 @@ const GridPage = () => {
       // }
       //SHORT DELAY TO WAIT IF THERE IS A USER LOGGED IN
       // const delayFetch = setTimeout(() => {
-      fetch(`https://food-feed.herokuapp.com/recipes/all/${user._id}`)
+      fetch(`https://food-feed.herokuapp.com/recipes/all/${user._id}`, {
+        method: "GET",
+        mode: "no-cors",
+      })
         // fetch("https://food-feed.herokuapp.com/recipes/all/0", {
         //   mode: "cors",
         //   credentials: "include",
         // })
         // fetch(`/recipes/all/0`)
         .then((res) => {
-          console.log("res", typeof res);
-          res.text();
+          console.log("res", res);
+          res.json();
         })
         .then(({ status, data, message }) => {
           console.log("status", status);

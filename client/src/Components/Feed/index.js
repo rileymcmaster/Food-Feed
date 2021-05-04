@@ -34,7 +34,7 @@ const GridPage = () => {
         method: "GET",
         mode: "no-cors",
         headers: {
-          Authorization: ("Bearer" = accessToken),
+          Authorization: "Bearer " + accessToken,
         },
       })
         // fetch("https://food-feed.herokuapp.com/recipes/all/0", {

@@ -1,1 +1,2 @@
-https://food-feed.herokuapp.com/
+for = "https://food-feed.herokuapp.com/"
+  X-Frame-Options: SAMEORIGIN

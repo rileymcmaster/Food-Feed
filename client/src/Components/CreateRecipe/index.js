@@ -208,7 +208,7 @@ const RecipeForm = () => {
     </FormContainer>
   ) : (
     <FormContainer>
-      <form onSubmit={handleSubmit} enctype="multipart/form-data">
+      <form onSubmit={handleSubmit} encType="multipart/form-data">
         <Title>
           <h1>Create a new recipe</h1>
         </Title>

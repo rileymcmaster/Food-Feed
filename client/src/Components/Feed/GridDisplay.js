@@ -7,7 +7,7 @@ const GridDisplay = ({ items }) => {
   const [currentPageItems, setCurrentPageItems] = useState(null);
   // PAGINATION
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(12);
+  const [itemsPerPage, setItemsPerPage] = useState(6);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   //
@@ -22,7 +22,7 @@ const GridDisplay = ({ items }) => {
       <Container>
         <GridContainer>
           {currentPageItems.map((item) => {
-            return <GridEach item={item} />;
+            return <GridEach key={item.recipeName} item={item} />;
           })}
         </GridContainer>
         <Pagination

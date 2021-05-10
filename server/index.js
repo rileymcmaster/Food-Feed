@@ -20,7 +20,7 @@ const options = {
 };
 
 const corsOptions = {
-  origin: "https://food-feed.netlify.app",
+  origin: ["https://food-feed.netlify.app", "https://localhost:3000"],
   optionsSuccessStatus: 202,
 };
 

@@ -10,24 +10,26 @@ const Pagination = ({ items, itemsPerPage, currentPage, setCurrentPage }) => {
   );
 
   return (
-    <Container>
-      {totalPagesArray.map((page) => {
-        return (
-          <button
-            id={page}
-            className={page === currentPage && "active-page"}
-            onClick={(e) => {
-              window.scrollTo(0, 0);
-              setCurrentPage(page);
-              e.currentTarget.blur();
-            }}
-            type="button"
-          >
-            {page}
-          </button>
-        );
-      })}
-    </Container>
+    totalNumOfPages > 1 && (
+      <Container>
+        {totalPagesArray.map((page) => {
+          return (
+            <button
+              id={page}
+              className={page === currentPage && "active-page"}
+              onClick={(e) => {
+                window.scrollTo(0, 0);
+                setCurrentPage(page);
+                e.currentTarget.blur();
+              }}
+              type="button"
+            >
+              {page}
+            </button>
+          );
+        })}
+      </Container>
+    )
   );
 };
 

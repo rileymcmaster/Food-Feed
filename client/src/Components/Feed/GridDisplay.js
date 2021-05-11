@@ -16,7 +16,7 @@ const GridDisplay = ({ items }) => {
     if (items) {
       setCurrentPageItems(items.slice(indexOfFirstItem, indexOfLastItem));
     }
-  }, [currentPageItems, currentPage]);
+  }, [currentPage]);
   return (
     currentPageItems && (
       <Container>

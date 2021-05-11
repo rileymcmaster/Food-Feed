@@ -106,6 +106,7 @@ const IngredientsPopOut = ({
               //  RENDER ALL THE INGREDIENTS LINKED
               return (
                 <input
+                  key={`${ingredientIndex}-${ingredient}`}
                   onChange={(e) =>
                     updateDirectionIngredient(
                       e,

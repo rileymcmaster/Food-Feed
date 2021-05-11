@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, Link, useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
@@ -8,7 +8,6 @@ import Wrapper from "../Wrapper";
 import AddStep from "../Buttons/AddStep";
 import Loading from "../Loading";
 import ButtonUpload from "../Buttons/ButtonUpload";
-import Button from "../Buttons/Button";
 import IngredientsPage from "./IngredientsPage";
 import IngredientsPopOut from "./IngredientsPopOut";
 // icons
@@ -59,7 +58,7 @@ const RecipePage = () => {
       })
       .then(() => setFirstFetch(true))
       .catch((err) => console.log("error getting recipe", err));
-  }, [urlId]);
+  }, [urlId, history]);
   //FETCH AUTHOR
   useEffect(() => {
     if (currentRecipe) {
@@ -88,7 +87,7 @@ const RecipePage = () => {
       }
       setLoading(false);
     }
-  }, [firstFetch]);
+  }, [firstFetch, currentRecipe]);
 
   //EDITING - anything on the page
   const [toggleEdit, setToggleEdit] = useState(false);
@@ -163,7 +162,7 @@ const RecipePage = () => {
         .then(() => history.push(`/recipe/${editedRecipeObject._id}`))
         .catch((err) => console.log("User's recipe array not updated", err));
     }
-  }, [editedRecipeObject]);
+  }, [editedRecipeObject, history]);
 
   // HANDLE CHECKBOXES of ingredients on direction page
   const updateDirectionsIngredientsLink = (e, directionIndex) => {

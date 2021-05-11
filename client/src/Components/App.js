@@ -26,7 +26,7 @@ const App = () => {
           dispatch(signIn(data.data));
         });
     }
-  }, []);
+  }, [dispatch]);
 
   return (
     <>

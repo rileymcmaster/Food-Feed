@@ -9,16 +9,6 @@ const Pagination = ({ items, itemsPerPage, currentPage, setCurrentPage }) => {
     (x, i) => i + 1
   );
 
-  const increasePageNumber = () => {
-    if (currentPage !== totalNumOfPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-  const decreasePageNumber = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
   return (
     <Container>
       {totalPagesArray.map((page) => {

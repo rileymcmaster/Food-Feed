@@ -27,17 +27,13 @@ const GridPage = () => {
       method: "GET",
       mode: "cors",
     })
-      .then((res) => {
-        console.log("res", res);
-        const response = res.json();
-        console.log("response", response);
-        return response;
-      })
+      .then((res) => res.json())
       .then(({ status, data, message }) => {
-        console.log("status", status);
-        console.log("message", message);
-        console.log("data", data);
-        setItems(data);
+        if (status === 200) {
+          setItems(data);
+        } else {
+          setErrorMessage("There is an error");
+        }
       })
       .catch((err) => {
         console.log("error", err);

@@ -44,7 +44,7 @@ const UserPage = () => {
         });
     }, 500);
     return () => clearTimeout(delayFetch);
-  }, [urlId]);
+  }, [urlId, history]);
 
   // FIND THE USER's RECIPES
   useEffect(() => {

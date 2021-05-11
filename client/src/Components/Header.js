@@ -42,7 +42,7 @@ const Header = () => {
               onClick={() => setToggleMenu(!toggleMenu)}
               onMouseEnter={() => setToggleMenu(true)}
             >
-              <img src={user.avatarUrl} />
+              <img src={user.avatarUrl} alt="user avatar" />
             </ImageContainer>
             {/* </Link> */}
             {/* DROP DOWN */}

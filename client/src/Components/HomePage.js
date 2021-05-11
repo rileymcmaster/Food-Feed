@@ -15,7 +15,8 @@ const HomePage = () => {
     if (user && user.isSignedIn) {
       history.push("/recipes");
     }
-  }, [user]);
+  }, [user, history]);
+
   return user && user.isSignedIn ? (
     <Wrapper>
       <Loading />

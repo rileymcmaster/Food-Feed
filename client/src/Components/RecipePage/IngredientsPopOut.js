@@ -52,9 +52,8 @@ const IngredientsPopOut = ({
       });
     });
     //change the value that is being edited
-    currentRecipeCopy.directions[directionIndex].ingredients[
-      ingredientIndex
-    ] = { ingredient: e.target.value };
+    currentRecipeCopy.directions[directionIndex].ingredients[ingredientIndex] =
+      { ingredient: e.target.value };
     setCurrentRecipe(currentRecipeCopy);
   };
   //if not editing or have the window expanded then you can't see the checkboxes

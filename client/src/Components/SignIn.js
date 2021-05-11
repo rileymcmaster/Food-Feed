@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { signIn } from "./actions";
 import styled from "styled-components";
 import ButtonUpload from "./Buttons/ButtonUpload";
 
 const SignIn = () => {
   const history = useHistory();
-  //SIGN IN STATE//
-  const user = useSelector((state) => state.user);
+
   //SIGN IN FIELDS
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);

@@ -28,7 +28,7 @@ const RecipeForm = () => {
     const userInputCopy = { ...userInput };
     //update the corresponding ingredient in DIRECTIONS
     userInputCopy.directions.filter((direction, i) => {
-      direction.ingredients.filter((ingredient, idx) => {
+      return direction.ingredients.filter((ingredient, idx) => {
         if (
           ingredient.ingredient === userInputCopy.ingredients[index].ingredient
         ) {
@@ -154,11 +154,7 @@ const RecipeForm = () => {
     // add object to end of array
     const ingredientLength = userInputCopy.ingredients.length;
     // splice changes original array, inserts the new object
-    const addNewIngredient = userInputCopy.ingredients.splice(
-      ingredientLength,
-      0,
-      newIngredientObject
-    );
+    userInputCopy.ingredients.splice(ingredientLength, 0, newIngredientObject);
     setUserInput(userInputCopy);
   };
 
@@ -168,7 +164,7 @@ const RecipeForm = () => {
     const userInputCopy = { ...userInput };
     // must be at least one ingredient
     if (userInputCopy.ingredients.length > 1) {
-      const remove = userInputCopy.ingredients.splice(ingredientIndex, 1);
+      userInputCopy.ingredients.splice(ingredientIndex, 1);
       setUserInput(userInputCopy);
     }
   };
@@ -181,11 +177,7 @@ const RecipeForm = () => {
     // add object to end of array
     const directionLength = userInputCopy.directions.length;
     // splice changes original array, inserts the new object
-    const addNewDirection = userInputCopy.directions.splice(
-      directionLength,
-      0,
-      newDirectionObject
-    );
+    userInputCopy.directions.splice(directionLength, 0, newDirectionObject);
     setUserInput(userInputCopy);
   };
 
@@ -233,11 +225,10 @@ const RecipeForm = () => {
         {/* INGREDIENTS */}
         <IngredientsCard>
           <h1>INGREDIENTS:</h1>
-          {/* {numIngredientsArray.map((num, index) => { */}
+
           {userInput.ingredients.map((ingredient, index) => {
             return (
-              <IngredientLine>
-                {/* <label for={`ingredient-${index}`}>Ingredient {index + 1}:</label> */}
+              <IngredientLine key={`ingredient${index}`}>
                 <input
                   type="text"
                   placeholder={`Ingredient ${index + 1}`}

@@ -61,9 +61,9 @@ const IngredientsPopOut = ({
     if (!open || !toggleEdit) {
       setViewCheckboxes(false);
     }
-    // if (mediaQuery) {
-    //   setOpen(true);
-    // }
+    if (mediaQuery) {
+      setOpen(true);
+    }
   }, [open, toggleEdit, mediaQuery]);
 
   return (
@@ -154,11 +154,11 @@ const IngredientsPopOut = ({
           </IngredientCheckboxes>
         </IngredientCard>
         {/* OPEN/CLOSE BUTTON */}
-        {/* {mediaQuery && ( */}
-        <Icon onClick={() => setOpen(!open)} open={open}>
-          <IoIosArrowDown size={20} />
-        </Icon>
-        {/* )} */}
+        {mediaQuery && (
+          <Icon onClick={() => setOpen(!open)} open={open}>
+            <IoIosArrowDown size={20} />
+          </Icon>
+        )}
       </Container>
     )
   );

@@ -47,7 +47,7 @@ const SignUp = () => {
     setImageUploading("Upload in progress");
     const data = new FormData();
     data.append("file", avatarImage);
-    data.append("upload_preset", "feed-preset");
+    data.append("upload_preset", "food-feed-avatar");
     data.append("cloud_name", "bodyofwater");
     fetch("https://api.cloudinary.com/v1_1/bodyofwater/image/upload", {
       method: "POST",
@@ -104,7 +104,7 @@ const SignUp = () => {
       <form onSubmit={handleSubmit}>
         {/* handle */}
         <div>
-          <label for="handle">User handle:</label>
+          <label htmlFor="handle">User handle:</label>
           <input
             size="40"
             tabIndex="2"
@@ -126,7 +126,7 @@ const SignUp = () => {
         </div>
         {/* userName */}
         <div>
-          <label for="userName">Display Name:</label>
+          <label htmlFor="userName">Display Name:</label>
           <input
             size="40"
             type="text"
@@ -139,7 +139,7 @@ const SignUp = () => {
         </div>
         {/* EMAIL */}
         <div>
-          <label for="email">Email:</label>
+          <label htmlFor="email">Email:</label>
           <input
             size="40"
             type="email"
@@ -156,7 +156,7 @@ const SignUp = () => {
         </div>
         <div>
           {/* PASSWORD */}
-          <label for="password">Password:</label>
+          <label htmlFor="password">Password:</label>
           <input
             size="40"
             type="password"
@@ -169,7 +169,7 @@ const SignUp = () => {
         </div>
         {/* UPLOAD AVATAR IMAGE */}
         <div>
-          <label for="uploadImage">
+          <label htmlFor="uploadImage">
             <input
               type="file"
               name="uploadImage"
@@ -204,7 +204,7 @@ const SignUp = () => {
 
         {/* BIO */}
         <div>
-          <label for="bio">Brief bio:</label>
+          <label htmlFor="bio">Brief bio:</label>
           <textarea
             rows="4"
             cols="50"

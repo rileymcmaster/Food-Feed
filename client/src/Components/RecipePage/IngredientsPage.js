@@ -60,7 +60,7 @@ const IngredientsPage = ({ currentRecipe, setCurrentRecipe, toggleEdit }) => {
       <IngredientList>
         {currentRecipe.ingredients.map((ingredient, index) => {
           return (
-            <IngredientLine>
+            <IngredientLine key={`${ingredient.ingredient}-${index}`}>
               <input
                 size={mediaQuery ? "80" : "30"}
                 disabled={!toggleEdit}

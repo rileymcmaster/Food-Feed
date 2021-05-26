@@ -48,7 +48,7 @@ const EachDirectionContainer = ({
               if (ingredient.ingredient) {
                 return (
                   <>
-                    <label for={`${index}-${ingredient.ingredient}`}>
+                    <label htmlFor={`${index}-${ingredient.ingredient}`}>
                       <input
                         checked={checkedIngredient(ingredients[idx].ingredient)}
                         className="checkbox"

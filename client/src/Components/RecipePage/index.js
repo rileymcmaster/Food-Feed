@@ -494,7 +494,7 @@ const Title = styled.div`
   font-size: 1.5rem;
   text-align: center;
   max-width: 300px;
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 1);
   box-shadow: var(--recipe-box-shadow);
 `;
 // Image that shows on first page

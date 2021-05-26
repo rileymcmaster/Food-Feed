@@ -90,7 +90,7 @@ const RecipeForm = () => {
     setImageUploading("uploading");
     const data = new FormData();
     data.append("file", recipeImage);
-    data.append("upload_preset", "feed-preset");
+    data.append("upload_preset", "food-feed-recipe");
     data.append("cloud_name", "bodyofwater");
     fetch("https://api.cloudinary.com/v1_1/bodyofwater/image/upload", {
       method: "POST",
@@ -207,7 +207,7 @@ const RecipeForm = () => {
         {/* RECIPE NAME */}
         <NameCard>
           <h1>
-            <label for="recipeName">Recipe name:</label>
+            <label htmlFor="recipeName">Recipe name:</label>
           </h1>
           <input
             className="recipe-name"
@@ -292,7 +292,7 @@ const RecipeForm = () => {
         {/* END DIRECTIONS */}
         {/* PRIVATE CHECKBOX */}
         <PrivateLine>
-          <label for="isPrivate">
+          <label htmlFor="isPrivate">
             <input
               className="checkbox"
               type="checkbox"
@@ -304,7 +304,7 @@ const RecipeForm = () => {
           </label>
         </PrivateLine>
         {/* UPLOAD IMAGE */}
-        <label for="uploadImage" className="file-uploader">
+        <label htmlFor="uploadImage" className="file-uploader">
           <input
             className="file-uploader"
             type="file"

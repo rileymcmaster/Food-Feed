@@ -57,7 +57,7 @@ const SignIn = () => {
       <form>
         {/* EMAIL */}
         <div>
-          <label for="email">Email:</label>
+          <label htmlFor="email">Email:</label>
           <input
             onFocus={() => {
               setErrorMessage("");
@@ -73,7 +73,7 @@ const SignIn = () => {
         </div>
         <div>
           {/* PASSWORD */}
-          <label for="password">Password:</label>
+          <label htmlFor="password">Password:</label>
           <input
             onFocus={() => {
               setErrorMessage("");

@@ -54,7 +54,6 @@ const EachDirectionContainer = ({
                         className="checkbox"
                         type="checkbox"
                         name="ingredient"
-                        class={index}
                         value={ingredients[idx].ingredient}
                         id={`${index}-${ingredient.ingredient}`}
                         onChange={ingredientChange}

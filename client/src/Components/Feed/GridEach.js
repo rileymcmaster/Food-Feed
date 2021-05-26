@@ -176,7 +176,7 @@ const GridEach = ({ item }) => {
                 <UserLink to={`/user/${author._id}`}>
                   <AvatarImage img={author.avatarUrl} />
                   <Name>
-                    <p> @{author.handle}</p>
+                    <p>{`${author.handle}`}</p>
                   </Name>
                 </UserLink>
                 {/* DATE */}
@@ -287,6 +287,9 @@ const Name = styled.div`
     text-align: center;
     margin: 10px auto 5px;
     font-size: 1.2rem;
+  }
+  p {
+    margin-left: 0.2rem;
   }
 `;
 // Link to author's profile. Wraps the avatar and handle

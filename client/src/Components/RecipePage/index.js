@@ -607,6 +607,7 @@ const DirectionCard = styled.div`
   position: relative;
   margin-top: 2rem;
   margin-right: 10px;
+  max-height: 60%;
   box-shadow: var(--recipe-box-shadow);
   textarea {
     padding: 20px;
@@ -618,6 +619,7 @@ const DirectionCard = styled.div`
     outline: none;
     border: none;
     resize: none;
+    overflow-x: auto;
   }
   textarea:focus {
     box-shadow: 0 0 10px blue;

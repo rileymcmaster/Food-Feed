@@ -19,7 +19,6 @@ const ErrorPage = () => {
 const StyledLink = styled(Link)`
   text-decoration: none;
   margin-top: 30px;
-  /* pointer-events: none; */
   user-select: contain;
 `;
 const ErrorCard = styled.div`

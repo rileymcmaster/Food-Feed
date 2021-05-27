@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 
 const Pagination = ({ items, itemsPerPage, currentPage, setCurrentPage }) => {
-  // figure out length of items and create an array of all those numbers
   const totalItemLength = items.length;
   const totalNumOfPages = Math.ceil(totalItemLength / itemsPerPage);
   const totalPagesArray = [...Array(totalNumOfPages).keys()].map(

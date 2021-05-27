@@ -22,22 +22,26 @@ const RecipePage = () => {
   let mediaQuery = useMediaQuery();
   //LOGGED IN USER
   const user = useSelector((state) => state.user);
+  //get the params to fetch the recipe
+  const urlId = useParams()._id;
 
   const [currentRecipe, setCurrentRecipe] = useState(null);
+  // loading states
   const [firstFetch, setFirstFetch] = useState(false);
   const [loading, setLoading] = useState(true);
+  // editing states
+  const [toggleEdit, setToggleEdit] = useState(false);
   const [author, setAuthor] = useState(null);
   const [originalVariations, setOriginalVariations] = useState([]);
   const [showVariations, setShowVariations] = useState(false);
   const [removePagePrompt, setRemovePagePrompt] = useState(false);
   const [editedRecipeObject, setEditedRecipeObject] = useState(null);
+  // sending recipe states
   const [confirmSendRecipe, setConfirmSendRecipe] = useState(false);
   const [sendingRecipe, setSendingRecipe] = useState("");
   const [sendingRecipeComplete, setSendingRecipeComplete] = useState("");
   const [sendingRecipeError, setSendingRecipeError] = useState("");
 
-  //get the params to fetch the recipe
-  const urlId = useParams()._id;
   // refresh page when edited recipe is submitted
   const history = useHistory();
 
@@ -89,17 +93,12 @@ const RecipePage = () => {
     }
   }, [firstFetch, currentRecipe]);
 
-  //EDITING - anything on the page
-  const [toggleEdit, setToggleEdit] = useState(false);
-
-  //UPDATE TITLE
   const updateTitle = (e) => {
     const currentRecipeCopy = { ...currentRecipe };
     currentRecipeCopy.recipeName = e.target.value;
     setCurrentRecipe(currentRecipeCopy);
   };
-  //
-  //UPDATE DIRECTIONS
+
   const updateDirections = (e, index) => {
     const currentRecipeCopy = { ...currentRecipe };
     currentRecipeCopy.directions[index].direction = e.target.value;
@@ -107,7 +106,6 @@ const RecipePage = () => {
   };
   //
 
-  //SEND THE EDITED RECIPE TO SERVER
   const handleSubmitChanges = () => {
     setSendingRecipe("sending");
     const currentRecipeCopy = {
@@ -140,7 +138,6 @@ const RecipePage = () => {
           setSendingRecipeError("Error, try again");
         }
       })
-
       .catch((err) => {
         console.log("Error uploading recipe", err);
         setSendingRecipe("");
@@ -164,7 +161,6 @@ const RecipePage = () => {
     }
   }, [editedRecipeObject, history]);
 
-  // HANDLE CHECKBOXES of ingredients on direction page
   const updateDirectionsIngredientsLink = (e, directionIndex) => {
     let currentRecipeCopy = { ...currentRecipe };
     const index = currentRecipeCopy.directions[
@@ -182,58 +178,51 @@ const RecipePage = () => {
     }
     setCurrentRecipe(currentRecipeCopy);
   };
-  // RENDERED ON THE PAGE
+
   return currentRecipe && !loading && author ? (
     <PageWrapper>
       {/* TITLEPAGE */}
       <Container confirmSendRecipe={confirmSendRecipe}>
-        {/* TITLE */}
         <TitlePage>
           <Title>{currentRecipe.recipeName}</Title>
-          <>
-            {/* AUTHOR */}
-            <AuthorCard>
-              {currentRecipe.isOriginal ? (
-                <h2>Original recipe by:</h2>
-              ) : (
-                <h2>Recipe improved by:</h2>
-              )}
-              {/* LINK */}
-              <UserLink to={`/user/${author._id}`}>
-                <h1>@{author.handle}</h1>
-              </UserLink>
-            </AuthorCard>
-            {/* VARIATIONS BUTTON */}
-            <VariationButton
-              tabIndex="0"
-              onClick={() => setShowVariations(!showVariations)}
-            >
-              VARIATIONS
-            </VariationButton>
-            {/* VARIATIONS POPUP */}
-            {originalVariations && showVariations && (
-              <VariationCard showVariations={showVariations}>
-                {originalVariations.map((variation) => {
-                  return (
-                    <VariationLink
-                      to={`/recipe/${variation.variationId}`}
-                      onClick={() => setShowVariations(false)}
-                    >
-                      {variation.variationTitle}
-                      {variation.isOriginal && " (original)"}
-                    </VariationLink>
-                  );
-                })}
-              </VariationCard>
+          <AuthorCard>
+            {currentRecipe.isOriginal ? (
+              <h2>Original recipe by:</h2>
+            ) : (
+              <h2>Recipe improved by:</h2>
             )}
-          </>
-          {/* IMAGE */}
+            <UserLink to={`/user/${author._id}`}>
+              <h1>@{author.handle}</h1>
+            </UserLink>
+          </AuthorCard>
+          {/* VARIATIONS BUTTON */}
+          <VariationButton
+            tabIndex="0"
+            onClick={() => setShowVariations(!showVariations)}
+          >
+            VARIATIONS
+          </VariationButton>
+          {/* VARIATIONS POPUP */}
+          {originalVariations && showVariations && (
+            <VariationCard showVariations={showVariations}>
+              {originalVariations.map((variation) => {
+                return (
+                  <VariationLink
+                    to={`/recipe/${variation.variationId}`}
+                    onClick={() => setShowVariations(false)}
+                  >
+                    {variation.variationTitle}
+                    {variation.isOriginal && " (original)"}
+                  </VariationLink>
+                );
+              })}
+            </VariationCard>
+          )}
           <RecipeImage src={currentRecipe.recipeImageUrl} />
         </TitlePage>
-        {/* IMAGE */}
       </Container>
       {/* END TITLE PAGE */}
-      {/*  */}
+
       {/* INGREDIENTS PAGE */}
       <Container confirmSendRecipe={confirmSendRecipe}>
         <IngredientsPage
@@ -242,9 +231,8 @@ const RecipePage = () => {
           toggleEdit={toggleEdit}
         />
       </Container>
-      {/*  */}
+
       {/* DIRECTION PAGES */}
-      {/*  */}
       {currentRecipe.directions.map((direction, directionIndex) => {
         return (
           <Container confirmSendRecipe={confirmSendRecipe}>
@@ -265,7 +253,6 @@ const RecipePage = () => {
                 ></textarea>
                 {toggleEdit && (
                   <>
-                    {/* ADD A PAGE TO RECIPE - after current page */}
                     <AddStep
                       modifier={"add-page"}
                       currentRecipe={currentRecipe}
@@ -276,7 +263,6 @@ const RecipePage = () => {
                         <CgPlayListAdd size={30} />
                       </AddPageButton>
                     </AddStep>
-                    {/* // REMOVE THIS PAGE */}
                     {!removePagePrompt ? (
                       <RemovePageButton
                         onClick={() => setRemovePagePrompt(true)}
@@ -313,7 +299,7 @@ const RecipePage = () => {
                   </>
                 )}
               </DirectionCard>
-              {/* ingredients for each direction page*/}
+
               <IngredientCard>
                 <IngredientsPopOut
                   key={"ingredients-" + directionIndex}
@@ -411,8 +397,7 @@ const RecipePage = () => {
     </Wrapper>
   );
 };
-//
-// Container for the entire recipe
+
 const PageWrapper = styled.div`
   padding: 0;
   position: relative;
@@ -424,7 +409,7 @@ const PageWrapper = styled.div`
   scroll-snap-points-y: repeat(100vh);
   scroll-behavior: smooth;
 `;
-// Container for each page
+
 const Container = styled.section`
   transition: filter 1s ease;
   filter: ${(props) => (props.confirmSendRecipe ? "blur(5px)" : "")};
@@ -474,7 +459,7 @@ const Container = styled.section`
     outline: none;
   }
 `;
-// TITLE PAGE
+
 const TitlePage = styled.div`
   height: 100%;
   overflow: hidden;
@@ -484,7 +469,7 @@ const TitlePage = styled.div`
   align-items: center;
   justify-content: space-evenly;
 `;
-// NAME OF RECIPE
+
 const Title = styled.div`
   display: flex;
   justify-content: center;
@@ -497,14 +482,14 @@ const Title = styled.div`
   background-color: rgba(255, 255, 255, 1);
   box-shadow: var(--recipe-box-shadow);
 `;
-// Image that shows on first page
+
 const RecipeImage = styled.img`
   height: 100%;
   width: auto;
   position: absolute;
   z-index: -10;
 `;
-// By line
+
 const AuthorCard = styled.div`
   display: flex;
   flex-direction: column;
@@ -516,7 +501,7 @@ const AuthorCard = styled.div`
   }
   background-color: rgba(255, 255, 255, 0.9);
 `;
-// Link to user handle
+
 const UserLink = styled(Link)`
   margin: 0 auto;
   padding: 5px;
@@ -530,7 +515,7 @@ const UserLink = styled(Link)`
     box-shadow: 0 0 4px 2px white inset, 0 0 2px black;
   }
 `;
-// VARIATIONS
+
 const VariationButton = styled.button`
   border: 6px solid var(--primary-color);
   position: relative;
@@ -556,7 +541,7 @@ const VariationButton = styled.button`
     opacity: 0.9;
   }
 `;
-// Variations popup window
+
 const VariationCard = styled.div`
   padding: 20px 20px 60px 20px;
   border-radius: 20px;
@@ -569,7 +554,7 @@ const VariationCard = styled.div`
   height: 80vh;
   overflow-y: auto;
 `;
-// each link in the variations popup
+
 const VariationLink = styled(Link)`
   text-decoration: none;
   color: white;
@@ -591,7 +576,7 @@ const VariationLink = styled(Link)`
     background-color: white;
   }
 `;
-// DIRECTIONS PAGES
+
 const DirectionsPage = styled.div`
   position: relative;
   padding: 20px 20px;
@@ -626,7 +611,6 @@ const DirectionCard = styled.div`
   }
 `;
 
-//ingredients in each direction
 const IngredientCard = styled.div`
   display: flex;
   flex-direction: column;
@@ -697,7 +681,6 @@ const RemovePageButton = styled.div`
   position: absolute;
   right: 0;
   top: 0px;
-  /* padding: 2px; */
   border-radius: 50%;
   :hover,
   :focus {

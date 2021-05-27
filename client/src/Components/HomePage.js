@@ -7,9 +7,8 @@ import Button from "./Buttons/Button";
 import Loading from "./Loading";
 
 const HomePage = () => {
-  const history = useHistory();
-  //USER STATE
   const user = useSelector((state) => state.user);
+  const history = useHistory();
 
   useEffect(() => {
     if (user && user.isSignedIn) {

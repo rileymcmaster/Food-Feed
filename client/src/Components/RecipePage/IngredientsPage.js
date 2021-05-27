@@ -5,18 +5,16 @@ import { BsPlusCircle } from "react-icons/bs";
 import { IoIosCloseCircle } from "react-icons/io";
 
 const IngredientsPage = ({ currentRecipe, setCurrentRecipe, toggleEdit }) => {
-  // media query
+  // media query - breakpoint is 800px
   let mediaQuery = useMediaQuery();
 
-  //   Input onChange = UPDATE INGREDIENTS
   const updateIngredients = (e, index) => {
     const currentRecipeCopy = { ...currentRecipe };
-    //update the corresponding ingredient in DIRECTIONS
+
     let filterDirections = currentRecipeCopy.directions.filter(
       (direction, i) => {
         let filterIngredients = direction.ingredients.filter(
           (ingredient, idx) => {
-            //if the ingredient listed matches the one that is being edited then it will update it
             if (
               ingredient.ingredient ===
               currentRecipeCopy.ingredients[index].ingredient
@@ -32,8 +30,7 @@ const IngredientsPage = ({ currentRecipe, setCurrentRecipe, toggleEdit }) => {
     currentRecipeCopy.ingredients[index] = { ingredient: e.target.value };
     setCurrentRecipe(currentRecipeCopy);
   };
-  //
-  //   ADD INGREDIENT
+
   const handleAddIngredient = () => {
     setCurrentRecipe({
       ...currentRecipe,
@@ -43,11 +40,9 @@ const IngredientsPage = ({ currentRecipe, setCurrentRecipe, toggleEdit }) => {
       ],
     });
   };
-  // REMOVE INGREDIENT
+
   const handleRemoveIngredient = (ingredientIndex) => {
-    // make a copy of the form
     const currentRecipeCopy = { ...currentRecipe };
-    // must be at least one ingredient
     if (currentRecipeCopy.ingredients.length > 1) {
       const remove = currentRecipeCopy.ingredients.splice(ingredientIndex, 1);
       setCurrentRecipe(currentRecipeCopy);
@@ -101,8 +96,6 @@ const IngredientsPage = ({ currentRecipe, setCurrentRecipe, toggleEdit }) => {
 
 const IngredientsPageContainer = styled.div`
   position: relative;
-  /* margin: 5px; */
-  /* width: 90%; */
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -131,7 +124,6 @@ const IngredientsPageContainer = styled.div`
     }
   }
   & button.remove-button {
-    /* transform: translateX(-20px); */
     height: 20px;
     background-color: transparent;
     border: none;

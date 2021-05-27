@@ -10,10 +10,9 @@ import EachDirectionContainer from "./EachDirectionContainer";
 const RecipeForm = () => {
   const history = useHistory();
   //should only be able to submit recipe if signed in!!
-  //USER STATE
+
   const user = useSelector((state) => state.user);
 
-  //the recipe state that will be submitted
   const [userInput, setUserInput] = useState({
     recipeName: "",
     ingredients: [{ ingredient: "" }],
@@ -23,7 +22,6 @@ const RecipeForm = () => {
     recipeImageUrl: "",
   });
 
-  // INGREDIENTS INPUT
   const updateIngredients = (e, index) => {
     const userInputCopy = { ...userInput };
     //update the corresponding ingredient in DIRECTIONS
@@ -36,12 +34,11 @@ const RecipeForm = () => {
         }
       });
     });
-    //update the ingredient
+
     userInputCopy.ingredients[index] = { ingredient: e.target.value };
     setUserInput(userInputCopy);
   };
 
-  // DIRECTIONS INPUT pushes to the array in userInput
   const updateDirections = (e, directionIndex) => {
     const userInputCopy = { ...userInput };
     userInputCopy.directions[directionIndex] = {
@@ -50,9 +47,8 @@ const RecipeForm = () => {
     };
     setUserInput(userInputCopy);
   };
-  //checkboxes for the ingredients inside directions
+
   const updateDirectionsIngredients = (e, directionIndex) => {
-    //toggle insert/remove from array
     let userInputCopy = { ...userInput };
     const index = userInputCopy.directions[
       directionIndex
@@ -70,7 +66,6 @@ const RecipeForm = () => {
     setUserInput(userInputCopy);
   };
 
-  //toggle private setting
   const updatePrivate = () => {
     const userInputCopy = { ...userInput };
     userInputCopy.isPrivate = !userInputCopy.isPrivate;
@@ -145,53 +140,38 @@ const RecipeForm = () => {
       });
   };
 
-  // ADD INGREDIENT
   const handleAddIngredient = () => {
-    // make a copy of the form
     const userInputCopy = { ...userInput };
-    // new object that will be inserted
     const newIngredientObject = { ingredient: "" };
-    // add object to end of array
     const ingredientLength = userInputCopy.ingredients.length;
-    // splice changes original array, inserts the new object
     userInputCopy.ingredients.splice(ingredientLength, 0, newIngredientObject);
     setUserInput(userInputCopy);
   };
 
-  // REMOVE INGREDIENT
   const handleRemoveIngredient = (ingredientIndex) => {
-    // make a copy of the form
     const userInputCopy = { ...userInput };
-    // must be at least one ingredient
     if (userInputCopy.ingredients.length > 1) {
       userInputCopy.ingredients.splice(ingredientIndex, 1);
       setUserInput(userInputCopy);
     }
   };
-  // ADD DIRECTION
+
   const handleAddDirection = () => {
-    // make a copy of the form
     const userInputCopy = { ...userInput };
-    // new object that will be inserted
     const newDirectionObject = { direction: "", ingredients: [] };
-    // add object to end of array
     const directionLength = userInputCopy.directions.length;
-    // splice changes original array, inserts the new object
     userInputCopy.directions.splice(directionLength, 0, newDirectionObject);
     setUserInput(userInputCopy);
   };
 
-  // REMOVE DIRECTION
   const handleRemoveDirection = (directionIndex) => {
-    // make a copy of the form
     const userInputCopy = { ...userInput };
-    // there must be at least one direction
     if (userInputCopy.directions.length > 1) {
       const remove = userInputCopy.directions.splice(directionIndex, 1);
       setUserInput(userInputCopy);
     }
   };
-  // RENDERED ON THE PAGE
+
   return !user.isSignedIn ? (
     <FormContainer>
       <Link style={{ marginTop: "50vh" }} to={"/signin"}>
@@ -351,7 +331,6 @@ const RecipeForm = () => {
     </FormContainer>
   );
 };
-// WHOLE PAGE
 const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -438,7 +417,7 @@ const FormContainer = styled.div`
     }
   }
 `;
-// PAGE TITLE
+
 const Title = styled.div`
   display: flex;
   justify-content: center;
@@ -451,13 +430,13 @@ const Title = styled.div`
     box-shadow: var(--recipe-box-shadow);
   }
 `;
-// RECIPE NAME
+
 const NameCard = styled.div`
   h1 {
     margin-bottom: 10px;
   }
 `;
-// INGREDIENTS
+
 const IngredientsCard = styled.div`
   max-width: 700px;
   margin: 30px auto 0;
@@ -477,7 +456,6 @@ const IngredientLine = styled.div`
   }
 `;
 
-// DIRECTIONS
 const DirectionCard = styled.div`
   transition: all 2s ease;
   max-width: 700px;

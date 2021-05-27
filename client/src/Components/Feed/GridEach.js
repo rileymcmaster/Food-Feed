@@ -16,9 +16,8 @@ import {
 // some alternate settings for a user viewing own profile - lock and delete buttons replace the author's picture and handle
 
 const GridEach = ({ item }) => {
-  //USER STATE
   const user = useSelector((state) => state.user);
-  //local states
+
   const [author, setAuthor] = useState("");
   const [loading, setLoading] = useState(null);
   const [deleteInProcess, setDeleteInProcess] = useState(false);
@@ -26,6 +25,7 @@ const GridEach = ({ item }) => {
 
   const urlId = useParams()._id;
   const history = useHistory();
+
   //fetch the author name and avatar
   useEffect(() => {
     setPrivacy(item.isPrivate);
@@ -40,7 +40,6 @@ const GridEach = ({ item }) => {
       .catch((err) => console.log("error", err));
   }, [item]);
 
-  //DELETE RECIPE - only visible if the user is viewing their own profile page
   const handleDeleteRecipe = (e) => {
     e.stopPropagation();
     e.preventDefault();
@@ -70,7 +69,7 @@ const GridEach = ({ item }) => {
       history.go(0);
     }
   };
-  // CHANGE PRIVACY SETTING
+
   const handleChangePrivacy = (e) => {
     e.stopPropagation();
     e.preventDefault();
@@ -91,7 +90,7 @@ const GridEach = ({ item }) => {
     }
     setPrivacy(!privacy);
   };
-  // Format for the timestamp
+
   moment.updateLocale("en", {
     relativeTime: {
       future: "in %s",
@@ -117,7 +116,6 @@ const GridEach = ({ item }) => {
   ) : (
     !loading && author && (
       <>
-        {/* THE WHOLE CARD IS A LINK */}
         <LinkContainer to={`/recipe/${item._id}`}>
           <ContainerEach>
             <ImageContainer>
@@ -191,8 +189,7 @@ const GridEach = ({ item }) => {
     )
   );
 };
-// STYLES
-// The parent container
+
 const ContainerEach = styled.div`
   height: 400px;
   width: 300px;
@@ -208,12 +205,12 @@ const ContainerEach = styled.div`
     transform: translate(10px 10px);
   }
 `;
-// Loading
+
 const LoadingContainer = styled.div`
   height: 400px;
   width: 300px;
 `;
-// Link that wraps whole card
+
 const LinkContainer = styled(Link)`
   margin: 20px;
   text-decoration: none;
@@ -233,7 +230,7 @@ const LinkContainer = styled(Link)`
     box-shadow: 0px 0px 0 0px black, 0 0 0px 0px rgba(0, 0, 0, 0.3);
   }
 `;
-// Main image
+
 const ImageContainer = styled.div`
   overflow: hidden;
   display: block;
@@ -244,14 +241,13 @@ const ImageContainer = styled.div`
   max-height: 300px;
   padding: 10px;
 `;
-// recipe image
+
 const Thumbnail = styled.img`
   margin: auto 0;
   width: 100%;
   height: auto;
 `;
 
-// Logged in user's own profile  - Privacy setting
 const OptionIcon = styled.div`
   padding: 10px;
   border-radius: 50%;
@@ -271,7 +267,7 @@ const OptionIcon = styled.div`
     color: var(--primary-color);
   }
 `;
-// TIMESTAMP
+
 const Date = styled.div`
   margin-left: auto;
   right: 20px;
@@ -279,7 +275,7 @@ const Date = styled.div`
   vertical-align: bottom;
   position: absolute;
 `;
-// h2 - title of recipe. No designation is the author's handle
+
 const Name = styled.div`
   h2 {
     /* margin-top: 10px; */
@@ -292,7 +288,7 @@ const Name = styled.div`
     margin-left: 0.2rem;
   }
 `;
-// Link to author's profile. Wraps the avatar and handle
+
 const UserLink = styled(Link)`
   margin-right: auto;
   text-decoration: none;

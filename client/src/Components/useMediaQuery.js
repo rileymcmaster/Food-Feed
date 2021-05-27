@@ -12,8 +12,6 @@ export default function useMediaQuery() {
       setMatches(media.matches);
     };
     media.addEventListener("change", listener);
-    // media.addListener(listener);
-    // return () => media.removeListener(listener);
     return () => media.removeEventListener("change", listener);
   }, [matches]);
   return matches;

@@ -19,10 +19,8 @@ const IngredientsPopOut = ({
   const [open, setOpen] = useState(false);
   const [viewCheckboxes, setViewCheckboxes] = useState(false);
 
-  // EDIT AND UPDATE INGREDIENTS RIGHT IN THE POPUP WINDOW
   const updateDirectionIngredient = (e, ingredientIndex, directionIndex) => {
     const currentRecipeCopy = { ...currentRecipe };
-    //update the ingredients array
     currentRecipeCopy.ingredients.filter((ingredient, index) => {
       if (
         ingredient.ingredient ===
@@ -36,11 +34,8 @@ const IngredientsPopOut = ({
       }
     });
     //check if any other directions reference this ingredient
-    //filter through the directions array
     currentRecipeCopy.directions.map((direction, i) => {
-      //filter through the ingredients array inside the directions
       direction.ingredients.filter((ingredient, idx) => {
-        //if the ingredient listed matches the one that is being edited then it will update it
         if (
           ingredient.ingredient ===
           currentRecipeCopy.directions[directionIndex].ingredients[
@@ -85,9 +80,7 @@ const IngredientsPopOut = ({
       </ViewCheckboxesAlt>
     ) : (
       // SHOW INGREDIENTS
-      // Click anywhere on container to open it
       <Container onClick={() => !open && setOpen(true)} open={open}>
-        {/* BUTTON to view CHECKBOXES  */}
         {toggleEdit && open && (
           <ViewCheckboxes>
             <button
@@ -103,7 +96,6 @@ const IngredientsPopOut = ({
         <IngredientCard open={open} viewCheckboxes={viewCheckboxes}>
           <IngredientList>
             {ingredients.map((ingredient, ingredientIndex) => {
-              //  RENDER ALL THE INGREDIENTS LINKED
               return (
                 <input
                   key={`${ingredientIndex}-${ingredient}`}
@@ -154,7 +146,7 @@ const IngredientsPopOut = ({
           </IngredientCheckboxes>
         </IngredientCard>
         {/* OPEN/CLOSE BUTTON */}
-        {mediaQuery && (
+        {!mediaQuery && (
           <Icon onClick={() => setOpen(!open)} open={open}>
             <IoIosArrowDown size={20} />
           </Icon>
@@ -200,12 +192,12 @@ const ViewCheckboxesAlt = styled(ViewCheckboxes)`
   right: 50%;
   transform: translate(50%, -30px);
 `;
-// TITLE
+
 const Title = styled.div`
   font-size: 1.1rem;
   padding: 10px;
 `;
-// The card that holds both lists of ingredients
+
 const IngredientCard = styled.div`
   display: flex;
   flex-direction: row;
@@ -216,7 +208,7 @@ const IngredientCard = styled.div`
   transform: ${(props) =>
     props.viewCheckboxes ? "translateX(-50%)" : "translateX(0%)"};
 `;
-// The ingredients that are linked to the current step
+
 const IngredientList = styled.div`
   width: 100%;
   height: 100%;
@@ -225,7 +217,7 @@ const IngredientList = styled.div`
   padding-left: 0.5rem;
   padding-bottom: 1rem;
 `;
-// checkboxes for all ingredients to be able to link them to the current step
+
 const IngredientCheckboxes = styled.div`
   width: 100%;
   min-height: ${(props) => (props.viewCheckboxes ? "300px" : "100px")};
@@ -233,7 +225,6 @@ const IngredientCheckboxes = styled.div`
   flex-direction: column;
   overflow-y: hidden;
 `;
-// expand/retract icon
 const Icon = styled.div`
   display: flex;
   position: absolute;

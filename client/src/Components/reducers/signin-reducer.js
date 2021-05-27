@@ -12,7 +12,6 @@ const initialState = {
 export default function signin(state = initialState, action) {
   switch (action.type) {
     case "SIGN_IN":
-      // console.log("action", action);
       return {
         ...state,
         ...action.user,

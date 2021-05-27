@@ -6,7 +6,6 @@ import { signOut } from "./actions";
 import { GiBurn } from "react-icons/gi";
 
 const Header = () => {
-  //USER STATE
   const user = useSelector((state) => state.user);
 
   const dispatch = useDispatch();
@@ -37,14 +36,12 @@ const Header = () => {
       {user.isSignedIn ? (
         <>
           <UserMenu onMouseLeave={() => setToggleMenu(false)}>
-            {/* <Link to={"/recipes"}> */}
             <ImageContainer
               onClick={() => setToggleMenu(!toggleMenu)}
               onMouseEnter={() => setToggleMenu(true)}
             >
               <img src={user.avatarUrl} alt="user avatar" />
             </ImageContainer>
-            {/* </Link> */}
             {/* DROP DOWN */}
             {toggleMenu && (
               <>
@@ -86,7 +83,6 @@ const Header = () => {
               </>
             )}
           </UserMenu>
-          {/* </div> */}
           {/* END DROPDOWN */}
         </>
       ) : (
@@ -124,16 +120,14 @@ const Header = () => {
   );
 };
 
-// main div
 const Container = styled.div`
   position: fixed;
   display: flex;
-  /* right: 0; */
   flex-direction: row;
   padding: 20px;
   z-index: 9;
 `;
-// contains the icon and the menu
+
 const UserMenu = styled.div`
   position: relative;
   display: inline-block;
@@ -141,7 +135,7 @@ const UserMenu = styled.div`
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.05);
   outline: 1px solid transparent;
 `;
-// profile pic icon
+
 const ImageContainer = styled.div`
   position: relative;
   width: 50px;
@@ -156,16 +150,13 @@ const ImageContainer = styled.div`
     height: auto;
   }
 `;
-// DROP DOWN
-// animate dropdown
+
 const growDown = keyframes`
 0% {
   transform: scaleY(0);
   opacity: 0%;
 }
 80% {
-  /* causes ghost pixels */
-  /* transform: scaleY(1.1); */
   opacity: 100%;
 }
 100%{
@@ -211,7 +202,6 @@ const IconContainer = styled.div`
   background-color: black;
   padding-bottom: 3px;
   overflow: hidden;
-  /* z-index: 999999; */
 `;
 
 export default Header;

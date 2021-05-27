@@ -5,7 +5,6 @@ import styled from "styled-components";
 import ButtonUpload from "./Buttons/ButtonUpload";
 
 const SignUp = () => {
-  //states all for the form
   const [userInput, setUserInput] = useState({
     handle: "",
     userName: "",
@@ -68,7 +67,6 @@ const SignUp = () => {
 
   //SUBMIT
   const handleSubmit = (e) => {
-    // e.preventDefault();
     setWaitingMessage("waiting");
     fetch("https://food-feed.herokuapp.com/user/signup", {
       method: "POST",

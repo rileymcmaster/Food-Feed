@@ -8,15 +8,12 @@ import Wrapper from "../Wrapper";
 import Loading from "../Loading";
 
 const GridPage = () => {
-  //USER STATE
   const user = useSelector((state) => state.user);
 
-  //LOCAL STATES
   const [items, setItems] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
 
-  //load data
   useEffect(() => {
     setErrorMessage("");
     setLoading(true);
@@ -65,7 +62,6 @@ const GridPage = () => {
 const Container = styled.div`
   padding: 1em;
   display: flex;
-  /* width: 100vw; */
   min-height: 90vh;
   flex-direction: column;
   margin-bottom: 20px;

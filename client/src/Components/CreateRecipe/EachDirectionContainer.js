@@ -11,9 +11,8 @@ const EachDirectionContainer = ({
   value,
   ingredientChange,
 }) => {
-  // SHOW/HIDE the ingredient checkboxes
   const [open, setOpen] = useState(false);
-  // will set the checked value if it is connected to a direction
+
   const checkedIngredient = (checkboxValue) => {
     let index = direction.ingredients.findIndex((ingredient) => {
       return ingredient.ingredient === checkboxValue;
@@ -26,7 +25,6 @@ const EachDirectionContainer = ({
 
   return (
     <Container>
-      {/* DIRECTION */}
       <DirectionLine>
         <input
           onFocus={() => setOpen(!open)}
@@ -40,8 +38,6 @@ const EachDirectionContainer = ({
         </button>
       </DirectionLine>
       {open && (
-        //   INGREDIENT
-        //   CHECKBOXES
         <IngredientBoxes>
           <div>
             {ingredients.map((ingredient, idx) => {

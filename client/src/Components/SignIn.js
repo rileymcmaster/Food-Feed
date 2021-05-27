@@ -8,7 +8,6 @@ import ButtonUpload from "./Buttons/ButtonUpload";
 const SignIn = () => {
   const history = useHistory();
 
-  //SIGN IN FIELDS
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
   const [waitingMessage, setWaitingMessage] = useState("");
@@ -17,7 +16,6 @@ const SignIn = () => {
 
   const dispatch = useDispatch();
 
-  //SUBMIT
   const handleSubmit = (e) => {
     e.preventDefault();
     setWaitingMessage("waiting");

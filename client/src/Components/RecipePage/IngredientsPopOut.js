@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { useSelector, useDispatch } from "react-redux";
+// components
 import useMediaQuery from "../useMediaQuery";
+import { editRecipe } from "../actions";
 // icons
 import { IoIosArrowDown } from "react-icons/io";
 import { FaLink } from "react-icons/fa";
 
+// currentRecipe,
+
 const IngredientsPopOut = ({
   ingredients,
   toggleEdit,
-  currentRecipe,
   directionIndex,
   updatePageDirections,
-  setCurrentRecipe,
 }) => {
+  const currentRecipe = useSelector((state) => state.recipe);
+  const dispatch = useDispatch();
   // MEDIA QUERY - Break point is 800px
   let mediaQuery = useMediaQuery();
 
@@ -49,7 +54,8 @@ const IngredientsPopOut = ({
     //change the value that is being edited
     currentRecipeCopy.directions[directionIndex].ingredients[ingredientIndex] =
       { ingredient: e.target.value };
-    setCurrentRecipe(currentRecipeCopy);
+
+    dispatch(editRecipe(currentRecipeCopy));
   };
   //if not editing or have the window expanded then you can't see the checkboxes
   useEffect(() => {
@@ -64,7 +70,7 @@ const IngredientsPopOut = ({
   return (
     // IF NO INGREDIENTS TO SHOW - default to show nothing
     // IF NO ingredients but toggleEdit then show the chain icon and you can link ingredients
-    ingredients.length <= 0 && !toggleEdit && !open ? (
+    ingredients.length <= 0 && !toggleEdit ? (
       <></>
     ) : ingredients.length <= 0 && toggleEdit && !open ? (
       <ViewCheckboxesAlt>
@@ -145,7 +151,7 @@ const IngredientsPopOut = ({
             })}
           </IngredientCheckboxes>
         </IngredientCard>
-        {/* OPEN/CLOSE BUTTON */}
+        {/* OPEN/CLOSE BUTTON - mobile view only */}
         {!mediaQuery && (
           <Icon onClick={() => setOpen(!open)} open={open}>
             <IoIosArrowDown size={20} />
@@ -155,7 +161,7 @@ const IngredientsPopOut = ({
     )
   );
 };
-//contains everything
+
 const Container = styled.div`
   position: relative;
   overflow: hidden;
@@ -169,7 +175,7 @@ const Container = styled.div`
       : "  linear-gradient(0deg, rgba(172,172,172,0.9920343137254902) 0%, rgba(255,255,255,0) 19%) "};
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.5);
 `;
-// ICON TO VIEW CHECKBOXES
+
 const ViewCheckboxes = styled.div`
   position: absolute;
   top: 0;

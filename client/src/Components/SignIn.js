@@ -37,7 +37,7 @@ const SignIn = () => {
           //delay to redirect to the feed page
           setTimeout(() => {
             history.push("/recipes");
-          }, 2000);
+          }, 1000);
         } else {
           setWaitingMessage("");
           console.log("message", message);

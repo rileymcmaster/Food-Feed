@@ -1,16 +1,23 @@
 import React from "react";
 import styled from "styled-components";
+import { useSelector, useDispatch } from "react-redux";
+// components
 import useMediaQuery from "../useMediaQuery";
+import { editRecipe } from "../actions";
+
+// icons
 import { BsPlusCircle } from "react-icons/bs";
 import { IoIosCloseCircle } from "react-icons/io";
 
-const IngredientsPage = ({ currentRecipe, setCurrentRecipe, toggleEdit }) => {
+const IngredientsPage = ({ toggleEdit }) => {
+  const currentRecipe = useSelector((state) => state.recipe);
+  const dispatch = useDispatch();
+
   // media query - breakpoint is 800px
   let mediaQuery = useMediaQuery();
 
   const updateIngredients = (e, index) => {
     const currentRecipeCopy = { ...currentRecipe };
-
     let filterDirections = currentRecipeCopy.directions.filter(
       (direction, i) => {
         let filterIngredients = direction.ingredients.filter(
@@ -28,34 +35,36 @@ const IngredientsPage = ({ currentRecipe, setCurrentRecipe, toggleEdit }) => {
       }
     );
     currentRecipeCopy.ingredients[index] = { ingredient: e.target.value };
-    setCurrentRecipe(currentRecipeCopy);
+    dispatch(editRecipe(currentRecipeCopy));
   };
 
   const handleAddIngredient = () => {
-    setCurrentRecipe({
-      ...currentRecipe,
-      ingredients: [
-        ...currentRecipe.ingredients,
-        { ingredient: "New ingredient" },
-      ],
-    });
+    dispatch(
+      editRecipe({
+        ...currentRecipe,
+        ingredients: [
+          ...currentRecipe.ingredients,
+          { ingredient: "New ingredient" },
+        ],
+      })
+    );
   };
 
   const handleRemoveIngredient = (ingredientIndex) => {
     const currentRecipeCopy = { ...currentRecipe };
     if (currentRecipeCopy.ingredients.length > 1) {
       const remove = currentRecipeCopy.ingredients.splice(ingredientIndex, 1);
-      setCurrentRecipe(currentRecipeCopy);
+      dispatch(editRecipe(currentRecipeCopy));
     }
   };
 
   return (
     <IngredientsPageContainer>
-      <SubHeader>Ingredients:</SubHeader>
+      <h2>Ingredients:</h2>
       <IngredientList>
         {currentRecipe.ingredients.map((ingredient, index) => {
           return (
-            <IngredientLine key={`${ingredient.ingredient}-${index}`}>
+            <IngredientLine key={`ingredient-${index}`}>
               <input
                 size={mediaQuery ? "80" : "30"}
                 disabled={!toggleEdit}
@@ -136,10 +145,12 @@ const IngredientsPageContainer = styled.div`
       color: red;
     }
   }
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
 `;
-const SubHeader = styled.div`
-  font-size: 1.5rem;
-`;
+
 const IngredientList = styled.div`
   max-height: 80%;
   margin-top: 2rem;
